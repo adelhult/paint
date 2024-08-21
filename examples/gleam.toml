@@ -1,0 +1,8 @@
+name = "examples"
+version = "1.0.0"
+description = "Examples"
+target = "javascript"
+
+[dependencies]
+gleam_stdlib = ">= 0.34.0 and < 2.0.0"
+paint = { path = "./.." }

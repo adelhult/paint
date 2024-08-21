@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+            rel="stylesheet"
+        />
+        <title>Gleam Paint Examples</title>
+        <style>
+            canvas {
+                background-color: #f9f8f8;
+                max-width: 200px;
+                max-height: 200px;
+            }
+
+            body {
+                max-width: 900px;
+                padding: 1rem;
+                box-sizing: border-box;
+                margin-left: auto;
+                margin-right: auto;
+                font-family: "Inter", sans-serif;
+                font-optical-sizing: auto;
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                font-family: "Inter", sans-serif;
+                font-optical-sizing: auto;
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            h1,
+            h2 {
+                font-weight: bold;
+            }
+
+            body > section {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .example {
+                flex: 1 1 0px;
+                display: flex;
+                justify-content: space-between;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .example > h3 {
+                margin: 0;
+            }
+
+            .example > .description {
+                opacity: 0.8;
+            }
+        </style>
+        <script defer type="module">
+            import {
+                circle_example,
+                arc_example,
+                text_example,
+                fill_example,
+                stroke_example,
+            } from "./build/dev/javascript/examples/examples.mjs";
+            import { display_on_canvas } from "./build/dev/javascript/paint/paint.mjs";
+
+            function createExamples(examples, root) {
+                for (const example of examples) {
+                    // create canvases for each example
+                    const { name, description } = example;
+                    root.innerHTML += `
+                       <section class="example">
+                           <h3>${name}</h3>
+                           <div class="description">${description}</div>
+                           <canvas id="${name}" width="200" height="200"></canvas>
+                       </section>
+                       `;
+                }
+                // Finally, display the examples on the canvas
+                for (const example of examples) {
+                    const { name, picture } = example;
+                    display_on_canvas(picture, name);
+                }
+            }
+
+            window.onload = () => {
+                const shapes = document.getElementById("shapes");
+                createExamples(
+                    [
+                        {
+                            name: "Circle",
+                            description: "circle(radius: Float)",
+                            picture: circle_example(),
+                        },
+                        {
+                            name: "Arc",
+                            description:
+                                "arc(radius: Float, start start: Float, end end: Float)",
+                            picture: arc_example(),
+                        },
+                        {
+                            name: "Text",
+                            description: "text(text: String)",
+                            picture: text_example(),
+                        },
+                        // ADD more examples here
+                    ],
+                    shapes,
+                );
+
+                const fillAndStroke = document.getElementById("fillAndStroke");
+                createExamples(
+                    [
+                        {
+                            name: "Fill",
+                            description: "TODO",
+                            picture: fill_example(),
+                        },
+                        {
+                            name: "Stroke",
+                            description: "TODO",
+                            picture: stroke_example(),
+                        },
+                    ],
+                    fillAndStroke,
+                );
+            };
+        </script>
+    </head>
+    <body>
+        <h1>Gleam Paint Examples</h1>
+        <h2>Shapes</h2>
+        <section id="shapes"></section>
+        <h2>Fill and stroke</h2>
+        <section id="fillAndStroke"></section>
+    </body>
+</html>
