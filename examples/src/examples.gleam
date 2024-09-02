@@ -1,6 +1,7 @@
 import paint.{
   type Picture, NoStroke, SolidStroke, angle_deg, arc, blank, circle, color_rgb,
-  combine, concat, fill, lines, polygon, scale, stroke, text, translate_y,
+  combine, concat, fill, lines, polygon, rectangle, scale, square, stroke, text,
+  translate_y,
 }
 
 pub fn blank_example() -> Picture {
@@ -8,8 +9,7 @@ pub fn blank_example() -> Picture {
 }
 
 pub fn circle_example() -> Picture {
-  let radius = 40.0
-  circle(radius)
+  circle(40.0)
 }
 
 pub fn arc_example() -> Picture {
@@ -23,6 +23,14 @@ pub fn polygon_example() -> Picture {
 
 pub fn lines_example() -> Picture {
   lines([#(-10.0, -20.0), #(50.0, 30.0), #(-20.0, 50.0)])
+}
+
+pub fn rectangle_example() -> Picture {
+  rectangle(50.0, 80.0)
+}
+
+pub fn square_example() -> Picture {
+  square(80.0)
 }
 
 pub fn text_example() -> Picture {

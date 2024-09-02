@@ -93,6 +93,14 @@ pub fn lines(points: List(#(Float, Float))) -> Picture {
   Polygon(points, False)
 }
 
+pub fn rectangle(width: Float, height: Float) -> Picture {
+  polygon([#(0.0, 0.0), #(width, 0.0), #(width, height), #(0.0, height)])
+}
+
+pub fn square(length: Float) -> Picture {
+  rectangle(length, length)
+}
+
 pub fn text(text: String, font_size_px: Int) -> Picture {
   Text(text, style: FontProperties(font_size_px, "sans-serif"))
 }
