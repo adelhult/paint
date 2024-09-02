@@ -257,7 +257,6 @@ fn display_on_rendering_context(
       impl_canvas.translate(ctx, x, y)
       display_on_rendering_context(p, ctx, state)
       impl_canvas.reset_transform(ctx)
-      // TODO: FIX THIS! calling translate |> rotate etc... will cause issues
     }
 
     Scale(p, vec) -> {
@@ -265,7 +264,6 @@ fn display_on_rendering_context(
       impl_canvas.scale(ctx, x, y)
       display_on_rendering_context(p, ctx, state)
       impl_canvas.reset_transform(ctx)
-      // TODO: FIX THIS! calling translate |> rotate etc... will cause issues
     }
 
     Rotate(p, angle) -> {
@@ -273,7 +271,6 @@ fn display_on_rendering_context(
       impl_canvas.rotate(ctx, rad)
       display_on_rendering_context(p, ctx, state)
       impl_canvas.reset_transform(ctx)
-      // TODO: FIX THIS! calling translate |> rotate etc... will cause issues
     }
 
     Combine(pictures) -> {
