@@ -1,25 +1,37 @@
-import canvas
 import gleam/int
 import gleam_community/maths/elementary.{pi}
+import impl_canvas
 
 /// A 2D picture
 pub opaque type Picture {
+  // Shapes
   Blank
-  Rectangle
-  // Remove rectangle, add polygon and line instead
+  Polygon(List(Vec2), closed: Bool)
   Arc(radius: Float, start: Angle, end: Angle)
-  Text(text: String, style: String)
+  Text(text: String, style: FontProperties)
+  // TODO: Bitmap images
+  // Styling
   Fill(Picture, Color)
-  Stroke(Picture, StrokeProperty)
+  Stroke(Picture, StrokeProperties)
+  // Transform
   Translate(Picture, Vec2)
   Scale(Picture, Vec2)
   Rotate(Picture, Angle)
+  // Combine
   Combine(List(Picture))
 }
 
-pub type StrokeProperty {
+/// Options for strokes. Either no stroke or
+/// a stroke with some given color and line width.
+pub type StrokeProperties {
   NoStroke
   SolidStroke(Color, Float)
+}
+
+/// Internal type used to decouple the font styling
+/// from the back-end.
+type FontProperties {
+  FontProperties(size_px: Int, font_family: String)
 }
 
 /// An angle in clock-wise direction.
@@ -54,28 +66,39 @@ pub fn color_rgb(red: Int, green: Int, blue: Int) -> Color {
 //   todo
 // }
 
-/// 2D vector, currently only used for the internal API.
-/// The public API just uses seperate parameters for x and y. Might change this later.
-type Vec2 {
-  Vec2(Float, Float)
+pub type Vec2 =
+  #(Float, Float)
+
+/// A blank image
+pub fn blank() -> Picture {
+  Blank
 }
 
+/// A circle with some given radius
 pub fn circle(radius: Float) -> Picture {
   Arc(radius, start: Radians(0.0), end: Radians(2.0 *. pi()))
 }
 
-pub fn arc(radius: Float, start start: Angle, end end: Angle) -> Picture {
+/// An arc with some radius going from some
+/// starting angle to some other angle in clock-wise direction
+pub fn arc(radius: Float, start: Angle, end: Angle) -> Picture {
   Arc(radius, start: start, end: end)
 }
 
-pub fn text(text: String) -> Picture {
-  Text(text, style: "20px sans-serif")
-  // TODO: Expose a way of changing the font style.
-  // Preferably without tying it to the html canvas backend.
+pub fn polygon(points: List(#(Float, Float))) -> Picture {
+  Polygon(points, True)
+}
+
+pub fn lines(points: List(#(Float, Float))) -> Picture {
+  Polygon(points, False)
+}
+
+pub fn text(text: String, font_size_px: Int) -> Picture {
+  Text(text, style: FontProperties(font_size_px, "sans-serif"))
 }
 
 pub fn translate(picture: Picture, x: Float, y: Float) -> Picture {
-  Translate(picture, Vec2(x, y))
+  Translate(picture, #(x, y))
 }
 
 pub fn translate_x(picture: Picture, x: Float) -> Picture {
@@ -88,17 +111,17 @@ pub fn translate_y(picture: Picture, y: Float) -> Picture {
 
 /// Scale the picture in the horizontal direction
 pub fn scale_x(picture: Picture, factor: Float) -> Picture {
-  Scale(picture, Vec2(factor, 1.0))
+  Scale(picture, #(factor, 1.0))
 }
 
 /// Scale the picture in the vertical direction
 pub fn scale_y(picture: Picture, factor: Float) -> Picture {
-  Scale(picture, Vec2(1.0, factor))
+  Scale(picture, #(1.0, factor))
 }
 
 /// Scale the picture uniformly in horizontal and vertical direction
 pub fn scale(picture: Picture, factor: Float) -> Picture {
-  Scale(picture, Vec2(factor, factor))
+  Scale(picture, #(factor, factor))
 }
 
 /// Rotate the picture in a clock-wise direction
@@ -112,8 +135,8 @@ pub fn fill(picture: Picture, color: Color) -> Picture {
 }
 
 /// Set properties for the stroke
-pub fn stroke(picture: Picture, stroke_property: StrokeProperty) -> Picture {
-  Stroke(picture, stroke_property)
+pub fn stroke(picture: Picture, stroke_properties: StrokeProperties) -> Picture {
+  Stroke(picture, stroke_properties)
 }
 
 pub fn concat(picture: Picture, another_picture: Picture) -> Picture {
@@ -125,7 +148,7 @@ pub fn combine(pictures: List(Picture)) -> Picture {
   Combine(pictures)
 }
 
-// HTML Canvas API
+// HTML Canvas Api
 
 fn color_to_css(color: Color) -> String {
   let Rgb(r, g, b) = color
@@ -140,8 +163,8 @@ fn color_to_css(color: Color) -> String {
 
 /// Display a picture on a HTML canvas element
 pub fn display_on_canvas(picture: Picture, id: String) {
-  let ctx = canvas.get_rendering_context(id)
-  canvas.reset(ctx)
+  let ctx = impl_canvas.get_rendering_context(id)
+  impl_canvas.reset(ctx)
   display_on_rendering_context(
     picture,
     ctx,
@@ -158,24 +181,31 @@ type DrawingState {
 
 fn display_on_rendering_context(
   picture: Picture,
-  ctx: canvas.RenderingContext2D,
+  ctx: impl_canvas.RenderingContext2D,
   state: DrawingState,
 ) {
   case picture {
     Blank -> Nil
 
-    Rectangle -> canvas.fill_rect(ctx)
+    Text(text, properties) -> {
+      let FontProperties(size_px, font_family) = properties
+      impl_canvas.save(ctx)
+      impl_canvas.text(
+        ctx,
+        text,
+        int.to_string(size_px) <> "px " <> font_family,
+      )
+      impl_canvas.restore(ctx)
+    }
 
-    Text(text, style) -> {
-      canvas.save(ctx)
-      canvas.text(ctx, text, style)
-      canvas.restore(ctx)
+    Polygon(points, closed) -> {
+      impl_canvas.polygon(ctx, points, closed, state.fill, state.stroke)
     }
 
     Arc(radius, start, end) -> {
       let Radians(start_radians) = start
       let Radians(end_radians) = end
-      canvas.arc(
+      impl_canvas.arc(
         ctx,
         radius,
         start_radians,
@@ -186,10 +216,10 @@ fn display_on_rendering_context(
     }
 
     Fill(p, color) -> {
-      canvas.save(ctx)
-      canvas.set_fill_color(ctx, color_to_css(color))
+      impl_canvas.save(ctx)
+      impl_canvas.set_fill_color(ctx, color_to_css(color))
       display_on_rendering_context(p, ctx, DrawingState(..state, fill: True))
-      canvas.restore(ctx)
+      impl_canvas.restore(ctx)
     }
 
     Stroke(p, stroke) -> {
@@ -201,38 +231,41 @@ fn display_on_rendering_context(
             DrawingState(..state, stroke: False),
           )
         SolidStroke(color, width) -> {
-          canvas.save(ctx)
-          canvas.set_stroke_color(ctx, color_to_css(color))
-          canvas.set_line_width(ctx, width)
+          impl_canvas.save(ctx)
+          impl_canvas.set_stroke_color(ctx, color_to_css(color))
+          impl_canvas.set_line_width(ctx, width)
           display_on_rendering_context(
             p,
             ctx,
             DrawingState(..state, stroke: True),
           )
-          canvas.restore(ctx)
+          impl_canvas.restore(ctx)
         }
       }
     }
 
     Translate(p, vec) -> {
-      let Vec2(x, y) = vec
-      canvas.translate(ctx, x, y)
+      let #(x, y) = vec
+      impl_canvas.translate(ctx, x, y)
       display_on_rendering_context(p, ctx, state)
-      canvas.reset_transform(ctx)
+      impl_canvas.reset_transform(ctx)
+      // TODO: FIX THIS! calling translate |> rotate etc... will cause issues
     }
 
     Scale(p, vec) -> {
-      let Vec2(x, y) = vec
-      canvas.scale(ctx, x, y)
+      let #(x, y) = vec
+      impl_canvas.scale(ctx, x, y)
       display_on_rendering_context(p, ctx, state)
-      canvas.reset_transform(ctx)
+      impl_canvas.reset_transform(ctx)
+      // TODO: FIX THIS! calling translate |> rotate etc... will cause issues
     }
 
     Rotate(p, angle) -> {
       let Radians(rad) = angle
-      canvas.rotate(ctx, rad)
+      impl_canvas.rotate(ctx, rad)
       display_on_rendering_context(p, ctx, state)
-      canvas.reset_transform(ctx)
+      impl_canvas.reset_transform(ctx)
+      // TODO: FIX THIS! calling translate |> rotate etc... will cause issues
     }
 
     Combine(pictures) -> {

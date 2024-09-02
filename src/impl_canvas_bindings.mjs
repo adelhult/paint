@@ -1,5 +1,3 @@
-const UNIT_SIZE_PX = 50;
-
 export function get_rendering_context(id) {
   // TODO: Handle the case where the canvas element is not found.
   return document.getElementById(id).getContext("2d");
@@ -16,16 +14,40 @@ export function reset(ctx) {
   set_origin(ctx);
 }
 
-export function fill_rect(ctx) {
-  ctx.fillRect(0, 0, UNIT_SIZE_PX, UNIT_SIZE_PX);
-}
-
 export function arc(ctx, radius, start, end, fill, stroke) {
   ctx.beginPath();
   ctx.arc(0, 0, radius, start, end);
   if (fill) {
     ctx.fill();
   }
+  if (stroke) {
+    ctx.stroke();
+  }
+}
+
+export function polygon(ctx, points, closed, fill, stroke) {
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  let started = false;
+  for (const point of points) {
+    let x = point[0];
+    let y = point[1];
+    if (started) {
+      ctx.lineTo(x, y);
+    } else {
+      ctx.moveTo(x, y);
+      started = true;
+    }
+  }
+
+  if (closed) {
+    ctx.closePath();
+  }
+
+  if (fill && closed) {
+    ctx.fill();
+  }
+
   if (stroke) {
     ctx.stroke();
   }

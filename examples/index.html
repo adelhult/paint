@@ -72,11 +72,16 @@
         </style>
         <script defer type="module">
             import {
+                blank_example,
                 circle_example,
                 arc_example,
+                polygon_example,
+                lines_example,
                 text_example,
                 fill_example,
                 stroke_example,
+                scale_example,
+                translate_example,
             } from "./build/dev/javascript/examples/examples.mjs";
             import { display_on_canvas } from "./build/dev/javascript/paint/paint.mjs";
 
@@ -87,7 +92,6 @@
                     root.innerHTML += `
                        <section class="example">
                            <h3>${name}</h3>
-                           <div class="description">${description}</div>
                            <canvas id="${name}" width="250" height="200"></canvas>
                        </section>
                        `;
@@ -104,19 +108,28 @@
                 createExamples(
                     [
                         {
+                            name: "Blank",
+                            picture: blank_example(),
+                        },
+
+                        {
                             name: "Circle",
-                            description: "circle(radius: Float)",
                             picture: circle_example(),
                         },
                         {
                             name: "Arc",
-                            description:
-                                "arc(radius: Float, start start: Float, end end: Float)",
                             picture: arc_example(),
                         },
                         {
+                            name: "Polygon",
+                            picture: polygon_example(),
+                        },
+                        {
+                            name: "Lines",
+                            picture: lines_example(),
+                        },
+                        {
                             name: "Text",
-                            description: "text(text: String)",
                             picture: text_example(),
                         },
                         // ADD more examples here
@@ -129,27 +142,44 @@
                     [
                         {
                             name: "Fill",
-                            description: "TODO",
                             picture: fill_example(),
                         },
                         {
                             name: "Stroke",
-                            description: "TODO",
                             picture: stroke_example(),
                         },
                     ],
                     fillAndStroke,
+                );
+
+                const transformations =
+                    document.getElementById("transformations");
+                createExamples(
+                    [
+                        {
+                            name: "Scale",
+                            picture: scale_example(),
+                        },
+                        {
+                            name: "Translate",
+                            picture: translate_example(),
+                        },
+                    ],
+                    transformations,
                 );
             };
         </script>
     </head>
     <body>
         <h1>Gleam Paint Examples</h1>
-        <hr>
+        <hr />
         <h2>Shapes</h2>
         <section id="shapes"></section>
-        
+
         <h2>Fill and stroke</h2>
         <section id="fillAndStroke"></section>
+
+        <h2>Transformations</h2>
+        <section id="transformations"></section>
     </body>
 </html>
