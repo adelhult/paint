@@ -1,4 +1,5 @@
 import gleam/int
+import gleam/option.{type Option, None, Some}
 import gleam_community/maths/elementary.{pi}
 import impl_canvas
 
@@ -156,7 +157,7 @@ pub fn combine(pictures: List(Picture)) -> Picture {
   Combine(pictures)
 }
 
-// HTML Canvas Api
+// HTML Canvas API
 
 fn color_to_css(color: Color) -> String {
   let Rgb(r, g, b) = color
@@ -169,7 +170,101 @@ fn color_to_css(color: Color) -> String {
   <> ")"
 }
 
+/// A list of events
+pub type Event {
+  /// Triggered before drawing. Contains the number of milliseconds elapsed.
+  Tick(Float)
+  /// Triggered when a key is pressed
+  KeyDown(Key)
+  /// Triggered when a key is released
+  KeyUp(Key)
+}
+
+pub type Key {
+  LeftArrow
+  RightArrow
+  UpArrow
+  DownArrow
+  Space
+}
+
+/// Make animations and games and display them on the given HTML canvas.
+/// Follows the same architecture as Elm/Lustre.
+/// The type variable "state" can be anything
+/// you want. If you are only making a stateless animation, use `Nil`.
+/// Note: this function may only be called once the page has loaded and the
+/// document and window objects are available.
+pub fn interact_on_canvas(
+  init: fn() -> state,
+  update: fn(state, Event) -> state,
+  view: fn(state) -> Picture,
+  id: String,
+) {
+  let ctx = impl_canvas.get_rendering_context(id)
+  let initial_state = init()
+  impl_canvas.store_state(initial_state, id)
+
+  let create_key_handler = fn(event_name, constructor) {
+    impl_canvas.setup_key_handler(event_name, fn(key_code) {
+      let key = parse_key_code(key_code)
+      case key {
+        Some(key) -> {
+          let new_state = update(impl_canvas.get_state(id), constructor(key))
+          impl_canvas.store_state(new_state, id)
+        }
+        None -> Nil
+      }
+    })
+  }
+  create_key_handler("keydown", KeyDown)
+  create_key_handler("keyup", KeyUp)
+
+  // TODO: Support more events and mouse input
+
+  impl_canvas.setup_request_animation_frame(get_tick_func(ctx, view, update, id))
+}
+
+fn parse_key_code(key_code: Int) -> Option(Key) {
+  case key_code {
+    32 -> Some(Space)
+    37 -> Some(LeftArrow)
+    38 -> Some(UpArrow)
+    39 -> Some(RightArrow)
+    40 -> Some(DownArrow)
+    _ -> None
+  }
+}
+
+// Gleam does n ot have recursive let bindings, so I need
+// to do this workaround...
+fn get_tick_func(ctx, view, update, id) {
+  fn() {
+    let current_state = impl_canvas.get_state(id)
+
+    // Trigger a tick event before drawing
+    let new_state = update(current_state, Tick(0.0))
+    impl_canvas.store_state(new_state, id)
+
+    // Create the picture
+    let picture = view(new_state)
+
+    // Render the picture on the canvas
+    impl_canvas.reset(ctx)
+    display_on_rendering_context(
+      picture,
+      ctx,
+      DrawingState(fill: False, stroke: True),
+    )
+    impl_canvas.setup_request_animation_frame(
+      // call myself
+      get_tick_func(ctx, view, update, id),
+    )
+  }
+}
+
 /// Display a picture on a HTML canvas element
+/// Note: this function may only be called once the page has loaded and the
+/// document objects is available.
 pub fn display_on_canvas(picture: Picture, id: String) {
   let ctx = impl_canvas.get_rendering_context(id)
   impl_canvas.reset(ctx)

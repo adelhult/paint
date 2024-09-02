@@ -1,7 +1,20 @@
 pub type RenderingContext2D
 
+// TODO: forward the timestamp from the callback
+@external(javascript, "./impl_canvas_bindings.mjs", "setup_request_animation_frame")
+pub fn setup_request_animation_frame(callback: fn() -> Nil) -> Nil
+
+@external(javascript, "./impl_canvas_bindings.mjs", "setup_key_handler")
+pub fn setup_key_handler(event: String, callback: fn(Int) -> Nil) -> Nil
+
 @external(javascript, "./impl_canvas_bindings.mjs", "get_rendering_context")
 pub fn get_rendering_context(id: String) -> RenderingContext2D
+
+@external(javascript, "./impl_canvas_bindings.mjs", "store_state")
+pub fn store_state(state: state, id: String) -> Nil
+
+@external(javascript, "./impl_canvas_bindings.mjs", "get_state")
+pub fn get_state(id: String) -> state
 
 @external(javascript, "./impl_canvas_bindings.mjs", "reset")
 pub fn reset(ctx: RenderingContext2D) -> Nil

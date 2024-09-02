@@ -17,6 +17,11 @@
                 max-height: 200px;
             }
 
+            #interactive-canvas {
+                max-width: 600px;
+                max-height: inherit;
+            }
+
             body {
                 max-width: calc(2rem + 250px * 3 + 2rem);
                 padding: 1rem;
@@ -65,10 +70,6 @@
             .example > h3 {
                 margin: 0;
             }
-
-            .example > .description {
-                opacity: 0.8;
-            }
         </style>
         <script defer type="module">
             import {
@@ -87,8 +88,14 @@
                 translate_example,
                 combine_example,
                 concat_example,
+                init,
+                update,
+                view,
             } from "./build/dev/javascript/examples/examples.mjs";
-            import { display_on_canvas } from "./build/dev/javascript/paint/paint.mjs";
+            import {
+                display_on_canvas,
+                interact_on_canvas,
+            } from "./build/dev/javascript/paint/paint.mjs";
 
             function createExamples(examples, root) {
                 for (const example of examples) {
@@ -199,6 +206,8 @@
                     ],
                     combine,
                 );
+
+                interact_on_canvas(init, update, view, "interactive-canvas");
             };
         </script>
     </head>
@@ -216,5 +225,10 @@
 
         <h2>Combine</h2>
         <section id="combine"></section>
+
+        <h2>Interactive</h2>
+        <section id="interactive">
+            <canvas id="interactive-canvas"></canvas>
+        </section>
     </body>
 </html>

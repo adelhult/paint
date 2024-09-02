@@ -3,6 +3,30 @@ export function get_rendering_context(id) {
   return document.getElementById(id).getContext("2d");
 }
 
+export function setup_request_animation_frame(callback) {
+  window.requestAnimationFrame(() => {
+    console.log("hej");
+    callback();
+  });
+}
+
+export function setup_key_handler(event_name, callback) {
+  window.addEventListener(event_name, (event) => {
+    callback(event.keyCode);
+  });
+}
+
+export function store_state(state, id) {
+  if (typeof window.PAINT_STATE == "undefined") {
+    window.PAINT_STATE = {};
+  }
+  window.PAINT_STATE[id] = state;
+}
+
+export function get_state(id) {
+  return window.PAINT_STATE[id];
+}
+
 function set_origin(ctx) {
   let x = ctx.canvas.clientWidth * 0.5;
   let y = ctx.canvas.clientHeight * 0.5;
