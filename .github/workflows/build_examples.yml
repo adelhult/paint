@@ -18,16 +18,22 @@ jobs:
           gleam-version: "1.3.2"
           rebar3-version: "3"
           # elixir-version: "1.15.4"
-      - run: |
+      - name: Build examples
+        run: |
           cd examples
           gleam deps download
           gleam build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
+          # TODO: A bit wasteful to grab all the build artifacts...
           path: "./examples/"
 
   deploy:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{steps.deployment.outputs.page_url}}
