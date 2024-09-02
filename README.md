@@ -32,4 +32,5 @@ fn main() {
       This means that the order in which these functions are applied greatly matter. Maybe I could normalize the Picture tree before drawing?
       Or introduce an API more similar to [Haskell diagrams](https://hackage.haskell.org/package/diagrams) and [Diagrammer](https://www.youtube.com/watch?v=gT9Xu-ctNqI).
 - [ ] Add more utility functions (especially for parsing color formats)
+- [ ] Support (bitmap) images
 - [ ] Add another backend
