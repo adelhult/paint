@@ -1,7 +1,9 @@
+import gleam/int
+import gleam/list
 import paint.{
   type Picture, NoStroke, SolidStroke, angle_deg, arc, blank, circle, color_rgb,
-  combine, concat, fill, lines, polygon, rectangle, scale, square, stroke, text,
-  translate_y,
+  combine, concat, fill, lines, polygon, rectangle, rotate, scale, square,
+  stroke, text, translate_y,
 }
 
 pub fn blank_example() -> Picture {
@@ -57,4 +59,14 @@ pub fn scale_example() -> Picture {
   circle_example()
   |> scale(0.5)
   |> concat(circle_example())
+}
+
+pub fn rotate_example() -> Picture {
+  // A bit more of an advanced example, just for fun!
+  combine(
+    list.repeat(rectangle_example(), times: 6)
+    |> list.index_map(fn(picture, i) {
+      rotate(picture, angle_deg(360.0 /. 6.0 *. int.to_float(i)))
+    }),
+  )
 }
