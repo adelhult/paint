@@ -21,7 +21,7 @@ fn main() {
 }
 ```
 
-**Want to learn more? Read the [docs](https://hexdocs.pm/paint) or browse the [examples](todo).**
+**Want to learn more? Read the [docs](https://hexdocs.pm/paint) or browse the [visual examples]([todo](https://adelhult.github.io/paint/)).**
 
 > [!NOTE]
 > Currently, there is only a HTML canvas backend for displaying the pictures.
