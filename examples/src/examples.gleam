@@ -3,7 +3,7 @@ import gleam/list
 import paint.{
   type Picture, NoStroke, SolidStroke, angle_deg, arc, blank, circle, color_rgb,
   combine, concat, fill, lines, polygon, rectangle, rotate, scale, square,
-  stroke, text, translate_y,
+  stroke, text, translate_x, translate_y,
 }
 
 pub fn blank_example() -> Picture {
@@ -69,4 +69,17 @@ pub fn rotate_example() -> Picture {
       rotate(picture, angle_deg(360.0 /. 6.0 *. int.to_float(i)))
     }),
   )
+}
+
+pub fn combine_example() -> Picture {
+  combine([
+    circle_example(),
+    circle_example() |> translate_x(50.0),
+    circle_example() |> translate_x(100.0),
+  ])
+}
+
+pub fn concat_example() -> Picture {
+  circle_example()
+  |> concat(circle_example() |> translate_x(50.0))
 }

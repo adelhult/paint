@@ -85,6 +85,8 @@
                 scale_example,
                 rotate_example,
                 translate_example,
+                combine_example,
+                concat_example,
             } from "./build/dev/javascript/examples/examples.mjs";
             import { display_on_canvas } from "./build/dev/javascript/paint/paint.mjs";
 
@@ -182,6 +184,21 @@
                     ],
                     transformations,
                 );
+
+                const combine = document.getElementById("combine");
+                createExamples(
+                    [
+                        {
+                            name: "Concat",
+                            picture: concat_example(),
+                        },
+                        {
+                            name: "Combine",
+                            picture: combine_example(),
+                        },
+                    ],
+                    combine,
+                );
             };
         </script>
     </head>
@@ -196,5 +213,8 @@
 
         <h2>Transformations</h2>
         <section id="transformations"></section>
+
+        <h2>Combine</h2>
+        <section id="combine"></section>
     </body>
 </html>
