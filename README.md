@@ -11,7 +11,7 @@ Make pictures out of basic shapes then style, transform, and combine them using 
 import paint
 
 fn main() {
-  let my_picture = combine([
+  let my_picture = paint.combine([
     paint.circle(50.),
     paint.rectangle(20., 30.) |> paint.translate_x(100.),
     paint.text("Hello world", 20) |> paint.translate_y(100.)
