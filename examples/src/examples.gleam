@@ -2,10 +2,10 @@ import gleam/float
 import gleam/int
 import gleam/list
 import paint.{
-  type Event, type Picture, KeyUp, NoStroke, SolidStroke, Space, Tick, angle_deg,
-  arc, blank, circle, color_rgb, combine, concat, fill, lines, polygon,
-  rectangle, rotate, scale, square, stroke, text, translate, translate_x,
-  translate_y,
+  type CanvasConfig, type Event, type Picture, CanvasConfig, KeyUp, NoStroke,
+  SolidStroke, Space, Tick, angle_deg, arc, blank, circle, color_rgb, combine,
+  concat, fill, lines, polygon, rectangle, rotate, scale, square, stroke, text,
+  translate, translate_x, translate_y,
 }
 
 pub fn blank_example() -> Picture {
@@ -89,10 +89,18 @@ pub fn concat_example() -> Picture {
 // An example of the interactive API
 // used together with the function
 // `interact_on_canvas(init, update, view, canvas_id)`
+// ------------------------
 
 /// The state of the game
 pub type State {
-  State(x: Float, y: Float, dy: Float, direction: Direction)
+  State(
+    x: Float,
+    y: Float,
+    dy: Float,
+    direction: Direction,
+    width: Float,
+    height: Float,
+  )
 }
 
 /// Movement direction of the "Player"
@@ -101,67 +109,89 @@ pub type Direction {
   Right
 }
 
+const ground_height = 20.0
+
+const player_length = 40.0
+
 /// The "init" function is used to setup the initial
 /// state of the game
-pub fn init() -> State {
-  State(0.0, -200.0, 0.0, Right)
+pub fn init(config: CanvasConfig) -> State {
+  State(
+    x: 10.0,
+    y: config.height -. ground_height -. player_length,
+    dy: 0.0,
+    direction: Right,
+    width: config.width,
+    height: config.height,
+  )
 }
 
 /// A pure function that takes the state of the game
 /// and creates an image to present to the canvas
 pub fn view(state: State) -> Picture {
+  let ground =
+    rectangle(state.width, ground_height)
+    |> fill(color_rgb(0, 0, 0))
+    |> translate_y(state.height -. ground_height)
+
   let pos_text =
     "(" <> float.to_string(state.x) <> ", " <> float.to_string(state.y) <> ")"
 
-  let ground = lines([#(-50.0, 0.0), #(50.0, 0.0)])
-  // todo: replace with colored rect
-  let player = combine([square(50.0), text(pos_text, 10) |> translate_y(-5.0)])
+  let player =
+    combine([square(player_length), text(pos_text, 10) |> translate_y(-5.0)])
+    |> translate(state.x, state.y)
 
-  player
-  |> translate(state.x, state.y)
-  |> concat(ground)
+  combine([
+    player,
+    ground,
+    text("Press <space> to jump", 10) |> translate(5.0, 15.0),
+  ])
 }
 
 /// "update" should be a pure function that given
 /// some state and and an event produces a new state
 pub fn update(state: State, event: Event) -> State {
   let speed = 1.0
-  let gravity_acceleration = 0.05
-  let movement_range = 50.0
-  let ground_level = -0.0
+  let gravity_acceleration = 0.5
+  let ground_level = state.height -. ground_height
 
   case event {
     Tick(_time) ->
       State(
-        direction: case state.x >. movement_range {
+        ..state,
+        // Flip the direction of movement if we hit the edges
+        // of the screen
+        direction: case state.x +. player_length >. state.width {
           // flip direction
           True -> Left
           False ->
-            case state.x <. float.negate(movement_range) {
+            case state.x <. 0.0 {
               // flip direction
               True -> Right
               False -> state.direction
             }
         },
+        // Move the player left/right every tick
         x: case state.direction {
           Right -> state.x +. speed
           Left -> state.x -. speed
         },
-        y: case state.y >=. ground_level {
-          True -> state.y +. state.dy
-          False -> ground_level
-        },
-        dy: case state.y >=. ground_level {
+        y: float.min(state.y +. state.dy, ground_level -. player_length),
+        dy: case state.y +. player_length <. ground_level {
+          // Apply gravity if we are in the air
           True -> state.dy +. gravity_acceleration
-          False -> 0.0
+          // if we are on the ground, remove the downwards velocity
+          False -> float.min(state.dy, 0.0)
         },
       )
     KeyUp(key) ->
       case key {
-        Space -> State(..state, y: -50.0)
+        // Move the player into the air if we press space (when on ground level)
+        Space -> State(..state, dy: -10.0)
         _ -> state
       }
+
+    // all other events: do nothing
     _ -> state
-    // all other events, do nothing
   }
 }

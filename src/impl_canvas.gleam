@@ -10,6 +10,12 @@ pub fn setup_key_handler(event: String, callback: fn(Int) -> Nil) -> Nil
 @external(javascript, "./impl_canvas_bindings.mjs", "get_rendering_context")
 pub fn get_rendering_context(id: String) -> RenderingContext2D
 
+@external(javascript, "./impl_canvas_bindings.mjs", "get_width")
+pub fn get_width(ctx: RenderingContext2D) -> Float
+
+@external(javascript, "./impl_canvas_bindings.mjs", "get_height")
+pub fn get_height(ctx: RenderingContext2D) -> Float
+
 @external(javascript, "./impl_canvas_bindings.mjs", "store_state")
 pub fn store_state(state: state, id: String) -> Nil
 

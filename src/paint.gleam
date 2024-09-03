@@ -159,15 +159,9 @@ pub fn combine(pictures: List(Picture)) -> Picture {
 
 // HTML Canvas API
 
-fn color_to_css(color: Color) -> String {
-  let Rgb(r, g, b) = color
-  "rgb("
-  <> int.to_string(r)
-  <> ", "
-  <> int.to_string(g)
-  <> ", "
-  <> int.to_string(b)
-  <> ")"
+/// The configuration of the "canvas"
+pub type CanvasConfig {
+  CanvasConfig(width: Float, height: Float)
 }
 
 /// A list of events
@@ -195,13 +189,15 @@ pub type Key {
 /// Note: this function may only be called once the page has loaded and the
 /// document and window objects are available.
 pub fn interact_on_canvas(
-  init: fn() -> state,
+  init: fn(CanvasConfig) -> state,
   update: fn(state, Event) -> state,
   view: fn(state) -> Picture,
   id: String,
 ) {
   let ctx = impl_canvas.get_rendering_context(id)
-  let initial_state = init()
+  let initial_state =
+    init(CanvasConfig(impl_canvas.get_width(ctx), impl_canvas.get_height(ctx)))
+
   impl_canvas.store_state(initial_state, id)
 
   let create_key_handler = fn(event_name, constructor) {
@@ -265,9 +261,11 @@ fn get_tick_func(ctx, view, update, id) {
 /// Display a picture on a HTML canvas element
 /// Note: this function may only be called once the page has loaded and the
 /// document objects is available.
-pub fn display_on_canvas(picture: Picture, id: String) {
+pub fn display_on_canvas(init: fn(CanvasConfig) -> Picture, id: String) {
   let ctx = impl_canvas.get_rendering_context(id)
   impl_canvas.reset(ctx)
+  let picture =
+    init(CanvasConfig(impl_canvas.get_width(ctx), impl_canvas.get_height(ctx)))
   display_on_rendering_context(
     picture,
     ctx,
@@ -349,23 +347,26 @@ fn display_on_rendering_context(
 
     Translate(p, vec) -> {
       let #(x, y) = vec
+      impl_canvas.save(ctx)
       impl_canvas.translate(ctx, x, y)
       display_on_rendering_context(p, ctx, state)
-      impl_canvas.reset_transform(ctx)
+      impl_canvas.restore(ctx)
     }
 
     Scale(p, vec) -> {
       let #(x, y) = vec
+      impl_canvas.save(ctx)
       impl_canvas.scale(ctx, x, y)
       display_on_rendering_context(p, ctx, state)
-      impl_canvas.reset_transform(ctx)
+      impl_canvas.restore(ctx)
     }
 
     Rotate(p, angle) -> {
       let Radians(rad) = angle
+      impl_canvas.save(ctx)
       impl_canvas.rotate(ctx, rad)
       display_on_rendering_context(p, ctx, state)
-      impl_canvas.reset_transform(ctx)
+      impl_canvas.restore(ctx)
     }
 
     Combine(pictures) -> {
@@ -378,4 +379,34 @@ fn display_on_rendering_context(
       }
     }
   }
+}
+
+/// Utility function that is useful for cases where you
+/// are no interested in the canvas configuration. For example,
+/// ```
+/// display_on_canvas(just(circle(30.0)), "my_canvas")
+/// // instead of...
+/// display_on_canvas(fn(_config) { circle(30.0) }, "my_canvas")
+/// ```
+pub fn just(picture: Picture) -> fn(a) -> Picture {
+  fn(_config) { picture }
+}
+
+/// Utility to set the origin in the center of the canvas
+pub fn center(picture: Picture) -> fn(CanvasConfig) -> Picture {
+  fn(config) {
+    let CanvasConfig(width, height) = config
+    picture |> translate(width *. 0.5, height *. 0.5)
+  }
+}
+
+fn color_to_css(color: Color) -> String {
+  let Rgb(r, g, b) = color
+  "rgb("
+  <> int.to_string(r)
+  <> ", "
+  <> int.to_string(g)
+  <> ", "
+  <> int.to_string(b)
+  <> ")"
 }

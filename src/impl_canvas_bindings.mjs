@@ -5,7 +5,6 @@ export function get_rendering_context(id) {
 
 export function setup_request_animation_frame(callback) {
   window.requestAnimationFrame(() => {
-    console.log("hej");
     callback();
   });
 }
@@ -27,15 +26,16 @@ export function get_state(id) {
   return window.PAINT_STATE[id];
 }
 
-function set_origin(ctx) {
-  let x = ctx.canvas.clientWidth * 0.5;
-  let y = ctx.canvas.clientHeight * 0.5;
-  ctx.translate(x, y);
+export function get_width(ctx) {
+  return ctx.canvas.clientWidth;
+}
+
+export function get_height(ctx) {
+  return ctx.canvas.clientHeight;
 }
 
 export function reset(ctx) {
   ctx.reset();
-  set_origin(ctx);
 }
 
 export function arc(ctx, radius, start, end, fill, stroke) {
@@ -116,5 +116,4 @@ export function rotate(ctx, radians) {
 
 export function reset_transform(ctx) {
   ctx.resetTransform();
-  set_origin(ctx);
 }

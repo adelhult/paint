@@ -12,14 +12,9 @@
         <title>Gleam Paint Examples</title>
         <style>
             canvas {
-                background-color: #f9f8f8;
                 max-width: 250px;
                 max-height: 200px;
-            }
-
-            #interactive-canvas {
-                max-width: 600px;
-                max-height: inherit;
+                background-color: #f9f8f8;
             }
 
             body {
@@ -95,6 +90,7 @@
             import {
                 display_on_canvas,
                 interact_on_canvas,
+                center,
             } from "./build/dev/javascript/paint/paint.mjs";
 
             function createExamples(examples, root) {
@@ -104,14 +100,14 @@
                     root.innerHTML += `
                        <section class="example">
                            <h3>${name}</h3>
-                           <canvas id="${name}" width="250" height="200"></canvas>
+                           <canvas class="example-canvas" id="${name}" width="250" height="200"></canvas>
                        </section>
                        `;
                 }
                 // Finally, display the examples on the canvas
                 for (const example of examples) {
                     const { name, picture } = example;
-                    display_on_canvas(picture, name);
+                    display_on_canvas(center(picture), name);
                 }
             }
 
@@ -228,7 +224,7 @@
 
         <h2>Interactive</h2>
         <section id="interactive">
-            <canvas id="interactive-canvas"></canvas>
+            <canvas id="interactive-canvas" width="250" height="200"></canvas>
         </section>
     </body>
 </html>

@@ -17,7 +17,7 @@ fn main() {
     paint.text("Hello world", 20) |> paint.translate_y(100.)
   ])
 
-  paint.display_on_canvas(my_picture, "canvas_id")
+  paint.display_on_canvas(fn(_config) { my_picture }, "canvas_id")
 }
 ```
 
