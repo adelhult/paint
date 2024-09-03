@@ -32,7 +32,7 @@ fn main() {
 > Hopefully, I will have time to add other backends in the future (such as SVG). Feel free to contribute!
 
 ## Logo
-Lucy is borrowed from the [Gleam branding page](https://gleam.run/branding/) and the brush is made by [Delapouite (game design icons)](https://game-icons.net/1x1/delapouite/paint-brush.html).
+Lucy is borrowed from the [Gleam branding page](https://gleam.run/branding/) and the brush is made by [Delapouite (game icons)](https://game-icons.net/1x1/delapouite/paint-brush.html).
 
 ## TODOs
 - [ ] I'm not super happy with the API for the transformations. (Especially that scale affects the stroke width).
