@@ -29,6 +29,10 @@
                 font-style: normal;
             }
 
+            a {
+                color: inherit;
+            }
+
             h1,
             h2,
             h3,
@@ -44,6 +48,16 @@
             h1,
             h2 {
                 font-weight: bold;
+                margin-bottom: 0.2rem;
+            }
+
+            strong {
+                opacity: 0.7;
+            }
+
+            hr {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
             }
 
             body > section {
@@ -221,6 +235,18 @@
     </head>
     <body>
         <h1>Gleam Paint Examples</h1>
+        <strong>Make drawings, animations, and games with Gleam</strong>
+        <ul>
+            <li>
+                <a
+                    href="https://github.com/adelhult/paint/blob/main/examples/src/examples.gleam"
+                    >Source code for these examples</a
+                >
+            </li>
+            <li>
+                <a href="https://github.com/adelhult/paint">GitHub repo</a>
+            </li>
+        </ul>
         <hr />
         <h2>Shapes</h2>
         <section id="shapes"></section>
