@@ -12,12 +12,13 @@ import paint
 
 fn main() {
   let my_picture = paint.combine([
-    paint.circle(50.),
-    paint.rectangle(20., 30.) |> paint.translate_x(100.),
-    paint.text("Hello world", 20) |> paint.translate_y(100.)
+    paint.circle(50.0),
+    paint.circle(30.0) |> paint.fill(paint.color_rgb(0, 200, 200)),
+    paint.rectangle(100.0, 50.0) |> paint.rotate(angle_deg(30.0)),
+    paint.text("Hello world", 20) |> paint.translate_y(-65.0),
   ])
 
-  paint.display_on_canvas(fn(_config) { my_picture }, "canvas_id")
+  paint.display_on_canvas(fn(_canvas_config) { my_picture }, "canvas_id")
 }
 ```
 

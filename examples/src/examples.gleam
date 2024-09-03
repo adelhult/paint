@@ -86,6 +86,15 @@ pub fn concat_example() -> Picture {
   |> concat(circle_example() |> translate_x(50.0))
 }
 
+pub fn readme_example() -> Picture {
+  paint.combine([
+    paint.circle(50.0),
+    paint.circle(30.0) |> paint.fill(paint.color_rgb(0, 200, 200)),
+    paint.rectangle(100.0, 50.0) |> paint.rotate(angle_deg(30.0)),
+    paint.text("Hello world", 20) |> paint.translate_y(-65.0),
+  ])
+}
+
 // An example of the interactive API
 // used together with the function
 // `interact_on_canvas(init, update, view, canvas_id)`

@@ -83,6 +83,7 @@
                 translate_example,
                 combine_example,
                 concat_example,
+                readme_example,
                 init,
                 update,
                 view,
@@ -203,6 +204,17 @@
                     combine,
                 );
 
+                const other = document.getElementById("other");
+                createExamples(
+                    [
+                        {
+                            name: "README example",
+                            picture: readme_example(),
+                        },
+                    ],
+                    other,
+                );
+
                 interact_on_canvas(init, update, view, "interactive-canvas");
             };
         </script>
@@ -221,6 +233,9 @@
 
         <h2>Combine</h2>
         <section id="combine"></section>
+
+        <h2>Other</h2>
+        <section id="other"></section>
 
         <h2>Interactive</h2>
         <section id="interactive">
