@@ -29,9 +29,11 @@ fn main() {
 > Hopefully, I will have time to add other backends in the future (such as SVG). Feel free to contribute!
 
 ## TODOs
-- [ ] I'm not super happy with the API for the transformations. The functions `scale`, `translate`, and `rotate` all affect the same underlying transformation matrix.
-      This means that the order in which these functions are applied greatly matter. Maybe I could normalize the Picture tree before drawing?
-      Or introduce an API more similar to [Haskell diagrams](https://hackage.haskell.org/package/diagrams) and [Diagrammer](https://www.youtube.com/watch?v=gT9Xu-ctNqI).
-- [ ] Add more utility functions (especially for parsing color formats)
+- [ ] I'm not super happy with the API for the transformations. (Especially that scale affects the stroke width).
+      Would be fun to investigate an API more similar to [Haskell diagrams](https://hackage.haskell.org/package/diagrams) and [Diagrammer](https://www.youtube.com/watch?v=gT9Xu-ctNqI).
+- [ ] Replace the color functions with [gleam-community/colour](https://hexdocs.pm/gleam_community_colour/)
 - [ ] Support (bitmap) images
-- [ ] Add another backend
+- [ ] Split the library into multiple files (would make integration with other libraries like Lustre more convenient).
+- [ ] Allowing arbitrary css selectors instead of requiring ids in `interact_...` and `display_...`
+- [ ] Improve input handling for `interact_on_canvas`
+- [ ] Add another backend?
