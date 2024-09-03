@@ -2,7 +2,7 @@ pub type RenderingContext2D
 
 // TODO: forward the timestamp from the callback
 @external(javascript, "./impl_canvas_bindings.mjs", "setup_request_animation_frame")
-pub fn setup_request_animation_frame(callback: fn() -> Nil) -> Nil
+pub fn setup_request_animation_frame(callback: fn(Float) -> Nil) -> Nil
 
 @external(javascript, "./impl_canvas_bindings.mjs", "setup_key_handler")
 pub fn setup_key_handler(event: String, callback: fn(Int) -> Nil) -> Nil

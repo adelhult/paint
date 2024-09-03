@@ -59,6 +59,7 @@ pub opaque type Color {
 /// Given three Ints [0-255], create a color
 pub fn color_rgb(red: Int, green: Int, blue: Int) -> Color {
   Rgb(red, green, blue)
+  // TODO: ensure the values are within the allowed range
 }
 
 /// Convert a hexadecimal string to a color, for example:
@@ -86,36 +87,45 @@ pub fn arc(radius: Float, start: Angle, end: Angle) -> Picture {
   Arc(radius, start: start, end: end)
 }
 
+/// A polygon consisting of a list of 2d points
 pub fn polygon(points: List(#(Float, Float))) -> Picture {
   Polygon(points, True)
 }
 
+/// Lines (same as a polygon but not a closed shape)
 pub fn lines(points: List(#(Float, Float))) -> Picture {
   Polygon(points, False)
 }
 
+/// A rectangle with some given width and height
 pub fn rectangle(width: Float, height: Float) -> Picture {
   polygon([#(0.0, 0.0), #(width, 0.0), #(width, height), #(0.0, height)])
 }
 
+/// A square
 pub fn square(length: Float) -> Picture {
   rectangle(length, length)
 }
 
+/// Text with some given font size
 pub fn text(text: String, font_size_px: Int) -> Picture {
   Text(text, style: FontProperties(font_size_px, "sans-serif"))
+  // TODO: expose more styling options (font and text alignment)
 }
 
-pub fn translate(picture: Picture, x: Float, y: Float) -> Picture {
+/// Translate a picture in horizontal and vertical direction
+pub fn translate_xy(picture: Picture, x: Float, y: Float) -> Picture {
   Translate(picture, #(x, y))
 }
 
+/// Translate a picture in the horizontal direction
 pub fn translate_x(picture: Picture, x: Float) -> Picture {
-  translate(picture, x, 0.0)
+  translate_xy(picture, x, 0.0)
 }
 
+/// Translate a picture in the vertical direction
 pub fn translate_y(picture: Picture, y: Float) -> Picture {
-  translate(picture, 0.0, y)
+  translate_xy(picture, 0.0, y)
 }
 
 /// Scale the picture in the horizontal direction
@@ -129,7 +139,7 @@ pub fn scale_y(picture: Picture, factor: Float) -> Picture {
 }
 
 /// Scale the picture uniformly in horizontal and vertical direction
-pub fn scale(picture: Picture, factor: Float) -> Picture {
+pub fn scale_uniform(picture: Picture, factor: Float) -> Picture {
   Scale(picture, #(factor, factor))
 }
 
@@ -138,16 +148,17 @@ pub fn rotate(picture: Picture, angle: Angle) -> Picture {
   Rotate(picture, angle)
 }
 
-/// Fill a picture with some given color
+/// Fill a picture with some given color, see `Color`.
 pub fn fill(picture: Picture, color: Color) -> Picture {
   Fill(picture, color)
 }
 
-/// Set properties for the stroke
+/// Set properties for the stroke. See `StrokeProperties`
 pub fn stroke(picture: Picture, stroke_properties: StrokeProperties) -> Picture {
   Stroke(picture, stroke_properties)
 }
 
+/// Concatenate two pictures
 pub fn concat(picture: Picture, another_picture: Picture) -> Picture {
   combine([picture, another_picture])
 }
@@ -172,6 +183,7 @@ pub type Event {
   KeyDown(Key)
   /// Triggered when a key is released
   KeyUp(Key)
+  // TODO: add more events
 }
 
 pub type Key {
@@ -180,6 +192,7 @@ pub type Key {
   UpArrow
   DownArrow
   Space
+  // TODO: add more keys
 }
 
 /// Make animations and games and display them on the given HTML canvas.
@@ -234,11 +247,11 @@ fn parse_key_code(key_code: Int) -> Option(Key) {
 // Gleam does n ot have recursive let bindings, so I need
 // to do this workaround...
 fn get_tick_func(ctx, view, update, id) {
-  fn() {
+  fn(time) {
     let current_state = impl_canvas.get_state(id)
 
     // Trigger a tick event before drawing
-    let new_state = update(current_state, Tick(0.0))
+    let new_state = update(current_state, Tick(time))
     impl_canvas.store_state(new_state, id)
 
     // Create the picture
@@ -396,7 +409,7 @@ pub fn just(picture: Picture) -> fn(a) -> Picture {
 pub fn center(picture: Picture) -> fn(CanvasConfig) -> Picture {
   fn(config) {
     let CanvasConfig(width, height) = config
-    picture |> translate(width *. 0.5, height *. 0.5)
+    picture |> translate_xy(width *. 0.5, height *. 0.5)
   }
 }
 

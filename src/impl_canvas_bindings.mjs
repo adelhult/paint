@@ -4,8 +4,8 @@ export function get_rendering_context(id) {
 }
 
 export function setup_request_animation_frame(callback) {
-  window.requestAnimationFrame(() => {
-    callback();
+  window.requestAnimationFrame((time) => {
+    callback(time);
   });
 }
 

@@ -4,8 +4,8 @@ import gleam/list
 import paint.{
   type CanvasConfig, type Event, type Picture, CanvasConfig, KeyUp, NoStroke,
   SolidStroke, Space, Tick, angle_deg, arc, blank, circle, color_rgb, combine,
-  concat, fill, lines, polygon, rectangle, rotate, scale, square, stroke, text,
-  translate, translate_x, translate_y,
+  concat, fill, lines, polygon, rectangle, rotate, scale_uniform, square, stroke,
+  text, translate_x, translate_xy, translate_y,
 }
 
 pub fn blank_example() -> Picture {
@@ -59,7 +59,7 @@ pub fn translate_example() -> Picture {
 
 pub fn scale_example() -> Picture {
   circle_example()
-  |> scale(0.5)
+  |> scale_uniform(0.5)
   |> concat(circle_example())
 }
 
@@ -107,6 +107,7 @@ pub type State {
     y: Float,
     dy: Float,
     direction: Direction,
+    time: Float,
     width: Float,
     height: Float,
   )
@@ -130,6 +131,7 @@ pub fn init(config: CanvasConfig) -> State {
     y: config.height -. ground_height -. player_length,
     dy: 0.0,
     direction: Right,
+    time: 0.0,
     width: config.width,
     height: config.height,
   )
@@ -148,12 +150,13 @@ pub fn view(state: State) -> Picture {
 
   let player =
     combine([square(player_length), text(pos_text, 10) |> translate_y(-5.0)])
-    |> translate(state.x, state.y)
+    |> translate_xy(state.x, state.y)
 
   combine([
     player,
     ground,
-    text("Press <space> to jump", 10) |> translate(5.0, 15.0),
+    text("Press <space> to jump", 10) |> translate_xy(5.0, 15.0),
+    text(float.to_string(state.time) <> " ms", 10) |> translate_xy(5.0, 30.0),
   ])
 }
 
@@ -165,9 +168,10 @@ pub fn update(state: State, event: Event) -> State {
   let ground_level = state.height -. ground_height
 
   case event {
-    Tick(_time) ->
+    Tick(time) ->
       State(
         ..state,
+        time: time,
         // Flip the direction of movement if we hit the edges
         // of the screen
         direction: case state.x +. player_length >. state.width {
