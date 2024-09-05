@@ -1,6 +1,6 @@
-export function get_rendering_context(id) {
+export function get_rendering_context(selector) {
   // TODO: Handle the case where the canvas element is not found.
-  return document.getElementById(id).getContext("2d");
+  return document.querySelector(selector).getContext("2d");
 }
 
 export function setup_request_animation_frame(callback) {

@@ -8,7 +8,7 @@ pub fn setup_request_animation_frame(callback: fn(Float) -> Nil) -> Nil
 pub fn setup_key_handler(event: String, callback: fn(Int) -> Nil) -> Nil
 
 @external(javascript, "./impl_canvas_bindings.mjs", "get_rendering_context")
-pub fn get_rendering_context(id: String) -> RenderingContext2D
+pub fn get_rendering_context(selector: String) -> RenderingContext2D
 
 @external(javascript, "./impl_canvas_bindings.mjs", "get_width")
 pub fn get_width(ctx: RenderingContext2D) -> Float

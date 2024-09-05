@@ -203,7 +203,9 @@ pub type Key {
   // TODO: add more keys
 }
 
-/// Make animations and games and display them on the given HTML canvas.
+/// Make animations and games and display them on the given HTML canvas
+/// (specified by some [CSS Selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors)).
+///
 /// Follows the same architecture as Elm/Lustre.
 /// The type variable "state" can be anything
 /// you want. If you are only making a stateless animation, use `Nil`.
@@ -213,21 +215,22 @@ pub fn interact_on_canvas(
   init: fn(CanvasConfig) -> state,
   update: fn(state, Event) -> state,
   view: fn(state) -> Picture,
-  id: String,
+  selector: String,
 ) {
-  let ctx = impl_canvas.get_rendering_context(id)
+  let ctx = impl_canvas.get_rendering_context(selector)
   let initial_state =
     init(CanvasConfig(impl_canvas.get_width(ctx), impl_canvas.get_height(ctx)))
 
-  impl_canvas.store_state(initial_state, id)
+  impl_canvas.store_state(initial_state, selector)
 
   let create_key_handler = fn(event_name, constructor) {
     impl_canvas.setup_key_handler(event_name, fn(key_code) {
       let key = parse_key_code(key_code)
       case key {
         Some(key) -> {
-          let new_state = update(impl_canvas.get_state(id), constructor(key))
-          impl_canvas.store_state(new_state, id)
+          let new_state =
+            update(impl_canvas.get_state(selector), constructor(key))
+          impl_canvas.store_state(new_state, selector)
         }
         None -> Nil
       }
@@ -238,7 +241,12 @@ pub fn interact_on_canvas(
 
   // TODO: Support more events and mouse input
 
-  impl_canvas.setup_request_animation_frame(get_tick_func(ctx, view, update, id))
+  impl_canvas.setup_request_animation_frame(get_tick_func(
+    ctx,
+    view,
+    update,
+    selector,
+  ))
 }
 
 fn parse_key_code(key_code: Int) -> Option(Key) {
@@ -254,13 +262,13 @@ fn parse_key_code(key_code: Int) -> Option(Key) {
 
 // Gleam does n ot have recursive let bindings, so I need
 // to do this workaround...
-fn get_tick_func(ctx, view, update, id) {
+fn get_tick_func(ctx, view, update, selector) {
   fn(time) {
-    let current_state = impl_canvas.get_state(id)
+    let current_state = impl_canvas.get_state(selector)
 
     // Trigger a tick event before drawing
     let new_state = update(current_state, Tick(time))
-    impl_canvas.store_state(new_state, id)
+    impl_canvas.store_state(new_state, selector)
 
     // Create the picture
     let picture = view(new_state)
@@ -274,16 +282,18 @@ fn get_tick_func(ctx, view, update, id) {
     )
     impl_canvas.setup_request_animation_frame(
       // call myself
-      get_tick_func(ctx, view, update, id),
+      get_tick_func(ctx, view, update, selector),
     )
   }
 }
 
 /// Display a picture on a HTML canvas element
+/// (specified by some [CSS Selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors)).
+///
 /// Note: this function may only be called once the page has loaded and the
 /// document objects is available.
-pub fn display_on_canvas(init: fn(CanvasConfig) -> Picture, id: String) {
-  let ctx = impl_canvas.get_rendering_context(id)
+pub fn display_on_canvas(init: fn(CanvasConfig) -> Picture, selector: String) {
+  let ctx = impl_canvas.get_rendering_context(selector)
   impl_canvas.reset(ctx)
   let picture =
     init(CanvasConfig(impl_canvas.get_width(ctx), impl_canvas.get_height(ctx)))
@@ -405,9 +415,9 @@ fn display_on_rendering_context(
 /// Utility function that is useful for cases where you
 /// are no interested in the canvas configuration. For example,
 /// ```
-/// display_on_canvas(just(circle(30.0)), "my_canvas")
+/// display_on_canvas(just(circle(30.0)), "#my_canvas")
 /// // instead of...
-/// display_on_canvas(fn(_config) { circle(30.0) }, "my_canvas")
+/// display_on_canvas(fn(_config) { circle(30.0) }, "#my_canvas")
 /// ```
 pub fn just(picture: Picture) -> fn(a) -> Picture {
   fn(_config) { picture }

@@ -116,14 +116,17 @@
                     root.innerHTML += `
                        <section class="example">
                            <h3>${name}</h3>
-                           <canvas class="example-canvas" id="${name}" width="250" height="200"></canvas>
+                           <canvas class="example-canvas" id="${name.replaceAll(" ", "_")}" width="250" height="200"></canvas>
                        </section>
                        `;
                 }
                 // Finally, display the examples on the canvas
                 for (const example of examples) {
                     const { name, picture } = example;
-                    display_on_canvas(center(picture), name);
+                    display_on_canvas(
+                        center(picture),
+                        `#${name.replaceAll(" ", "_")}`,
+                    );
                 }
             }
 
@@ -234,7 +237,7 @@
                     other,
                 );
 
-                interact_on_canvas(init, update, view, "interactive-canvas");
+                interact_on_canvas(init, update, view, "#interactive-canvas");
             };
         </script>
     </head>

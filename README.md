@@ -21,7 +21,7 @@ fn main() {
     paint.text("Hello world", 20) |> paint.translate_y(-65.0),
   ])
 
-  paint.display_on_canvas(fn(_canvas_config) { my_picture }, "canvas_id")
+  paint.display_on_canvas(fn(_canvas_config) { my_picture }, "#canvas_id")
 }
 ```
 
