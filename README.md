@@ -34,10 +34,14 @@ fn main() {
 ## Logo
 Lucy is borrowed from the [Gleam branding page](https://gleam.run/branding/) and the brush is made by [Delapouite (game icons)](https://game-icons.net/1x1/delapouite/paint-brush.html).
 
+## Changelog
+The API is considered unstable until a `1.*.*` release is published.
+Changes between versions can be found in the file `CHANGELOG.md`.
+
 ## TODOs
 - [ ] I'm not super happy with the API for the transformations. (Especially that scale affects the stroke width).
       Would be fun to investigate an API more similar to [Haskell diagrams](https://hackage.haskell.org/package/diagrams) and [Diagrammer](https://www.youtube.com/watch?v=gT9Xu-ctNqI).
-- [ ] Replace the color functions with [gleam-community/colour](https://hexdocs.pm/gleam_community_colour/)
+- [x] Replace the color functions with [gleam-community/colour](https://hexdocs.pm/gleam_community_colour/)
 - [ ] Support (bitmap) images
 - [ ] Split the library into multiple files (would make integration with other libraries like Lustre more convenient).
 - [ ] Allowing arbitrary css selectors instead of requiring ids in `interact_...` and `display_...`

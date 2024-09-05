@@ -1,9 +1,11 @@
 import gleam/float
 import gleam/int
 import gleam/list
+import gleam/result
+import gleam_community/colour
 import paint.{
   type CanvasConfig, type Event, type Picture, CanvasConfig, KeyUp, NoStroke,
-  SolidStroke, Space, Tick, angle_deg, arc, blank, circle, color_rgb, combine,
+  SolidStroke, Space, Tick, angle_deg, arc, blank, circle, colour_rgb, combine,
   concat, fill, lines, polygon, rectangle, rotate, scale_uniform, square, stroke,
   text, translate_x, translate_xy, translate_y,
 }
@@ -50,7 +52,7 @@ pub fn stroke_example() -> Picture {
 }
 
 fn blue() {
-  color_rgb(64, 110, 142)
+  colour_rgb(64, 110, 142)
 }
 
 pub fn translate_example() -> Picture {
@@ -89,10 +91,26 @@ pub fn concat_example() -> Picture {
 pub fn readme_example() -> Picture {
   paint.combine([
     paint.circle(50.0),
-    paint.circle(30.0) |> paint.fill(paint.color_rgb(0, 200, 200)),
+    paint.circle(30.0) |> paint.fill(paint.colour_rgb(0, 200, 200)),
     paint.rectangle(100.0, 50.0) |> paint.rotate(angle_deg(30.0)),
     paint.text("Hello world", 20) |> paint.translate_y(-65.0),
   ])
+}
+
+pub fn community_colour_example() -> Picture {
+  // paint uses `gleam_community/colour` which means that you are free
+  // to import and use any of the many functions and predefined colours from that package.
+  let assert Ok(cs) =
+    ["#2f2f2f", "#584355", "#a6f0fc", "#ffaff3"]
+    |> list.map(colour.from_rgb_hex_string)
+    |> result.all()
+  combine(
+    list.index_map(cs, fn(c, i) {
+      circle(30.0) |> fill(c) |> translate_x(int.to_float(i) *. 30.0)
+    }),
+  )
+  // center
+  |> translate_x(-45.0)
 }
 
 // An example of the interactive API
@@ -142,7 +160,7 @@ pub fn init(config: CanvasConfig) -> State {
 pub fn view(state: State) -> Picture {
   let ground =
     rectangle(state.width, ground_height)
-    |> fill(color_rgb(0, 0, 0))
+    |> fill(colour_rgb(0, 0, 0))
     |> translate_y(state.height -. ground_height)
 
   let pos_text =

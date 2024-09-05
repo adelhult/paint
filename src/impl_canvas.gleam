@@ -43,8 +43,8 @@ pub fn rotate(ctx: RenderingContext2D, radians: Float) -> Nil
 @external(javascript, "./impl_canvas_bindings.mjs", "reset_transform")
 pub fn reset_transform(ctx: RenderingContext2D) -> Nil
 
-@external(javascript, "./impl_canvas_bindings.mjs", "set_fill_color")
-pub fn set_fill_color(ctx: RenderingContext2D, css_color: String) -> Nil
+@external(javascript, "./impl_canvas_bindings.mjs", "set_fill_colour")
+pub fn set_fill_colour(ctx: RenderingContext2D, css_colour: String) -> Nil
 
 @external(javascript, "./impl_canvas_bindings.mjs", "set_stroke_color")
 pub fn set_stroke_color(ctx: RenderingContext2D, css_color: String) -> Nil

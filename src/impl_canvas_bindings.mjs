@@ -90,8 +90,8 @@ export function restore(ctx) {
   ctx.restore();
 }
 
-export function set_fill_color(ctx, css_color) {
-  ctx.fillStyle = css_color;
+export function set_fill_colour(ctx, css_colour) {
+  ctx.fillStyle = css_colour;
 }
 
 export function set_stroke_color(ctx, css_color) {

@@ -1,5 +1,7 @@
 import gleam/int
 import gleam/option.{type Option, None, Some}
+import gleam/result
+import gleam_community/colour
 import gleam_community/maths/elementary.{pi}
 import impl_canvas
 
@@ -12,7 +14,7 @@ pub opaque type Picture {
   Text(text: String, style: FontProperties)
   // TODO: Bitmap images
   // Styling
-  Fill(Picture, Color)
+  Fill(Picture, Colour)
   Stroke(Picture, StrokeProperties)
   // Transform
   Translate(Picture, Vec2)
@@ -23,10 +25,10 @@ pub opaque type Picture {
 }
 
 /// Options for strokes. Either no stroke or
-/// a stroke with some given color and line width.
+/// a stroke with some given colour and line width.
 pub type StrokeProperties {
   NoStroke
-  SolidStroke(Color, Float)
+  SolidStroke(Colour, Float)
 }
 
 /// Internal type used to decouple the font styling
@@ -51,22 +53,28 @@ pub fn angle_deg(degrees: Float) -> Angle {
   Radians(degrees *. pi() /. 180.0)
 }
 
-/// A color. See: `color_rgb`.
-pub opaque type Color {
-  Rgb(Int, Int, Int)
+/// A rexport of the Colour type from [gleam_community/colour](https://hexdocs.pm/gleam_community_colour/).
+/// Paint also includes the functions `colour_hex` and `colour_rgba` to
+/// easily construct Colours, but feel free to import the `gleam_community/colour` module
+/// and use the many utility that are provided from there.
+pub type Colour =
+  colour.Colour
+
+/// A utility around [colour.from_rgb_hex_string](https://hexdocs.pm/gleam_community_colour/gleam_community/colour.html#from_rgb_hex_string)
+/// (from `gleam_community/colour`) that **panics** on an invalid hex code.
+pub fn colour_hex(string: String) -> Colour {
+  result.lazy_unwrap(colour.from_rgb_hex_string(string), fn() {
+    panic as "Failed to parse hex code"
+  })
 }
 
-/// Given three Ints [0-255], create a color
-pub fn color_rgb(red: Int, green: Int, blue: Int) -> Color {
-  Rgb(red, green, blue)
-  // TODO: ensure the values are within the allowed range
+/// A utility around [colour.from_rgb255](https://hexdocs.pm/gleam_community_colour/gleam_community/colour.html#from_rgb255)
+/// (from `gleam_community/colour`) that **panics** if the values are outside of the allowed range.
+pub fn colour_rgb(red: Int, green: Int, blue: Int) -> Colour {
+  result.lazy_unwrap(colour.from_rgb255(red, green, blue), fn() {
+    panic as "The value was not inside of the valid range [0-255]"
+  })
 }
-
-/// Convert a hexadecimal string to a color, for example:
-/// "#eee", "#efefef" and "abc123"
-// pub fn color_hex(hex: String) -> Result(Color, Nil) {
-//   todo
-// }
 
 pub type Vec2 =
   #(Float, Float)
@@ -148,9 +156,9 @@ pub fn rotate(picture: Picture, angle: Angle) -> Picture {
   Rotate(picture, angle)
 }
 
-/// Fill a picture with some given color, see `Color`.
-pub fn fill(picture: Picture, color: Color) -> Picture {
-  Fill(picture, color)
+/// Fill a picture with some given colour, see `Colour`.
+pub fn fill(picture: Picture, colour: Colour) -> Picture {
+  Fill(picture, colour)
 }
 
 /// Set properties for the stroke. See `StrokeProperties`
@@ -329,9 +337,9 @@ fn display_on_rendering_context(
       )
     }
 
-    Fill(p, color) -> {
+    Fill(p, colour) -> {
       impl_canvas.save(ctx)
-      impl_canvas.set_fill_color(ctx, color_to_css(color))
+      impl_canvas.set_fill_colour(ctx, colour.to_css_rgba_string(colour))
       display_on_rendering_context(p, ctx, DrawingState(..state, fill: True))
       impl_canvas.restore(ctx)
     }
@@ -346,7 +354,7 @@ fn display_on_rendering_context(
           )
         SolidStroke(color, width) -> {
           impl_canvas.save(ctx)
-          impl_canvas.set_stroke_color(ctx, color_to_css(color))
+          impl_canvas.set_stroke_color(ctx, colour.to_css_rgba_string(color))
           impl_canvas.set_line_width(ctx, width)
           display_on_rendering_context(
             p,
@@ -411,15 +419,4 @@ pub fn center(picture: Picture) -> fn(CanvasConfig) -> Picture {
     let CanvasConfig(width, height) = config
     picture |> translate_xy(width *. 0.5, height *. 0.5)
   }
-}
-
-fn color_to_css(color: Color) -> String {
-  let Rgb(r, g, b) = color
-  "rgb("
-  <> int.to_string(r)
-  <> ", "
-  <> int.to_string(g)
-  <> ", "
-  <> int.to_string(b)
-  <> ")"
 }
