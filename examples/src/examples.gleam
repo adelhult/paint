@@ -217,7 +217,7 @@ pub fn update(state: State, event: Event) -> State {
       )
     KeyUp(key) ->
       case key {
-        // Move the player into the air if we press space (when on ground level)
+        // Move the player into the air if we press space
         Space -> State(..state, dy: -7.0)
         _ -> state
       }
