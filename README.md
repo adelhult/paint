@@ -44,6 +44,6 @@ Changes between versions can be found in the file `CHANGELOG.md`.
 - [x] Replace the color functions with [gleam-community/colour](https://hexdocs.pm/gleam_community_colour/)
 - [ ] Support (bitmap) images
 - [ ] Split the library into multiple files (would make integration with other libraries like Lustre more convenient).
-- [ ] Allowing arbitrary css selectors instead of requiring ids in `interact_...` and `display_...`
+- [x] Allowing arbitrary css selectors instead of requiring ids in `interact_...` and `display_...`
 - [ ] Improve input handling for `interact_on_canvas`
 - [ ] Add another backend?
