@@ -16,7 +16,7 @@ import paint
 fn main() {
   let my_picture = paint.combine([
     paint.circle(50.0),
-    paint.circle(30.0) |> paint.fill(paint.color_rgb(0, 200, 200)),
+    paint.circle(30.0) |> paint.fill(paint.colour_rgb(0, 200, 200)),
     paint.rectangle(100.0, 50.0) |> paint.rotate(angle_deg(30.0)),
     paint.text("Hello world", 20) |> paint.translate_y(-65.0),
   ])
