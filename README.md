@@ -7,7 +7,7 @@
 Paint is a tiny embedded domain specific language (inspired by [Gloss](https://hackage.haskell.org/package/gloss)).
 Make pictures out of basic shapes then style, transform, and combine them using the provided functions.
 
-![Logo](https://github.com/user-attachments/assets/515a8c28-b718-43fe-8eb7-43ca66047253)
+![Frame 3(2)](https://github.com/user-attachments/assets/a8b83b58-990a-432a-9034-deebc4d210a6)
 
 
 ```gleam
