@@ -1,10 +1,23 @@
-class PaintPicture extends HTMLCanvasElement {
+class PaintCanvas extends HTMLElement {
+  // Open an issue if you are in need of any other attributes :)
+  static observedAttributes = ["width", "height", "style"];
+
   constructor() {
     super();
-    this.ctx = this.getContext("2d");
+    // Create a canvas
+    this.canvas = document.createElement("canvas");
+    this.shadow = this.attachShadow({ mode: "open" });
+    this.shadow.appendChild(this.canvas);
+    this.ctx = this.canvas.getContext("2d");
+  }
+
+  // forward any given attributes to the canvas
+  attributeChangedCallback(name, _oldValue, newValue) {
+    this.canvas.setAttribute(name, newValue);
   }
 
   set picture(value) {
+    this.ctx.reset();
     const display =
       window.PAINT_STATE[
         "display_on_rendering_context_with_default_drawing_state"
@@ -14,9 +27,7 @@ class PaintPicture extends HTMLCanvasElement {
 }
 
 export function define_web_component() {
-  window.customElements.define("paint-picture", PaintPicture, {
-    extends: "canvas",
-  });
+  window.customElements.define("paint-canvas", PaintCanvas);
 }
 
 export function get_rendering_context(selector) {

@@ -287,11 +287,11 @@ fn get_tick_func(ctx, view, update, selector) {
 /// display your pictures. This may be especially convenient when using a front-end
 /// framework such as Lustre.
 ///
-/// After calling this function you be able to use a customized canvas element:
+/// After calling this function you be able to use the element `paint-canvas`:
 /// ```html
-/// <canvas is="paint-picture"></canvas>
+/// <paint-canvas></paint-canvas>
 /// <script>
-///   const myCanvas = document.querySelector("canvas");
+///   const myCanvas = document.querySelector("paint-canvas");
 ///   // When the `picture` property is set to a `Picture` object that picture
 ///   // will be displayed on the canvas.
 ///   myCanvas.picture = ...;
