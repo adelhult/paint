@@ -1,12 +1,7 @@
 class PaintPicture extends HTMLCanvasElement {
   constructor() {
     super();
-    // Create a canvas as child
-
-    //this.canvas = document.createElement("canvas");
-    //this.appendChild(this.canvas);
     this.ctx = this.getContext("2d");
-    console.log("wow!!");
   }
 
   set picture(value) {
