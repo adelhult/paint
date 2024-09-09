@@ -5,7 +5,6 @@ class PaintPicture extends HTMLCanvasElement {
   }
 
   set picture(value) {
-    //this.picture = value;
     const display =
       window.PAINT_STATE[
         "display_on_rendering_context_with_default_drawing_state"
