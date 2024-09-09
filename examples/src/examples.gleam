@@ -118,12 +118,8 @@ pub fn community_colour_example() -> Picture {
 // NOTE: this is nothing special with this picture.
 // The interesting things happen inside of `index.html`.
 pub fn web_component_example() -> Picture {
-  text("<canvas\n is=\"paint-picture\">", 10)
+  text("<paint-canvas>", 10)
   |> translate_xy(20.0, 40.0)
-  |> concat(
-    text("document.querySelector(\"canvas\").picture = ...", 10)
-    |> translate_xy(20.0, 55.0),
-  )
 }
 
 // An example of the interactive API
