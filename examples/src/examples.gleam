@@ -113,6 +113,19 @@ pub fn community_colour_example() -> Picture {
   |> translate_x(-45.0)
 }
 
+// Web component example.
+// Used together with `define_web_component`.
+// NOTE: this is nothing special with this picture.
+// The interesting things happen inside of `index.html`.
+pub fn web_component_example() -> Picture {
+  text("<canvas\n is=\"paint-picture\">", 10)
+  |> translate_xy(20.0, 40.0)
+  |> concat(
+    text("document.querySelector(\"canvas\").picture = ...", 10)
+    |> translate_xy(20.0, 55.0),
+  )
+}
+
 // An example of the interactive API
 // used together with the function
 // `interact_on_canvas(init, update, view, canvas_id)`

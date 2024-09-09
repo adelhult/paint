@@ -1,5 +1,8 @@
 pub type RenderingContext2D
 
+@external(javascript, "./impl_canvas_bindings.mjs", "define_web_component")
+pub fn define_web_component() -> Nil
+
 // TODO: forward the timestamp from the callback
 @external(javascript, "./impl_canvas_bindings.mjs", "setup_request_animation_frame")
 pub fn setup_request_animation_frame(callback: fn(Float) -> Nil) -> Nil
@@ -16,11 +19,11 @@ pub fn get_width(ctx: RenderingContext2D) -> Float
 @external(javascript, "./impl_canvas_bindings.mjs", "get_height")
 pub fn get_height(ctx: RenderingContext2D) -> Float
 
-@external(javascript, "./impl_canvas_bindings.mjs", "store_state")
-pub fn store_state(state: state, id: String) -> Nil
+@external(javascript, "./impl_canvas_bindings.mjs", "set_global")
+pub fn set_global(state: state, id: String) -> Nil
 
-@external(javascript, "./impl_canvas_bindings.mjs", "get_state")
-pub fn get_state(id: String) -> state
+@external(javascript, "./impl_canvas_bindings.mjs", "get_global")
+pub fn get_global(id: String) -> state
 
 @external(javascript, "./impl_canvas_bindings.mjs", "reset")
 pub fn reset(ctx: RenderingContext2D) -> Nil

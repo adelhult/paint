@@ -1,3 +1,30 @@
+class PaintPicture extends HTMLCanvasElement {
+  constructor() {
+    super();
+    // Create a canvas as child
+
+    //this.canvas = document.createElement("canvas");
+    //this.appendChild(this.canvas);
+    this.ctx = this.getContext("2d");
+    console.log("wow!!");
+  }
+
+  set picture(value) {
+    //this.picture = value;
+    const display =
+      window.PAINT_STATE[
+        "display_on_rendering_context_with_default_drawing_state"
+      ];
+    display(value, this.ctx);
+  }
+}
+
+export function define_web_component() {
+  window.customElements.define("paint-picture", PaintPicture, {
+    extends: "canvas",
+  });
+}
+
 export function get_rendering_context(selector) {
   // TODO: Handle the case where the canvas element is not found.
   return document.querySelector(selector).getContext("2d");
@@ -15,14 +42,14 @@ export function setup_key_handler(event_name, callback) {
   });
 }
 
-export function store_state(state, id) {
+export function set_global(state, id) {
   if (typeof window.PAINT_STATE == "undefined") {
     window.PAINT_STATE = {};
   }
   window.PAINT_STATE[id] = state;
 }
 
-export function get_state(id) {
+export function get_global(id) {
   return window.PAINT_STATE[id];
 }
 

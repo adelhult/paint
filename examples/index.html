@@ -99,6 +99,7 @@
                 concat_example,
                 readme_example,
                 community_colour_example,
+                web_component_example,
                 init,
                 update,
                 view,
@@ -106,6 +107,7 @@
             import {
                 display_on_canvas,
                 interact_on_canvas,
+                define_web_component,
                 center,
             } from "./build/dev/javascript/paint/paint.mjs";
 
@@ -238,6 +240,12 @@
                 );
 
                 interact_on_canvas(init, update, view, "#interactive-canvas");
+
+                // Web components
+                define_web_component();
+                // When the picture property is set, the web component will display the picture
+                document.getElementById("web-component-example").picture =
+                    web_component_example();
             };
         </script>
     </head>
@@ -277,6 +285,16 @@
         <h2>Interactive</h2>
         <section id="interactive">
             <canvas id="interactive-canvas" width="250" height="200"></canvas>
+        </section>
+
+        <h2>Web components</h2>
+        <section id="web-components">
+            <canvas
+                is="paint-picture"
+                id="web-component-example"
+                width="250"
+                height="200"
+            ></canvas>
         </section>
     </body>
 </html>

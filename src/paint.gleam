@@ -221,7 +221,7 @@ pub fn interact_on_canvas(
   let initial_state =
     init(CanvasConfig(impl_canvas.get_width(ctx), impl_canvas.get_height(ctx)))
 
-  impl_canvas.store_state(initial_state, selector)
+  impl_canvas.set_global(initial_state, selector)
 
   let create_key_handler = fn(event_name, constructor) {
     impl_canvas.setup_key_handler(event_name, fn(key_code) {
@@ -229,8 +229,8 @@ pub fn interact_on_canvas(
       case key {
         Some(key) -> {
           let new_state =
-            update(impl_canvas.get_state(selector), constructor(key))
-          impl_canvas.store_state(new_state, selector)
+            update(impl_canvas.get_global(selector), constructor(key))
+          impl_canvas.set_global(new_state, selector)
         }
         None -> Nil
       }
@@ -264,27 +264,50 @@ fn parse_key_code(key_code: Int) -> Option(Key) {
 // to do this workaround...
 fn get_tick_func(ctx, view, update, selector) {
   fn(time) {
-    let current_state = impl_canvas.get_state(selector)
+    let current_state = impl_canvas.get_global(selector)
 
     // Trigger a tick event before drawing
     let new_state = update(current_state, Tick(time))
-    impl_canvas.store_state(new_state, selector)
+    impl_canvas.set_global(new_state, selector)
 
     // Create the picture
     let picture = view(new_state)
 
     // Render the picture on the canvas
     impl_canvas.reset(ctx)
-    display_on_rendering_context(
-      picture,
-      ctx,
-      DrawingState(fill: False, stroke: True),
-    )
+    display_on_rendering_context(picture, ctx, default_drawing_state)
     impl_canvas.setup_request_animation_frame(
       // call myself
       get_tick_func(ctx, view, update, selector),
     )
   }
+}
+
+/// As an alternative to `display_on_canvas` you can you a web component API to
+/// display your pictures. This may be especially convenient when using a front-end
+/// framework such as Lustre.
+///
+/// After calling this function you be able to use a customized canvas element:
+/// ```html
+/// <canvas is="paint-picture"></canvas>
+/// <script>
+///   const myCanvas = document.querySelector("canvas");
+///   // When the `picture` property is set to a `Picture` object that picture
+///   // will be displayed on the canvas.
+///   myCanvas.picture = ...;
+/// </script>
+/// ```
+pub fn define_web_component() -> Nil {
+  impl_canvas.define_web_component()
+  // somewhat of an ugly hack, but the setter for the web component will need to call
+  // `display_on_rendering_context` when the picture property changes. Therefore we
+  // bind this function to the window object so we can access it from the JS side of things.
+  impl_canvas.set_global(
+    fn(picture, ctx) {
+      display_on_rendering_context(picture, ctx, default_drawing_state)
+    },
+    "display_on_rendering_context_with_default_drawing_state",
+  )
 }
 
 /// Display a picture on a HTML canvas element
@@ -297,11 +320,7 @@ pub fn display_on_canvas(init: fn(CanvasConfig) -> Picture, selector: String) {
   impl_canvas.reset(ctx)
   let picture =
     init(CanvasConfig(impl_canvas.get_width(ctx), impl_canvas.get_height(ctx)))
-  display_on_rendering_context(
-    picture,
-    ctx,
-    DrawingState(fill: False, stroke: True),
-  )
+  display_on_rendering_context(picture, ctx, default_drawing_state)
 }
 
 /// Additional state used when drawing
@@ -310,6 +329,8 @@ pub fn display_on_canvas(init: fn(CanvasConfig) -> Picture, selector: String) {
 type DrawingState {
   DrawingState(fill: Bool, stroke: Bool)
 }
+
+const default_drawing_state = DrawingState(fill: False, stroke: True)
 
 fn display_on_rendering_context(
   picture: Picture,
