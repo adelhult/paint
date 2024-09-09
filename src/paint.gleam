@@ -283,11 +283,11 @@ fn get_tick_func(ctx, view, update, selector) {
   }
 }
 
-/// As an alternative to `display_on_canvas` you can you a web component API to
+/// As an alternative to `display_on_canvas` you can use this web components API to
 /// display your pictures. This may be especially convenient when using a front-end
 /// framework such as Lustre.
 ///
-/// After calling this function you be able to use the element `paint-canvas`:
+/// After calling this function you will be able to use the element `paint-canvas`:
 /// ```html
 /// <paint-canvas></paint-canvas>
 /// <script>
@@ -297,6 +297,8 @@ fn get_tick_func(ctx, view, update, selector) {
 ///   myCanvas.picture = ...;
 /// </script>
 /// ```
+///
+/// A more detailed example for using this API together with Luster can be found in [this GitHub Gist](https://gist.github.com/adelhult/03c5916df891a06bec706e6f0842cd91).
 pub fn define_web_component() -> Nil {
   impl_canvas.define_web_component()
   // somewhat of an ugly hack, but the setter for the web component will need to call
