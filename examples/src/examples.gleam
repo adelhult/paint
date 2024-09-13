@@ -4,10 +4,11 @@ import gleam/list
 import gleam/result
 import gleam_community/colour
 import paint.{
-  type CanvasConfig, type Event, type Picture, CanvasConfig, KeyUp, NoStroke,
-  SolidStroke, Space, Tick, angle_deg, arc, blank, circle, colour_rgb, combine,
-  concat, fill, lines, polygon, rectangle, rotate, scale_uniform, square, stroke,
-  text, translate_x, translate_xy, translate_y,
+  type CanvasConfig, type Event, type Picture, CanvasConfig, EventKeyDown,
+  EventMouseMovement, EventTick, KeySpace, NoStroke, SolidStroke, angle_deg, arc,
+  blank, circle, colour_rgb, combine, concat, fill, lines, polygon, rectangle,
+  rotate, scale_uniform, square, stroke, text, translate_x, translate_xy,
+  translate_y,
 }
 
 pub fn blank_example() -> Picture {
@@ -135,6 +136,8 @@ pub type State {
     dy: Float,
     direction: Direction,
     time: Float,
+    mouse_x: Float,
+    mouse_y: Float,
     width: Float,
     height: Float,
   )
@@ -161,6 +164,8 @@ pub fn init(config: CanvasConfig) -> State {
     time: 0.0,
     width: config.width,
     height: config.height,
+    mouse_x: 0.0,
+    mouse_y: 0.0,
   )
 }
 
@@ -179,7 +184,10 @@ pub fn view(state: State) -> Picture {
     combine([square(player_length), text(pos_text, 10) |> translate_y(-5.0)])
     |> translate_xy(state.x, state.y)
 
+  let mouse = circle(10.0) |> translate_xy(state.mouse_x, state.mouse_y)
+
   combine([
+    mouse,
     player,
     ground,
     text("Press <space> to jump", 10) |> translate_xy(5.0, 15.0),
@@ -195,7 +203,7 @@ pub fn update(state: State, event: Event) -> State {
   let ground_level = state.height -. ground_height
 
   case event {
-    Tick(time) ->
+    EventTick(time) ->
       State(
         ..state,
         time: time,
@@ -224,13 +232,15 @@ pub fn update(state: State, event: Event) -> State {
           False -> float.min(state.dy, 0.0)
         },
       )
-    KeyUp(key) ->
+    EventKeyDown(key) ->
       case key {
         // Move the player into the air if we press space
-        Space -> State(..state, dy: -7.0)
+        KeySpace -> State(..state, dy: -7.0)
         _ -> state
       }
-
+    EventMouseMovement(x, y) -> {
+      State(..state, mouse_x: x, mouse_y: y)
+    }
     // all other events: do nothing
     _ -> state
   }

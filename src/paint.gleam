@@ -186,21 +186,32 @@ pub type CanvasConfig {
 /// A list of events
 pub type Event {
   /// Triggered before drawing. Contains the number of milliseconds elapsed.
-  Tick(Float)
+  EventTick(Float)
   /// Triggered when a key is pressed
-  KeyDown(Key)
+  EventKeyDown(Key)
   /// Triggered when a key is released
-  KeyUp(Key)
-  // TODO: add more events
+  EventKeyUp(Key)
+  // Triggered when the mouse is moved. Contains
+  // the `x` and `y` value for the mouse position.
+  EventMouseMovement(Float, Float)
 }
 
 pub type Key {
-  LeftArrow
-  RightArrow
-  UpArrow
-  DownArrow
-  Space
-  // TODO: add more keys
+  KeyLeftArrow
+  KeyRightArrow
+  KeyUpArrow
+  KeyDownArrow
+  KeySpace
+  KeyW
+  KeyA
+  KeyS
+  KeyD
+  KeyZ
+  KeyX
+  KeyC
+  KeyEnter
+  KeyEscape
+  KeyBackspace
 }
 
 /// Make animations and games and display them on the given HTML canvas
@@ -223,23 +234,43 @@ pub fn interact_on_canvas(
 
   impl_canvas.set_global(initial_state, selector)
 
+  // Handle keyboard input
   let create_key_handler = fn(event_name, constructor) {
-    impl_canvas.setup_key_handler(event_name, fn(key_code) {
-      let key = parse_key_code(key_code)
-      case key {
-        Some(key) -> {
-          let new_state =
-            update(impl_canvas.get_global(selector), constructor(key))
-          impl_canvas.set_global(new_state, selector)
+    impl_canvas.setup_input_handler(
+      event_name,
+      fn(event: impl_canvas.KeyboardEvent) {
+        let key = parse_key_code(impl_canvas.get_key_code(event))
+        case key {
+          Some(key) -> {
+            let new_state =
+              update(impl_canvas.get_global(selector), constructor(key))
+            impl_canvas.set_global(new_state, selector)
+          }
+          None -> Nil
         }
-        None -> Nil
-      }
-    })
+      },
+    )
   }
-  create_key_handler("keydown", KeyDown)
-  create_key_handler("keyup", KeyUp)
+  create_key_handler("keydown", EventKeyDown)
+  create_key_handler("keyup", EventKeyUp)
 
-  // TODO: Support more events and mouse input
+  // Handle mouse movement
+  impl_canvas.setup_input_handler(
+    "mousemove",
+    fn(event: impl_canvas.MouseEvent) {
+      let #(x, y) = impl_canvas.mouse_pos(ctx, event)
+      let new_state =
+        update(impl_canvas.get_global(selector), EventMouseMovement(x, y))
+      impl_canvas.set_global(new_state, selector)
+      Nil
+    },
+  )
+
+  // Handle mouse buttons
+  impl_canvas.setup_input_handler(
+    "mousedown",
+    fn(event: impl_canvas.MouseEvent) { todo },
+  )
 
   impl_canvas.setup_request_animation_frame(get_tick_func(
     ctx,
@@ -251,11 +282,21 @@ pub fn interact_on_canvas(
 
 fn parse_key_code(key_code: Int) -> Option(Key) {
   case key_code {
-    32 -> Some(Space)
-    37 -> Some(LeftArrow)
-    38 -> Some(UpArrow)
-    39 -> Some(RightArrow)
-    40 -> Some(DownArrow)
+    32 -> Some(KeySpace)
+    37 -> Some(KeyLeftArrow)
+    38 -> Some(KeyUpArrow)
+    39 -> Some(KeyRightArrow)
+    40 -> Some(KeyDownArrow)
+    87 -> Some(KeyW)
+    65 -> Some(KeyA)
+    83 -> Some(KeyS)
+    68 -> Some(KeyD)
+    90 -> Some(KeyZ)
+    88 -> Some(KeyX)
+    67 -> Some(KeyC)
+    18 -> Some(KeyEnter)
+    27 -> Some(KeyEscape)
+    8 -> Some(KeyBackspace)
     _ -> None
   }
 }
@@ -267,7 +308,7 @@ fn get_tick_func(ctx, view, update, selector) {
     let current_state = impl_canvas.get_global(selector)
 
     // Trigger a tick event before drawing
-    let new_state = update(current_state, Tick(time))
+    let new_state = update(current_state, EventTick(time))
     impl_canvas.set_global(new_state, selector)
 
     // Create the picture

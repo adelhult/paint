@@ -1,5 +1,5 @@
 name = "paint"
-version = "0.2.2"
+version = "0.3.0"
 target = "javascript"
 
 # Fill out these fields if you intend to generate HTML documentation or publish
