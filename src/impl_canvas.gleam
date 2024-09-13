@@ -7,11 +7,24 @@ pub fn define_web_component() -> Nil
 @external(javascript, "./impl_canvas_bindings.mjs", "setup_request_animation_frame")
 pub fn setup_request_animation_frame(callback: fn(Float) -> Nil) -> Nil
 
-@external(javascript, "./impl_canvas_bindings.mjs", "setup_key_handler")
-pub fn setup_key_handler(event: String, callback: fn(Int) -> Nil) -> Nil
-
 @external(javascript, "./impl_canvas_bindings.mjs", "get_rendering_context")
 pub fn get_rendering_context(selector: String) -> RenderingContext2D
+
+@external(javascript, "./impl_canvas_bindings.mjs", "setup_input_handler")
+pub fn setup_input_handler(event: String, callback: fn(event) -> Nil) -> Nil
+
+pub type KeyboardEvent
+
+@external(javascript, "./impl_canvas_bindings.mjs", "get_key_code")
+pub fn get_key_code(event: KeyboardEvent) -> Int
+
+pub type MouseEvent
+
+@external(javascript, "./impl_canvas_bindings.mjs", "mouse_pos")
+pub fn mouse_pos(ctx: RenderingContext2D, event: MouseEvent) -> #(Float, Float)
+
+@external(javascript, "./impl_canvas_bindings.mjs", "mouse_buttons")
+pub fn mouse_buttons(event: MouseEvent) -> Int
 
 @external(javascript, "./impl_canvas_bindings.mjs", "get_width")
 pub fn get_width(ctx: RenderingContext2D) -> Float

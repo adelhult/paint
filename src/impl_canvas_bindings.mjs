@@ -64,10 +64,12 @@ export function setup_request_animation_frame(callback) {
   });
 }
 
-export function setup_key_handler(event_name, callback) {
-  window.addEventListener(event_name, (event) => {
-    callback(event.keyCode);
-  });
+export function setup_input_handler(event_name, callback) {
+  window.addEventListener(event_name, callback);
+}
+
+export function get_key_code(event) {
+  return event.keyCode;
 }
 
 export function set_global(state, id) {
@@ -87,6 +89,23 @@ export function get_width(ctx) {
 
 export function get_height(ctx) {
   return ctx.canvas.clientHeight;
+}
+
+// Based on https://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
+export function mouse_pos(ctx, event) {
+  // Calculate the scaling of the canvas vs its content
+  const rect = ctx.canvas.getBoundingClientRect();
+  const scaleX = ctx.canvas.width / rect.width;
+  const scaleY = ctx.canvas.height / rect.height;
+
+  return [
+    (event.clientX - rect.left) * scaleX,
+    (event.clientY - rect.top) * scaleY,
+  ];
+}
+
+export function mouse_buttons(event) {
+  return event.buttons;
 }
 
 export function reset(ctx) {
