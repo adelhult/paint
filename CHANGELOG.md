@@ -1,4 +1,7 @@
-# 0.2.0 (WIP)
+# 0.2.1
+- Fix: Support width/height properties for the web component API (instead of just attributes).
+
+# 0.2.0
 - Addition: Web component API `<paint-canvas></paint-canvas>`.
 - Breaking: Replace the colour type with `Colour` from gleam_community_colour.
 - Breaking: Replace `color_rgb` with `colour_rgb` and `colour_hex`.
