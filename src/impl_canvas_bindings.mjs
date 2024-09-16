@@ -24,6 +24,22 @@ class PaintCanvas extends HTMLElement {
       ];
     display(value, this.ctx);
   }
+
+  set width(value) {
+    this.canvas.width = value;
+  }
+
+  set height(value) {
+    this.canvas.height = value;
+  }
+
+  get width() {
+    return this.canvas.width;
+  }
+
+  get height() {
+    return this.canvas.height;
+  }
 }
 
 export function define_web_component() {
