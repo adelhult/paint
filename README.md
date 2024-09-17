@@ -46,3 +46,4 @@ Changes between versions can be found in the file `CHANGELOG.md`.
 - [x] Allowing arbitrary css selectors instead of requiring ids in `interact_...` and `display_...`
 - [ ] Improve input handling for `interact_on_canvas` (more keys and mouse input)
 - [ ] Add another backend? SVG or maybe Raylib bindings (for either erlang or node).
+- [ ] Write a proper tutorial (and a nicer examples page).
