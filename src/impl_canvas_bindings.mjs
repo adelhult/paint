@@ -6,7 +6,14 @@ class PaintCanvas extends HTMLElement {
     super();
     // Create a canvas
     this.canvas = document.createElement("canvas");
+    const style = document.createElement("style");
+    style.textContent = `
+      :host {
+        display: inline-block;
+      }
+    `;
     this.shadow = this.attachShadow({ mode: "open" });
+    this.shadow.appendChild(style);
     this.shadow.appendChild(this.canvas);
     this.ctx = this.canvas.getContext("2d");
   }
