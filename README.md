@@ -39,11 +39,10 @@ The API is considered unstable until a `1.*.*` release is published.
 Changes between versions can be found in the file `CHANGELOG.md`.
 
 ## TODOs
-- [ ] I'm not super happy with the API for the transformations. (Especially that scale affects the stroke width).
-      Would be fun to investigate an API more similar to [Haskell diagrams](https://hackage.haskell.org/package/diagrams) and [Diagrammer](https://www.youtube.com/watch?v=gT9Xu-ctNqI).
+- [ ] Would be fun to investigate an API more similar to [Haskell diagrams](https://hackage.haskell.org/package/diagrams) and [Diagrammer](https://www.youtube.com/watch?v=gT9Xu-ctNqI).
 - [x] Replace the color functions with [gleam-community/colour](https://hexdocs.pm/gleam_community_colour/)
 - [ ] Support (bitmap) images
-- [ ] Split the library into multiple files (would make integration with other libraries like Lustre more convenient).
+- [ ] Split the library into multiple well structured modules (`paint`, `canvas`, `event`, etc.)
 - [x] Allowing arbitrary css selectors instead of requiring ids in `interact_...` and `display_...`
-- [ ] Improve input handling for `interact_on_canvas`
-- [ ] Add another backend?
+- [ ] Improve input handling for `interact_on_canvas` (more keys and mouse input)
+- [ ] Add another backend? SVG or maybe Raylib bindings (for either erlang or node).
