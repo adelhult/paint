@@ -54,7 +54,7 @@ pub fn angle_deg(degrees: Float) -> Angle {
 }
 
 /// A rexport of the Colour type from [gleam_community/colour](https://hexdocs.pm/gleam_community_colour/).
-/// Paint also includes the functions `colour_hex` and `colour_rgba` to
+/// Paint also includes the functions `colour_hex` and `colour_rgb` to
 /// easily construct Colours, but feel free to import the `gleam_community/colour` module
 /// and use the many utility that are provided from there.
 pub type Colour =
