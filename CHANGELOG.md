@@ -1,3 +1,6 @@
+# 0.2.2
+- Fix: Use display inline-block for the web component.
+
 # 0.2.1
 - Fix: Support width/height properties for the web component API (instead of just attributes).
 
