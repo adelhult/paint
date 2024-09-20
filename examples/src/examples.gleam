@@ -1,14 +1,16 @@
 import gleam/float
 import gleam/int
+import gleam/io
 import gleam/list
 import gleam/result
+import gleam/string
 import gleam_community/colour
 import paint.{
   type CanvasConfig, type Event, type Picture, CanvasConfig, EventKeyDown,
-  EventMouseMovement, EventTick, KeySpace, NoStroke, SolidStroke, angle_deg, arc,
-  blank, circle, colour_rgb, combine, concat, fill, lines, polygon, rectangle,
-  rotate, scale_uniform, square, stroke, text, translate_x, translate_xy,
-  translate_y,
+  EventMouseButtonPressed, EventMouseButtonReleased, EventMouseMovement,
+  EventTick, KeySpace, NoStroke, SolidStroke, angle_deg, arc, blank, circle,
+  colour_rgb, combine, concat, fill, lines, polygon, rectangle, rotate,
+  scale_uniform, square, stroke, text, translate_x, translate_xy, translate_y,
 }
 
 pub fn blank_example() -> Picture {
@@ -240,6 +242,14 @@ pub fn update(state: State, event: Event) -> State {
       }
     EventMouseMovement(x, y) -> {
       State(..state, mouse_x: x, mouse_y: y)
+    }
+    EventMouseButtonPressed(button) -> {
+      io.println("Button '" <> string.inspect(button) <> "' was pressed!")
+      state
+    }
+    EventMouseButtonReleased(button) -> {
+      io.println("Button '" <> string.inspect(button) <> "' was released!")
+      state
     }
     // all other events: do nothing
     _ -> state

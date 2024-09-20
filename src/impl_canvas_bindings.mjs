@@ -104,8 +104,28 @@ export function mouse_pos(ctx, event) {
   ];
 }
 
-export function mouse_buttons(event) {
-  return event.buttons;
+// if check_pressed is true, the function will return true if the button was pressed
+// if check_pressed is false, the function will return true if the button was released
+export function check_mouse_buttons(event, previous_event, check_pressed) {
+  let previous_buttons = previous_event?.buttons ?? 0;
+  let current_buttons = event.buttons;
+
+  // ~001 &&
+  //  011
+  //  -----
+  //  010 found the newly pressed!
+  //
+  //   011 &&
+  //  ~001
+  //   -----
+  //   010 found the newly released!
+  if (check_pressed) {
+    previous_buttons = ~previous_buttons;
+  } else {
+    current_buttons = ~current_buttons;
+  }
+
+  return previous_buttons & current_buttons;
 }
 
 export function reset(ctx) {

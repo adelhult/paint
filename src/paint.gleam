@@ -194,6 +194,19 @@ pub type Event {
   // Triggered when the mouse is moved. Contains
   // the `x` and `y` value for the mouse position.
   EventMouseMovement(Float, Float)
+  EventMouseButtonPressed(MouseButton)
+  EventMouseButtonReleased(MouseButton)
+}
+
+pub type MouseButton {
+  MouseButtonLeft
+  MouseButtonRight
+  /// The scrollwheel button
+  MouseButtonMiddle
+  /// Usually the "back" button
+  MouseButton4
+  /// Usually the "forward" button
+  MouseButton5
 }
 
 pub type Key {
@@ -267,10 +280,34 @@ pub fn interact_on_canvas(
   )
 
   // Handle mouse buttons
-  impl_canvas.setup_input_handler(
-    "mousedown",
-    fn(event: impl_canvas.MouseEvent) { todo },
-  )
+  let create_mouse_button_handler = fn(event_name, constructor, check_pressed) {
+    impl_canvas.setup_input_handler(
+      event_name,
+      fn(event: impl_canvas.MouseEvent) {
+        let previous_event_id = "PAINT_PREVIOUS_MOUSE_INPUT_FOR_" <> selector
+        let previous_event = impl_canvas.get_global(previous_event_id)
+        impl_canvas.set_global(event, previous_event_id)
+
+        let button =
+          impl_canvas.check_mouse_buttons(event, previous_event, check_pressed)
+
+        let button = case button {
+          1 -> MouseButtonLeft
+          2 -> MouseButtonRight
+          4 -> MouseButtonMiddle
+          8 -> MouseButton4
+          16 -> MouseButton5
+          _ -> panic as "these are the only allowed buttons according web API"
+        }
+
+        let new_state =
+          update(impl_canvas.get_global(selector), constructor(button))
+        impl_canvas.set_global(new_state, selector)
+      },
+    )
+  }
+  create_mouse_button_handler("mousedown", EventMouseButtonPressed, True)
+  create_mouse_button_handler("mouseup", EventMouseButtonReleased, False)
 
   impl_canvas.setup_request_animation_frame(get_tick_func(
     ctx,
@@ -301,7 +338,7 @@ fn parse_key_code(key_code: Int) -> Option(Key) {
   }
 }
 
-// Gleam does n ot have recursive let bindings, so I need
+// Gleam does not have recursive let bindings, so I need
 // to do this workaround...
 fn get_tick_func(ctx, view, update, selector) {
   fn(time) {
