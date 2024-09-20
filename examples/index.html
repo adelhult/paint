@@ -81,6 +81,7 @@
             }
         </style>
         <script defer type="module">
+            import { center } from "./build/dev/javascript/paint/paint/canvas.mjs";
             import {
                 blank_example,
                 circle_example,
@@ -105,11 +106,10 @@
                 view,
             } from "./build/dev/javascript/examples/examples.mjs";
             import {
-                display_on_canvas,
-                interact_on_canvas,
+                display,
+                interact,
                 define_web_component,
-                center,
-            } from "./build/dev/javascript/paint/paint.mjs";
+            } from "./build/dev/javascript/paint/paint/canvas.mjs";
 
             function createExamples(examples, root) {
                 for (const example of examples) {
@@ -125,10 +125,7 @@
                 // Finally, display the examples on the canvas
                 for (const example of examples) {
                     const { name, picture } = example;
-                    display_on_canvas(
-                        center(picture),
-                        `#${name.replaceAll(" ", "_")}`,
-                    );
+                    display(center(picture), `#${name.replaceAll(" ", "_")}`);
                 }
             }
 
@@ -239,7 +236,7 @@
                     other,
                 );
 
-                interact_on_canvas(init, update, view, "#interactive-canvas");
+                interact(init, update, view, "#interactive-canvas");
 
                 // Web components
                 define_web_component();

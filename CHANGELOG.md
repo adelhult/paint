@@ -1,7 +1,7 @@
-# 0.3.0 (WIP)
-- Breaking: The `Event` type now contains a `EventMouseMovement`, used to capture mouse movement.
-- Breaking: More `Key`s trigger events (WASD, XYZ, backspace, enter, escape).
-- Breaking: The constructors in `Event` and `Key` has been renamed with an added prefix. (not super happy with this, might introduce seperate namespaces `paint.key` and `paint.event` instead).
+# 0.3.0
+- Breaking: A big refactor of the code base. The canvas backend now lives in `paint/canvas`, the functions has been renamed appropriately (`display_on_canvas` => `canvas.display`). The `Key` and `Event` types has been moved to `paint/event`.
+- Addition/Breaking: More `Event`s for mouse movement and mouse buttons.
+- Addition/Breaking: More `Key`s (WASD, XYZ, backspace, enter, escape).
 
 # 0.2.2
 - Fix: Use display inline-block for the web component.
