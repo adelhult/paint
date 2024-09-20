@@ -5,129 +5,125 @@ import gleam/list
 import gleam/result
 import gleam/string
 import gleam_community/colour
-import paint.{
-  type CanvasConfig, type Event, type Picture, CanvasConfig, EventKeyDown,
-  EventMouseButtonPressed, EventMouseButtonReleased, EventMouseMovement,
-  EventTick, KeySpace, NoStroke, SolidStroke, angle_deg, arc, blank, circle,
-  colour_rgb, combine, concat, fill, lines, polygon, rectangle, rotate,
-  scale_uniform, square, stroke, text, translate_x, translate_xy, translate_y,
+import paint as p
+import paint/canvas
+import paint/event
+
+pub fn blank_example() -> p.Picture {
+  p.blank()
 }
 
-pub fn blank_example() -> Picture {
-  blank()
+pub fn circle_example() -> p.Picture {
+  p.circle(40.0)
 }
 
-pub fn circle_example() -> Picture {
-  circle(40.0)
-}
-
-pub fn arc_example() -> Picture {
+pub fn arc_example() -> p.Picture {
   let radius = 40.0
-  arc(radius, angle_deg(0.0), angle_deg(100.0))
+  p.arc(radius, p.angle_deg(0.0), p.angle_deg(100.0))
 }
 
-pub fn polygon_example() -> Picture {
-  polygon([#(-10.0, -20.0), #(50.0, 30.0), #(-20.0, 50.0)])
+pub fn polygon_example() -> p.Picture {
+  p.polygon([#(-10.0, -20.0), #(50.0, 30.0), #(-20.0, 50.0)])
 }
 
-pub fn lines_example() -> Picture {
-  lines([#(-10.0, -20.0), #(50.0, 30.0), #(-20.0, 50.0)])
+pub fn lines_example() -> p.Picture {
+  p.lines([#(-10.0, -20.0), #(50.0, 30.0), #(-20.0, 50.0)])
 }
 
-pub fn rectangle_example() -> Picture {
-  rectangle(50.0, 80.0)
+pub fn rectangle_example() -> p.Picture {
+  p.rectangle(50.0, 80.0)
 }
 
-pub fn square_example() -> Picture {
-  square(80.0)
+pub fn square_example() -> p.Picture {
+  p.square(80.0)
 }
 
-pub fn text_example() -> Picture {
-  text("Hi!", 40)
+pub fn text_example() -> p.Picture {
+  p.text("Hi!", 40)
 }
 
-pub fn fill_example() -> Picture {
-  circle_example() |> fill(blue()) |> stroke(NoStroke)
+pub fn fill_example() -> p.Picture {
+  circle_example() |> p.fill(blue()) |> p.stroke_none()
 }
 
-pub fn stroke_example() -> Picture {
-  circle_example() |> stroke(SolidStroke(blue(), 5.0))
+pub fn stroke_example() -> p.Picture {
+  circle_example() |> p.stroke(blue(), width: 5.0)
 }
 
 fn blue() {
-  colour_rgb(64, 110, 142)
+  p.colour_rgb(64, 110, 142)
 }
 
-pub fn translate_example() -> Picture {
-  circle_example() |> translate_y(25.0) |> concat(circle_example())
+pub fn translate_example() -> p.Picture {
+  circle_example() |> p.translate_y(25.0) |> p.concat(circle_example())
 }
 
-pub fn scale_example() -> Picture {
+pub fn scale_example() -> p.Picture {
   circle_example()
-  |> scale_uniform(0.5)
-  |> concat(circle_example())
+  |> p.scale_uniform(0.5)
+  |> p.concat(circle_example())
 }
 
-pub fn rotate_example() -> Picture {
+pub fn rotate_example() -> p.Picture {
   // A bit more of an advanced example, just for fun!
-  combine(
+  p.combine(
     list.repeat(rectangle_example(), times: 6)
     |> list.index_map(fn(picture, i) {
-      rotate(picture, angle_deg(360.0 /. 6.0 *. int.to_float(i)))
+      p.rotate(picture, p.angle_deg(360.0 /. 6.0 *. int.to_float(i)))
     }),
   )
 }
 
-pub fn combine_example() -> Picture {
-  combine([
+pub fn combine_example() -> p.Picture {
+  p.combine([
     circle_example(),
-    circle_example() |> translate_x(50.0),
-    circle_example() |> translate_x(100.0),
+    circle_example() |> p.translate_x(50.0),
+    circle_example() |> p.translate_x(100.0),
   ])
 }
 
-pub fn concat_example() -> Picture {
+pub fn concat_example() -> p.Picture {
   circle_example()
-  |> concat(circle_example() |> translate_x(50.0))
+  |> p.concat(circle_example() |> p.translate_x(50.0))
 }
 
-pub fn readme_example() -> Picture {
-  paint.combine([
-    paint.circle(50.0),
-    paint.circle(30.0) |> paint.fill(paint.colour_rgb(0, 200, 200)),
-    paint.rectangle(100.0, 50.0) |> paint.rotate(angle_deg(30.0)),
-    paint.text("Hello world", 20) |> paint.translate_y(-65.0),
+pub fn readme_example() -> p.Picture {
+  p.combine([
+    p.circle(50.0),
+    p.circle(30.0) |> p.fill(p.colour_rgb(0, 200, 200)),
+    p.rectangle(100.0, 50.0) |> p.rotate(p.angle_deg(30.0)),
+    p.text("Hello world", 20) |> p.translate_y(-65.0),
   ])
 }
 
-pub fn community_colour_example() -> Picture {
+pub fn community_colour_example() -> p.Picture {
   // paint uses `gleam_community/colour` which means that you are free
   // to import and use any of the many functions and predefined colours from that package.
   let assert Ok(cs) =
     ["#2f2f2f", "#584355", "#a6f0fc", "#ffaff3"]
     |> list.map(colour.from_rgb_hex_string)
     |> result.all()
-  combine(
+  p.combine(
     list.index_map(cs, fn(c, i) {
-      circle(30.0) |> fill(c) |> translate_x(int.to_float(i) *. 30.0)
+      p.circle(30.0) |> p.fill(c) |> p.translate_x(int.to_float(i) *. 30.0)
     }),
   )
   // center
-  |> translate_x(-45.0)
+  |> p.translate_x(-45.0)
 }
 
 // Web component example.
 // Used together with `define_web_component`.
 // NOTE: this is nothing special with this picture.
 // The interesting things happen inside of `index.html`.
-pub fn web_component_example() -> Picture {
-  text("<paint-canvas>", 10)
-  |> translate_xy(20.0, 40.0)
+pub fn web_component_example() -> p.Picture {
+  p.text("<paint-canvas>", 10)
+  |> p.translate_xy(20.0, 40.0)
 }
 
 // An example of the interactive API
 // used together with the function
-// `interact_on_canvas(init, update, view, canvas_id)`
+// `canvas.interact(init, update, view, canvas_id)`
 // ------------------------
 
 /// The state of the game
@@ -157,7 +153,7 @@ const player_length = 40.0
 
 /// The "init" function is used to setup the initial
 /// state of the game
-pub fn init(config: CanvasConfig) -> State {
+pub fn init(config: canvas.Config) -> State {
   State(
     x: 10.0,
     y: config.height -. ground_height -. player_length,
@@ -173,39 +169,43 @@ pub fn init(config: CanvasConfig) -> State {
 
 /// A pure function that takes the state of the game
 /// and creates an image to present to the canvas
-pub fn view(state: State) -> Picture {
+pub fn view(state: State) -> p.Picture {
   let ground =
-    rectangle(state.width, ground_height)
-    |> fill(colour_rgb(0, 0, 0))
-    |> translate_y(state.height -. ground_height)
+    p.rectangle(state.width, ground_height)
+    |> p.fill(p.colour_rgb(0, 0, 0))
+    |> p.translate_y(state.height -. ground_height)
 
   let pos_text =
     "(" <> float.to_string(state.x) <> ", " <> float.to_string(state.y) <> ")"
 
   let player =
-    combine([square(player_length), text(pos_text, 10) |> translate_y(-5.0)])
-    |> translate_xy(state.x, state.y)
+    p.combine([
+      p.square(player_length),
+      p.text(pos_text, 10) |> p.translate_y(-5.0),
+    ])
+    |> p.translate_xy(state.x, state.y)
 
-  let mouse = circle(10.0) |> translate_xy(state.mouse_x, state.mouse_y)
+  let mouse = p.circle(10.0) |> p.translate_xy(state.mouse_x, state.mouse_y)
 
-  combine([
+  p.combine([
     mouse,
     player,
     ground,
-    text("Press <space> to jump", 10) |> translate_xy(5.0, 15.0),
-    text(float.to_string(state.time) <> " ms", 10) |> translate_xy(5.0, 30.0),
+    p.text("Press <space> to jump", 10) |> p.translate_xy(5.0, 15.0),
+    p.text(float.to_string(state.time) <> " ms", 10)
+      |> p.translate_xy(5.0, 30.0),
   ])
 }
 
 /// "update" should be a pure function that given
 /// some state and and an event produces a new state
-pub fn update(state: State, event: Event) -> State {
+pub fn update(state: State, event: event.Event) -> State {
   let speed = 1.0
   let gravity_acceleration = 0.5
   let ground_level = state.height -. ground_height
 
   case event {
-    EventTick(time) ->
+    event.Tick(time) ->
       State(
         ..state,
         time: time,
@@ -234,20 +234,20 @@ pub fn update(state: State, event: Event) -> State {
           False -> float.min(state.dy, 0.0)
         },
       )
-    EventKeyDown(key) ->
+    event.KeyboardPressed(key) ->
       case key {
         // Move the player into the air if we press space
-        KeySpace -> State(..state, dy: -7.0)
+        event.KeySpace -> State(..state, dy: -7.0)
         _ -> state
       }
-    EventMouseMovement(x, y) -> {
+    event.MouseMoved(x, y) -> {
       State(..state, mouse_x: x, mouse_y: y)
     }
-    EventMouseButtonPressed(button) -> {
+    event.MouseButtonPressed(button) -> {
       io.println("Button '" <> string.inspect(button) <> "' was pressed!")
       state
     }
-    EventMouseButtonReleased(button) -> {
+    event.MouseButtonReleased(button) -> {
       io.println("Button '" <> string.inspect(button) <> "' was released!")
       state
     }
