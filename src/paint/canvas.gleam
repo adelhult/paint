@@ -260,8 +260,8 @@ pub fn interact(
       },
     )
   }
-  create_mouse_button_handler("mousedown", event.MouseButtonPressed, True)
-  create_mouse_button_handler("mouseup", event.MouseButtonReleased, False)
+  create_mouse_button_handler("mousedown", event.MousePressed, True)
+  create_mouse_button_handler("mouseup", event.MouseReleased, False)
 
   impl_canvas.setup_request_animation_frame(get_tick_func(
     ctx,

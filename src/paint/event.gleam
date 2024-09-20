@@ -15,13 +15,13 @@ pub type Event {
   /// the `x` and `y` value for the mouse position.
   MouseMoved(Float, Float)
   /// Triggered when a mouse button is pressed
-  MouseButtonPressed(MouseButton)
+  MousePressed(MouseButton)
   /// Triggered when a mouse button is released.
   ///
   /// Note, on the web you might encounter issues where the
   /// release event for the right mouse button is not triggered
   /// because of the context menu.
-  MouseButtonReleased(MouseButton)
+  MouseReleased(MouseButton)
 }
 
 pub type Key {
