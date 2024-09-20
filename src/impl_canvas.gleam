@@ -23,12 +23,13 @@ pub type MouseEvent
 @external(javascript, "./impl_canvas_bindings.mjs", "mouse_pos")
 pub fn mouse_pos(ctx: RenderingContext2D, event: MouseEvent) -> #(Float, Float)
 
-@external(javascript, "./impl_canvas_bindings.mjs", "check_mouse_buttons")
-pub fn check_mouse_buttons(
+@external(javascript, "./impl_canvas_bindings.mjs", "check_mouse_button")
+pub fn check_mouse_button(
   event: MouseEvent,
   previous_event: MouseEvent,
+  button_index: Int,
   check_pressed check_pressed: Bool,
-) -> Int
+) -> Bool
 
 @external(javascript, "./impl_canvas_bindings.mjs", "get_width")
 pub fn get_width(ctx: RenderingContext2D) -> Float

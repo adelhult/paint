@@ -191,22 +191,24 @@ pub type Event {
   EventKeyDown(Key)
   /// Triggered when a key is released
   EventKeyUp(Key)
-  // Triggered when the mouse is moved. Contains
-  // the `x` and `y` value for the mouse position.
+  /// Triggered when the mouse is moved. Contains
+  /// the `x` and `y` value for the mouse position.
   EventMouseMovement(Float, Float)
+  /// Triggered when a mouse button is pressed
   EventMouseButtonPressed(MouseButton)
+  /// Triggered when a mouse button is released.
+  ///
+  /// Note, on the web you might encounter issues where the
+  /// release event for the right mouse button is not triggered
+  /// because of the context menu.
   EventMouseButtonReleased(MouseButton)
 }
 
 pub type MouseButton {
   MouseButtonLeft
   MouseButtonRight
-  /// The scrollwheel button
+  /// The scroll wheel button
   MouseButtonMiddle
-  /// Usually the "back" button
-  MouseButton4
-  /// Usually the "forward" button
-  MouseButton5
 }
 
 pub type Key {
@@ -284,25 +286,45 @@ pub fn interact_on_canvas(
     impl_canvas.setup_input_handler(
       event_name,
       fn(event: impl_canvas.MouseEvent) {
+        // Read the previous state of the mouse
         let previous_event_id = "PAINT_PREVIOUS_MOUSE_INPUT_FOR_" <> selector
         let previous_event = impl_canvas.get_global(previous_event_id)
+        // Save this state
         impl_canvas.set_global(event, previous_event_id)
 
-        let button =
-          impl_canvas.check_mouse_buttons(event, previous_event, check_pressed)
-
-        let button = case button {
-          1 -> MouseButtonLeft
-          2 -> MouseButtonRight
-          4 -> MouseButtonMiddle
-          8 -> MouseButton4
-          16 -> MouseButton5
-          _ -> panic as "these are the only allowed buttons according web API"
+        // A utility to check which buttons was just pressed/released
+        let check_button = fn(i) {
+          impl_canvas.check_mouse_button(
+            event,
+            previous_event,
+            i,
+            check_pressed,
+          )
         }
 
-        let new_state =
-          update(impl_canvas.get_global(selector), constructor(button))
-        impl_canvas.set_global(new_state, selector)
+        let trigger_update = fn(button) {
+          let new_state =
+            update(impl_canvas.get_global(selector), constructor(button))
+          impl_canvas.set_global(new_state, selector)
+        }
+
+        // Note: it is rather rare, but it seems that multiple buttons
+        // can be pressed in the very same MouseEvent, so we may need to
+        // trigger multiple events at once.
+        case check_button(0) {
+          True -> trigger_update(MouseButtonLeft)
+          False -> Nil
+        }
+        case check_button(1) {
+          True -> trigger_update(MouseButtonRight)
+          False -> Nil
+        }
+        case check_button(2) {
+          True -> trigger_update(MouseButtonMiddle)
+          False -> Nil
+        }
+
+        Nil
       },
     )
   }
