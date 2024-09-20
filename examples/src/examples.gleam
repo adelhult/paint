@@ -243,11 +243,11 @@ pub fn update(state: State, event: event.Event) -> State {
     event.MouseMoved(x, y) -> {
       State(..state, mouse_x: x, mouse_y: y)
     }
-    event.MouseButtonPressed(button) -> {
+    event.MousePressed(button) -> {
       io.println("Button '" <> string.inspect(button) <> "' was pressed!")
       state
     }
-    event.MouseButtonReleased(button) -> {
+    event.MouseReleased(button) -> {
       io.println("Button '" <> string.inspect(button) <> "' was released!")
       state
     }
