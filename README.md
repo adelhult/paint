@@ -16,10 +16,10 @@ import paint/canvas
 
 fn main() {
   let my_picture = p.combine([
-    p.circle(50.0),
-    p.circle(30.0) |> p.fill(p.colour_rgb(0, 200, 200)),
-    p.rectangle(100.0, 50.0) |> p.rotate(p.angle_deg(30.0)),
-    p.text("Hello world", 20) |> p.translate_y(-65.0),
+    p.circle(30.0),
+    p.circle(20.0) |> p.fill(p.colour_rgb(0, 200, 200)),
+    p.rectangle(50.0, 30.0) |> p.rotate(p.angle_deg(30.0)),
+    p.text("Hello world", 10) |> p.translate_y(-35.0),
   ])
 
   canvas.display(fn(_: canvas.Config) { my_picture }, "#canvas_id")
