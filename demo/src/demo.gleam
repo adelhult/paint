@@ -19,6 +19,7 @@ import examples_code
 import gleam/bool
 import gleam/dict.{type Dict}
 import gleam/int
+import gleam/io
 import gleam/list
 import gleam/string
 import lustre
@@ -27,7 +28,6 @@ import lustre/element.{type Element, keyed, text}
 import lustre/element/html.{button, div, h1, h2, hr, p, pre}
 import lustre/event.{on_click}
 import paint
-import paint/canvas
 
 // Convert a file path for an example into a heading
 // "my_example.gleam" => "My example"
@@ -76,14 +76,6 @@ fn highlight(code code: String) -> element.Element(a) {
   element.element("highlighted-code", [attribute.attribute("code", code)], [])
 }
 
-pub fn main() {
-  canvas.define_web_component()
-  let app = lustre.simple(init, update, view)
-  let assert Ok(_) = lustre.start(app, "#app", Nil)
-
-  Nil
-}
-
 type Example {
   Example(
     title: String,
@@ -93,15 +85,7 @@ type Example {
   )
 }
 
-type Model {
-  Model(examples: List(Example), show_source_code: Bool)
-}
-
-type Msg {
-  ToggleSourceCode
-}
-
-fn init(_flags) {
+pub fn view() {
   let refs = get_references_by_filename()
   let ref_to_example = fn(
     refs: Dict(String, examples_code.Reference),
@@ -121,7 +105,7 @@ fn init(_flags) {
     )
   }
 
-  Model(show_source_code: True, examples: [
+  let examples = [
     ref_to_example(refs, "blank.gleam", blank.blank_example()),
     ref_to_example(refs, "circle.gleam", circle.circle_example()),
     ref_to_example(refs, "arc.gleam", arc.arc_example()),
@@ -143,51 +127,81 @@ fn init(_flags) {
       community_colour.community_colour_example(),
     ),
     ref_to_example(refs, "readme.gleam", readme.readme_example()),
+  ]
+  html.html([], [
+    default_head(),
+    html.body([], [
+      html.main([], [
+        h1([], [text("Gleam Paint Examples")]),
+        p([], [text("Make drawings, animations, and games with Gleam")]),
+        hr([]),
+        keyed(
+          div([class("example-list")], _),
+          list.map(examples, fn(example) {
+            #(example.title, view_example(example))
+          }),
+        ),
+      ]),
+    ]),
   ])
 }
 
-fn view_example(example: Example, show_source show_source: Bool) -> Element(Msg) {
-  let Example(title, description, source_code, picture) = example
-
-  div([class("example")], [
-    h2([], [text(title)]),
-    div([class("text")], [
-      p([], [text(description)]),
-      case show_source {
-        True -> highlight(code: source_code)
-        False -> element.none()
-      },
+fn default_head() {
+  html.head([], [
+    html.meta([attribute.attribute("charset", "UTF-8")]),
+    html.meta([
+      attribute.name("viewport"),
+      attribute.attribute("content", "width=device-width, initial-scale=1.0"),
     ]),
-    div([class("canvas")], [paint_canvas(picture, [])]),
-  ])
-}
-
-fn update(model: Model, msg: Msg) {
-  case msg {
-    ToggleSourceCode ->
-      Model(..model, show_source_code: bool.negate(model.show_source_code))
-  }
-}
-
-fn view(model: Model) {
-  html.main([], [
-    h1([], [text("Gleam Paint Examples")]),
-    p([], [text("Make drawings, animations, and games with Gleam")]),
-    button([event.on_click(ToggleSourceCode)], [
-      text(case model.show_source_code {
-        True -> "Hide source code"
-        False -> "Show source code"
-      }),
-    ]),
-    hr([]),
-    keyed(
-      div([class("example-list")], _),
-      list.map(model.examples, fn(example) {
-        #(
-          example.title,
-          view_example(example, show_source: model.show_source_code),
-        )
-      }),
+    google_fonts(
+      "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lexend:wght@100..900&display=swap",
     ),
+    js_module("./highlight.js"),
+    css_stylesheet("./style.css"),
+    setup_paint(),
+  ])
+}
+
+// Rather hacky, this can be a lot cleaner
+// if you are making a SPA with ordinary Lustre
+// and not using the SSG.
+fn setup_paint() -> Element(a) {
+  html.script([attribute.src("./setup_paint.js"), attribute.type_("module")], "")
+}
+
+fn google_fonts(href: String) -> Element(a) {
+  element.fragment([
+    html.link([
+      attribute.rel("preconnect"),
+      attribute.href("https://fonts.googleapis.com"),
+    ]),
+    html.link([
+      attribute.rel("preconnect"),
+      attribute.href("https://fonts.gstatic.com"),
+      attribute.attribute("crossorigin", "crossorigin"),
+    ]),
+    html.link([attribute.rel("stylesheet"), attribute.href(href)]),
+  ])
+}
+
+fn js_module(src: String) -> Element(a) {
+  html.script([attribute.src(src), attribute.type_("module")], "")
+}
+
+fn css_stylesheet(href: String) -> Element(a) {
+  html.link([attribute.rel("stylesheet"), attribute.href(href)])
+}
+
+fn view_example(example: Example) -> Element(Nil) {
+  let Example(title, description, source_code, picture) = example
+  div([], [
+    div([class("example")], [
+      h2([], [text(title)]),
+      div([class("text")], [
+        p([], [text(description)]),
+        highlight(code: source_code),
+      ]),
+      div([class("canvas")], [paint_canvas(picture, [])]),
+    ]),
   ])
 }

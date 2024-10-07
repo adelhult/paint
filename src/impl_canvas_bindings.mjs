@@ -1,56 +1,57 @@
-class PaintCanvas extends HTMLElement {
-  // Open an issue if you are in need of any other attributes :)
-  static observedAttributes = ["width", "height", "style"];
-
-  constructor() {
-    super();
-    // Create a canvas
-    this.canvas = document.createElement("canvas");
-    const style = document.createElement("style");
-    style.textContent = `
-      :host {
-        display: inline-block;
-      }
-    `;
-    this.shadow = this.attachShadow({ mode: "open" });
-    this.shadow.appendChild(style);
-    this.shadow.appendChild(this.canvas);
-    this.ctx = this.canvas.getContext("2d");
-  }
-
-  // forward any given attributes to the canvas
-  attributeChangedCallback(name, _oldValue, newValue) {
-    this.canvas.setAttribute(name, newValue);
-  }
-
-  set picture(value) {
-    this.ctx.reset();
-    const display =
-      window.PAINT_STATE[
-        "display_on_rendering_context_with_default_drawing_state"
-      ];
-    display(value, this.ctx);
-  }
-
-  set width(value) {
-    this.canvas.width = value;
-  }
-
-  set height(value) {
-    this.canvas.height = value;
-  }
-
-  get width() {
-    return this.canvas.width;
-  }
-
-  get height() {
-    return this.canvas.height;
-  }
-}
-
 export function define_web_component() {
-  window.customElements.define("paint-canvas", PaintCanvas);
+  window.customElements.define(
+    "paint-canvas",
+    class extends HTMLElement {
+      // Open an issue if you are in need of any other attributes :)
+      static observedAttributes = ["width", "height", "style"];
+
+      constructor() {
+        super();
+        // Create a canvas
+        this.canvas = document.createElement("canvas");
+        const style = document.createElement("style");
+        style.textContent = `
+        :host {
+          display: inline-block;
+        }
+      `;
+        this.shadow = this.attachShadow({ mode: "open" });
+        this.shadow.appendChild(style);
+        this.shadow.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext("2d");
+      }
+
+      // forward any given attributes to the canvas
+      attributeChangedCallback(name, _oldValue, newValue) {
+        this.canvas.setAttribute(name, newValue);
+      }
+
+      set picture(value) {
+        this.ctx.reset();
+        const display =
+          window.PAINT_STATE[
+            "display_on_rendering_context_with_default_drawing_state"
+          ];
+        display(value, this.ctx);
+      }
+
+      set width(value) {
+        this.canvas.width = value;
+      }
+
+      set height(value) {
+        this.canvas.height = value;
+      }
+
+      get width() {
+        return this.canvas.width;
+      }
+
+      get height() {
+        return this.canvas.height;
+      }
+    },
+  );
 }
 
 export function get_rendering_context(selector) {

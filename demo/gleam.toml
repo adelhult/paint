@@ -10,3 +10,4 @@ lustre = ">= 4.5.0 and < 5.0.0"
 [dev-dependencies]
 lustre_dev_tools = ">= 1.5.6 and < 2.0.0"
 reference = { path = "../../reference" }
+lustre_ssg = ">= 0.8.3 and < 1.0.0"
