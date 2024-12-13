@@ -4,16 +4,13 @@
 //// - `define_web_component` (an alternative to `display` using custom web components, useful if you are using a web framework like Lustre)
 //// - `interact` (allows you to make animations and interactive programs)
 
-import gleam/int
 import gleam/option.{type Option, None, Some}
-import gleam_community/colour
 import paint.{translate_xy}
-import paint/event.{type Event}
+import paint/event.{type Event, type Next, Continue, Stop}
+import paint/internal/draw.{default_drawing_state, display_on_rendering_context}
 import paint/internal/impl_canvas
-import paint/internal/types.{
-  type Picture, Arc, Blank, Combine, Fill, FontProperties, NoStroke, Polygon,
-  Radians, Rotate, Scale, SolidStroke, Stroke, Text, Translate,
-}
+import paint/internal/impl_rendering_ctx
+import paint/internal/types.{type Picture}
 
 /// The configuration of the "canvas"
 pub type Config {
@@ -27,120 +24,13 @@ pub type Config {
 /// ```
 pub fn display(init: fn(Config) -> Picture, selector: String) {
   let ctx = impl_canvas.get_rendering_context(selector)
-  impl_canvas.reset(ctx)
+  impl_rendering_ctx.reset(ctx)
   let picture =
-    init(Config(impl_canvas.get_width(ctx), impl_canvas.get_height(ctx)))
+    init(Config(
+      impl_rendering_ctx.get_width(ctx),
+      impl_rendering_ctx.get_height(ctx),
+    ))
   display_on_rendering_context(picture, ctx, default_drawing_state)
-}
-
-/// Additional state used when drawing
-/// (note that the fill and stroke color as well as the stroke width
-/// is stored inside of the context)
-type DrawingState {
-  DrawingState(fill: Bool, stroke: Bool)
-}
-
-const default_drawing_state = DrawingState(fill: False, stroke: True)
-
-fn display_on_rendering_context(
-  picture: Picture,
-  ctx: impl_canvas.RenderingContext2D,
-  state: DrawingState,
-) {
-  case picture {
-    Blank -> Nil
-
-    Text(text, properties) -> {
-      let FontProperties(size_px, font_family) = properties
-      impl_canvas.save(ctx)
-      impl_canvas.text(
-        ctx,
-        text,
-        int.to_string(size_px) <> "px " <> font_family,
-      )
-      impl_canvas.restore(ctx)
-    }
-
-    Polygon(points, closed) -> {
-      impl_canvas.polygon(ctx, points, closed, state.fill, state.stroke)
-    }
-
-    Arc(radius, start, end) -> {
-      let Radians(start_radians) = start
-      let Radians(end_radians) = end
-      impl_canvas.arc(
-        ctx,
-        radius,
-        start_radians,
-        end_radians,
-        state.fill,
-        state.stroke,
-      )
-    }
-
-    Fill(p, colour) -> {
-      impl_canvas.save(ctx)
-      impl_canvas.set_fill_colour(ctx, colour.to_css_rgba_string(colour))
-      display_on_rendering_context(p, ctx, DrawingState(..state, fill: True))
-      impl_canvas.restore(ctx)
-    }
-
-    Stroke(p, stroke) -> {
-      case stroke {
-        NoStroke ->
-          display_on_rendering_context(
-            p,
-            ctx,
-            DrawingState(..state, stroke: False),
-          )
-        SolidStroke(color, width) -> {
-          impl_canvas.save(ctx)
-          impl_canvas.set_stroke_color(ctx, colour.to_css_rgba_string(color))
-          impl_canvas.set_line_width(ctx, width)
-          display_on_rendering_context(
-            p,
-            ctx,
-            DrawingState(..state, stroke: True),
-          )
-          impl_canvas.restore(ctx)
-        }
-      }
-    }
-
-    Translate(p, vec) -> {
-      let #(x, y) = vec
-      impl_canvas.save(ctx)
-      impl_canvas.translate(ctx, x, y)
-      display_on_rendering_context(p, ctx, state)
-      impl_canvas.restore(ctx)
-    }
-
-    Scale(p, vec) -> {
-      let #(x, y) = vec
-      impl_canvas.save(ctx)
-      impl_canvas.scale(ctx, x, y)
-      display_on_rendering_context(p, ctx, state)
-      impl_canvas.restore(ctx)
-    }
-
-    Rotate(p, angle) -> {
-      let Radians(rad) = angle
-      impl_canvas.save(ctx)
-      impl_canvas.rotate(ctx, rad)
-      display_on_rendering_context(p, ctx, state)
-      impl_canvas.restore(ctx)
-    }
-
-    Combine(pictures) -> {
-      case pictures {
-        [] -> Nil
-        [p, ..ps] -> {
-          display_on_rendering_context(p, ctx, state)
-          display_on_rendering_context(Combine(ps), ctx, state)
-        }
-      }
-    }
-  }
 }
 
 /// Animations, interactive applications and tiny games can be built using the
@@ -154,9 +44,9 @@ fn display_on_rendering_context(
 ///   0
 /// }
 ///
-/// fn update(state: State, event: event.Event) -> State {
+/// fn update(state: State, event: Event) -> State {
 ///   case event {
-///     event.Tick(_) -> state + 1
+///     Tick(_) -> state + 1
 ///     _ -> state
 ///   }
 /// }
@@ -175,9 +65,45 @@ pub fn interact(
   view: fn(state) -> Picture,
   selector: String,
 ) {
+  let ignore_output = fn(_) { Nil }
+  interact_with_output(
+    init,
+    fn(state, event) { Continue(update(state, event)) },
+    view,
+    selector,
+    ignore_output,
+  )
+}
+
+/// Works the same as the `interact` function but wraps the update
+/// in `Next(state, output)` and takes an additional
+/// callback `on_complete` that allows you to access the output when
+/// `Stop(output)` is returned from your update function.
+///
+/// For example:
+/// ```
+/// // ...
+/// fn update(event, state) {
+///   // terminate directly with some value
+///   Stop("some output")
+/// }
+///
+/// use output <- interact_with_output(init, update, view, "#mycanvas")
+/// let assert "Some output" = output
+/// ```
+pub fn interact_with_output(
+  init: fn(Config) -> state,
+  update: fn(state, Event) -> Next(state, output),
+  view: fn(state) -> Picture,
+  selector: String,
+  on_complete: fn(output) -> Nil,
+) {
   let ctx = impl_canvas.get_rendering_context(selector)
   let initial_state =
-    init(Config(impl_canvas.get_width(ctx), impl_canvas.get_height(ctx)))
+    init(Config(
+      impl_rendering_ctx.get_width(ctx),
+      impl_rendering_ctx.get_height(ctx),
+    ))
 
   impl_canvas.set_global(initial_state, selector)
 
@@ -265,6 +191,7 @@ pub fn interact(
 
   impl_canvas.setup_request_animation_frame(get_tick_func(
     ctx,
+    on_complete,
     view,
     update,
     selector,
@@ -294,24 +221,30 @@ fn parse_key_code(key_code: Int) -> Option(event.Key) {
 
 // Gleam does not have recursive let bindings, so I need
 // to do this workaround...
-fn get_tick_func(ctx, view, update, selector) {
+fn get_tick_func(ctx, on_complete, view, update, selector) {
   fn(time) {
     let current_state = impl_canvas.get_global(selector)
 
     // Trigger a tick event before drawing
-    let new_state = update(current_state, event.Tick(time))
-    impl_canvas.set_global(new_state, selector)
+    case update(current_state, event.Tick(time)) {
+      Stop(result) -> {
+        on_complete(result)
+      }
+      Continue(new_state) -> {
+        impl_canvas.set_global(new_state, selector)
 
-    // Create the picture
-    let picture = view(new_state)
+        // Create the picture
+        let picture = view(new_state)
 
-    // Render the picture on the canvas
-    impl_canvas.reset(ctx)
-    display_on_rendering_context(picture, ctx, default_drawing_state)
-    impl_canvas.setup_request_animation_frame(
-      // call myself
-      get_tick_func(ctx, view, update, selector),
-    )
+        // Render the picture on the canvas
+        impl_rendering_ctx.reset(ctx)
+        display_on_rendering_context(picture, ctx, default_drawing_state)
+        impl_canvas.setup_request_animation_frame(
+          // call myself
+          get_tick_func(ctx, on_complete, view, update, selector),
+        )
+      }
+    }
   }
 }
 
@@ -352,6 +285,7 @@ pub fn define_web_component() -> Nil {
   )
 }
 
+// FIXME: move to a more general place maybe?
 /// Utility to set the origin in the center of the canvas
 pub fn center(picture: Picture) -> fn(Config) -> Picture {
   fn(config) {

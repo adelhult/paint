@@ -1,3 +1,5 @@
+//// Types describing the main Paint DSL
+
 import gleam_community/colour.{type Colour}
 
 pub type Picture {
