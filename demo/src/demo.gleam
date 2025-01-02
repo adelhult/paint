@@ -178,27 +178,41 @@ fn update(model: Model, msg: Msg) {
 }
 
 fn view(model: Model) {
-  html.main([], [
-    h1([], [text("Gleam Paint Examples")]),
-    p([], [text("Make drawings, animations, and games with Gleam")]),
-    button([event.on_click(ToggleSourceCode)], [
-      text(case model.show_source_code {
-        True -> "Hide source code"
-        False -> "Show source code"
-      }),
+  div([], [
+    div([class("logo-background")], [
+      logo(),
+      text("Make drawings, animations, and games with Gleam"),
     ]),
-    hr([]),
-    keyed(
-      div([class("example-list")], _),
-      list.flat_map(model.examples, fn(category) {
-        let #(category_name, category_examples) = category
-        list.map(category_examples, fn(example) {
-          #(
-            example.title,
-            view_example(example, show_source: model.show_source_code),
-          )
-        })
-      }),
+    html.main([], [
+      p([], []),
+      button([event.on_click(ToggleSourceCode)], [
+        text(case model.show_source_code {
+          True -> "Hide source code"
+          False -> "Show source code"
+        }),
+      ]),
+      hr([]),
+      keyed(
+        div([class("example-list")], _),
+        list.flat_map(model.examples, fn(category) {
+          let #(category_name, category_examples) = category
+          list.map(category_examples, fn(example) {
+            #(
+              example.title,
+              view_example(example, show_source: model.show_source_code),
+            )
+          })
+        }),
+      ),
+    ]),
+  ])
+}
+
+fn logo() -> Element(a) {
+  html.img([
+    class("logo"),
+    attribute.src(
+      "https://raw.githubusercontent.com/adelhult/paint/refs/heads/main/media/logo.svg",
     ),
   ])
 }
