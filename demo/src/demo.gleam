@@ -94,7 +94,7 @@ type Example {
 }
 
 type Model {
-  Model(examples: List(Example), show_source_code: Bool)
+  Model(examples: List(#(String, List(Example))), show_source_code: Bool)
 }
 
 type Msg {
@@ -122,27 +122,35 @@ fn init(_flags) {
   }
 
   Model(show_source_code: True, examples: [
-    ref_to_example(refs, "blank.gleam", blank.blank_example()),
-    ref_to_example(refs, "circle.gleam", circle.circle_example()),
-    ref_to_example(refs, "arc.gleam", arc.arc_example()),
-    ref_to_example(refs, "polygon.gleam", polygon.polygon_example()),
-    ref_to_example(refs, "lines.gleam", lines.lines_example()),
-    ref_to_example(refs, "rectangle.gleam", rectangle.rectangle_example()),
-    ref_to_example(refs, "square.gleam", square.square_example()),
-    ref_to_example(refs, "text.gleam", text.text_example()),
-    ref_to_example(refs, "fill.gleam", fill.fill_example()),
-    ref_to_example(refs, "stroke.gleam", stroke.stroke_example()),
-    ref_to_example(refs, "translate.gleam", translate.translate_example()),
-    ref_to_example(refs, "scale.gleam", scale.scale_example()),
-    ref_to_example(refs, "rotate.gleam", rotate.rotate_example()),
-    ref_to_example(refs, "combine.gleam", combine.combine_example()),
-    ref_to_example(refs, "concat.gleam", concat.concat_example()),
-    ref_to_example(
-      refs,
-      "community_colour.gleam",
-      community_colour.community_colour_example(),
-    ),
-    ref_to_example(refs, "readme.gleam", readme.readme_example()),
+    #("Shapes", [
+      ref_to_example(refs, "blank.gleam", blank.blank_example()),
+      ref_to_example(refs, "circle.gleam", circle.circle_example()),
+      ref_to_example(refs, "arc.gleam", arc.arc_example()),
+      ref_to_example(refs, "polygon.gleam", polygon.polygon_example()),
+      ref_to_example(refs, "lines.gleam", lines.lines_example()),
+      ref_to_example(refs, "rectangle.gleam", rectangle.rectangle_example()),
+      ref_to_example(refs, "square.gleam", square.square_example()),
+      ref_to_example(refs, "text.gleam", text.text_example()),
+    ]),
+    #("Style", [
+      ref_to_example(refs, "fill.gleam", fill.fill_example()),
+      ref_to_example(refs, "stroke.gleam", stroke.stroke_example()),
+      ref_to_example(
+        refs,
+        "community_colour.gleam",
+        community_colour.community_colour_example(),
+      ),
+    ]),
+    #("Transform", [
+      ref_to_example(refs, "translate.gleam", translate.translate_example()),
+      ref_to_example(refs, "scale.gleam", scale.scale_example()),
+      ref_to_example(refs, "rotate.gleam", rotate.rotate_example()),
+    ]),
+    #("Combine", [
+      ref_to_example(refs, "combine.gleam", combine.combine_example()),
+      ref_to_example(refs, "concat.gleam", concat.concat_example()),
+    ]),
+    #("Other", [ref_to_example(refs, "readme.gleam", readme.readme_example())]),
   ])
 }
 
@@ -182,11 +190,14 @@ fn view(model: Model) {
     hr([]),
     keyed(
       div([class("example-list")], _),
-      list.map(model.examples, fn(example) {
-        #(
-          example.title,
-          view_example(example, show_source: model.show_source_code),
-        )
+      list.flat_map(model.examples, fn(category) {
+        let #(category_name, category_examples) = category
+        list.map(category_examples, fn(example) {
+          #(
+            example.title,
+            view_example(example, show_source: model.show_source_code),
+          )
+        })
       }),
     ),
   ])
