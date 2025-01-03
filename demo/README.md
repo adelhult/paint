@@ -1,5 +1,3 @@
-A few examples and a short introduction to the API.
-
 Visit the version [hosted online](https://adelhult.github.io/paint/).
 
 ## Developing
@@ -16,10 +14,10 @@ gleam run -m lustre/dev build app --minify
 
 Update the referenced code snippets:
 ```sh
-gleam run -m reference src/examples src/examples_code.gleam
+gleam run -m reference -- --allow-all-ext src/examples src/examples_code.gleam
 ```
 
 Add a new example:
 - Add a file in `src/examples/`
 - Add the example picture to `demo.gleam`
-- run `gleam run -m reference src/examples src/examples_code.gleam`
+- run `reference` tool as mentioned above

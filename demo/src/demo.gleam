@@ -1,3 +1,17 @@
+import gleam/bool
+import gleam/dict.{type Dict}
+import gleam/int
+import gleam/list
+import gleam/string
+import lustre
+import lustre/attribute.{class}
+import lustre/element.{type Element, keyed, text}
+import lustre/element/html.{button, div, h1, h2, h3, hr, p}
+import lustre/event
+import paint
+import paint/canvas
+
+// Example pictures
 import examples/arc
 import examples/blank
 import examples/circle
@@ -15,38 +29,10 @@ import examples/square
 import examples/stroke
 import examples/text
 import examples/translate
+
 import examples_code
 import getting_started
-import gleam/bool
-import gleam/dict.{type Dict}
-import gleam/int
-import gleam/list
-import gleam/string
-import lustre
-import lustre/attribute.{class}
-import lustre/element.{type Element, keyed, text}
-import lustre/element/html.{button, div, h1, h2, h3, hr, p, pre}
-import lustre/event.{on_click}
-import paint
-import paint/canvas
-
-// Convert a file path for an example into a heading
-// "my_example.gleam" => "My example"
-fn title_from_path(path: examples_code.Path) -> String {
-  let assert Ok(name) = list.last(path)
-  let assert Ok(#(name, _extension)) = string.split_once(name, on: ".")
-  let name = string.replace(name, each: "_", with: " ")
-  string.capitalise(name)
-}
-
-fn get_references_by_filename() -> Dict(String, examples_code.Reference) {
-  dict.from_list(
-    list.map(examples_code.references, fn(r) {
-      let assert Ok(filename) = list.last(r.path)
-      #(filename, r)
-    }),
-  )
-}
+import utils
 
 const canvas_width = 125
 
@@ -71,12 +57,6 @@ fn paint_canvas(
     ],
     [],
   )
-}
-
-fn highlight(code code: String) -> element.Element(a) {
-  div([class("code-snippet")], [
-    element.element("highlighted-code", [attribute.attribute("code", code)], []),
-  ])
 }
 
 pub fn main() {
@@ -109,7 +89,7 @@ type Msg {
 }
 
 fn init(_flags) {
-  let refs = get_references_by_filename()
+  let refs = utils.get_references_by_filename()
   let ref_to_example = fn(
     refs: Dict(String, examples_code.Reference),
     filename: String,
@@ -117,7 +97,7 @@ fn init(_flags) {
   ) {
     let assert Ok(r) = dict.get(refs, filename)
     Example(
-      title: title_from_path(r.path),
+      title: utils.title_from_path(r.path),
       description: r.module_doc,
       source_code: r.content,
       picture: picture
@@ -198,7 +178,7 @@ fn view_example(example: Example, show_source show_source: Bool) -> Element(a) {
         h3([], [text(title)]),
         div([class("text")], [
           p([], [text(description)]),
-          highlight(code: source_code),
+          utils.highlight(source_code, "gleam"),
         ]),
         div([class("canvas")], [paint_canvas(picture, [])]),
       ])
