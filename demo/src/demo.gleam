@@ -16,6 +16,7 @@ import examples/stroke
 import examples/text
 import examples/translate
 import examples_code
+import getting_started
 import gleam/bool
 import gleam/dict.{type Dict}
 import gleam/int
@@ -73,7 +74,9 @@ fn paint_canvas(
 }
 
 fn highlight(code code: String) -> element.Element(a) {
-  element.element("highlighted-code", [attribute.attribute("code", code)], [])
+  div([class("code-snippet")], [
+    element.element("highlighted-code", [attribute.attribute("code", code)], []),
+  ])
 }
 
 pub fn main() {
@@ -168,12 +171,17 @@ fn update(model: Model, msg: Msg) {
 }
 
 fn view_category(category: Category, show_source: Bool) {
+  let class_name = case show_source {
+    True -> "example-list"
+    False -> "example-list-compact"
+  }
+
   div([], [
-    h2([], [text(category.name)]),
     anchor(category.name),
+    h2([], [text(category.name)]),
     hr([]),
     keyed(
-      div([], _),
+      div([class(class_name)], _),
       list.map(category.examples, fn(example) {
         #(example.title, view_example(example, show_source))
       }),
@@ -184,17 +192,22 @@ fn view_category(category: Category, show_source: Bool) {
 fn view_example(example: Example, show_source show_source: Bool) -> Element(a) {
   let Example(title, description, source_code, picture) = example
 
-  div([class("example")], [
-    h3([], [text(title)]),
-    div([class("text")], [
-      p([], [text(description)]),
-      case show_source {
-        True -> highlight(code: source_code)
-        False -> element.none()
-      },
-    ]),
-    div([class("canvas")], [paint_canvas(picture, [])]),
-  ])
+  case show_source {
+    True ->
+      div([class("example")], [
+        h3([], [text(title)]),
+        div([class("text")], [
+          p([], [text(description)]),
+          highlight(code: source_code),
+        ]),
+        div([class("canvas")], [paint_canvas(picture, [])]),
+      ])
+    False ->
+      div([class("example-compact")], [
+        h3([], [text(title)]),
+        div([class("canvas")], [paint_canvas(picture, [])]),
+      ])
+  }
 }
 
 fn view(model: Model) {
@@ -203,39 +216,21 @@ fn view(model: Model) {
       logo(),
       text("Make drawings, animations, and games with Gleam"),
     ]),
-    html.main([], [links(), getting_started(), examples(model)]),
+    html.main([], [
+      links(),
+      getting_started_section(),
+      examples(model),
+      interactive_demo(),
+    ]),
   ])
 }
 
-fn getting_started() -> Element(a) {
+fn getting_started_section() -> Element(a) {
   div([], [
     anchor("getting-started"),
     h1([], [text("Getting Started")]),
-    intro_text(),
-  ])
-}
-
-fn intro_text() -> Element(a) {
-  div([], [
-    p([], [
-      text(
-        "Paint is a domain-specific language that allows you to create pictures and tiny interactive experiences with Gleam in a declarative fashion.",
-      ),
-    ]),
-    p([], [
-      text("Everything in Paint revolves around the "),
-      code("Picture"),
-      text(" type, pictures are made by combining multiple functions like "),
-      code("paint.circle"),
-      text(", "),
-      code("paint.rotate"),
-      text(" and "),
-      code("paint.fill"),
-      text(
-        ". You can learn more about this in the examples section further down this page. ",
-      ),
-      text("But first, follow this short setup guide to get started."),
-    ]),
+    getting_started.intro_text(),
+    getting_started.canvas_guide(),
   ])
 }
 
@@ -243,14 +238,15 @@ fn examples(model: Model) -> Element(Msg) {
   div([], [
     anchor("examples"),
     h1([], [text("Examples")]),
+    category_toc(model),
     button([event.on_click(ToggleSourceCode)], [
       text(case model.show_source_code {
-        True -> "Hide source code"
-        False -> "Show source code"
+        True -> "Compact view"
+        False -> "Detailed view"
       }),
     ]),
     keyed(
-      div([class("example-list")], _),
+      div([class("example-section")], _),
       list.map(model.examples, fn(category) {
         #(category.name, view_category(category, model.show_source_code))
       }),
@@ -258,8 +254,31 @@ fn examples(model: Model) -> Element(Msg) {
   ])
 }
 
-fn code(content: String) -> Element(a) {
-  html.code([], [text(content)])
+fn category_toc(model: Model) -> Element(Msg) {
+  div([], [
+    h3([], [text("Contents")]),
+    keyed(
+      html.ul([class("toc")], _),
+      list.map(model.examples, fn(category) {
+        #(
+          category.name,
+          html.a([attribute.href("#" <> category.name)], [
+            html.li([], [text(category.name)]),
+          ]),
+        )
+      }),
+    ),
+  ])
+}
+
+fn interactive_demo() -> Element(a) {
+  div([], [
+    anchor("interactive-demo"),
+    h1([], [text("Interactive demo")]),
+    text(
+      "TODO: I will try add a larger interactive app / game here with a link to a seperate GitHub repo",
+    ),
+  ])
 }
 
 fn logo() -> Element(a) {
@@ -277,10 +296,17 @@ fn anchor(name: String) -> Element(a) {
 
 fn links() -> Element(a) {
   let links_list = [
-    #("Getting started", "#getting-started"),
-    #("Examples", "#examples"),
-    #("Documentation", "https://hexdocs.pm/paint/"),
-    #("GitHub", "https://github.com/adelhult/paint"),
+    #(text("Getting started"), "#getting-started"),
+    #(text("Examples"), "#examples"),
+    #(text("Interactive demo"), "#interactive-demo"),
+    #(text("GitHub"), "https://github.com/adelhult/paint"),
+    #(
+      html.span([], [
+        text("Documentation"),
+        html.img([attribute.src("https://img.shields.io/badge/hex-docs-ffaff3")]),
+      ]),
+      "https://hexdocs.pm/paint/",
+    ),
   ]
 
   div([class("menu-container")], [
@@ -288,7 +314,7 @@ fn links() -> Element(a) {
       html.menu([], _),
       list.map(links_list, fn(link) {
         let #(name, address) = link
-        #(name, html.a([attribute.href(address)], [html.li([], [text(name)])]))
+        #(address, html.a([attribute.href(address)], [html.li([], [name])]))
       }),
     ),
   ])

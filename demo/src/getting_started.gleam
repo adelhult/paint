@@ -1,0 +1,107 @@
+import lustre/attribute
+import lustre/element.{type Element, text}
+import lustre/element/html.{div, p}
+
+fn code(content: String) -> Element(a) {
+  html.code([], [text(content)])
+}
+
+fn italic(content: String) -> Element(a) {
+  html.em([], [text(content)])
+}
+
+fn bold(content: String) -> Element(a) {
+  html.strong([], [text(content)])
+}
+
+fn guide(title: String, content: Element(a)) -> Element(a) {
+  html.details([], [html.summary([], [text(title)]), content])
+}
+
+pub fn canvas_guide() -> Element(a) {
+  div([], [
+    guide("Project using a HTML canvas", div([], [text("hej")])),
+    guide(
+      "Using Lustre (or other web frameworks)",
+      div([], [
+        p([], [
+          text(
+            "Paint offers a web components API that can be used together with web frameworks such as Lustre. You can read more about this ",
+          ),
+          html.a(
+            [
+              attribute.href(
+                "https://hexdocs.pm/paint/paint/canvas.html#define_web_component",
+              ),
+            ],
+            [text("in the documentation")],
+          ),
+        ]),
+      ]),
+    ),
+    guide(
+      "Interactive apps and games",
+      div([], [
+        p([], [
+          text(
+            "If you wish to create animations, interactive apps or games you should try using ",
+          ),
+          html.a(
+            [
+              attribute.href(
+                "https://hexdocs.pm/paint/paint/canvas.html#interact
+",
+              ),
+            ],
+            [text("Paint’s interactive API.")],
+          ),
+          text(
+            " You can follow the first guide using a HTML canvas to get started.",
+          ),
+        ]),
+        p([], [
+          text(
+            "Note: a limitation of the interactive API at the moment is that it does not include a system for managing arbitrary side effects (playing sounds, fetching data etc.). If you need this, you may wish to use Paint together with ",
+          ),
+          html.a([attribute.href("https://hexdocs.pm/lustre/")], [
+            text("Lustre"),
+          ]),
+          text(
+            " to manage state and effects instead.
+",
+          ),
+        ]),
+      ]),
+    ),
+  ])
+}
+
+pub fn intro_text() -> Element(a) {
+  div([], [
+    p([], [
+      text("Paint is a "),
+      italic("domain-specific language"),
+      text(
+        " that allows you to create pictures and tiny interactive experiences with Gleam in a ",
+      ),
+      italic("declarative"),
+      text(" fashion."),
+    ]),
+    p([], [
+      text("Everything in Paint revolves around the "),
+      html.a([attribute.href("https://hexdocs.pm/paint/paint.html#Picture")], [
+        code("Picture"),
+      ]),
+      text(" type, pictures are made by combining multiple functions like "),
+      code("circle"),
+      text(", "),
+      code("rotate"),
+      text(" and "),
+      code("fill"),
+      text(
+        ". You can learn more about this in the examples section further down this page. ",
+      ),
+      text("But first, follow one of these short setup guide to get started:"),
+    ]),
+  ])
+}
