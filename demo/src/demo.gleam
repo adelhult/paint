@@ -2,7 +2,6 @@ import gleam/bool
 import gleam/dict.{type Dict}
 import gleam/int
 import gleam/list
-import gleam/string
 import lustre
 import lustre/attribute.{class}
 import lustre/element.{type Element, keyed, text}

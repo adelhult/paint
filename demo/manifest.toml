@@ -33,7 +33,7 @@ packages = [
   { name = "mist", version = "4.0.4", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_http", "gleam_otp", "gleam_stdlib", "gleam_yielder", "glisten", "gramps", "hpack_erl", "logging"], otp_app = "mist", source = "hex", outer_checksum = "9F87DA535A75AA1B8B37D27E59B1E60A1BE34EB2CA63BE8B211D75E5D10BEEAF" },
   { name = "paint", version = "0.3.0", build_tools = ["gleam"], requirements = ["gleam_community_colour", "gleam_community_maths", "gleam_stdlib"], source = "local", path = ".." },
   { name = "platform", version = "1.0.0", build_tools = ["gleam"], requirements = [], otp_app = "platform", source = "hex", outer_checksum = "8339420A95AD89AAC0F82F4C3DB8DD401041742D6C3F46132A8739F6AEB75391" },
-  { name = "reference", version = "0.1.0", build_tools = ["gleam"], requirements = ["argv", "gleam_stdlib", "glint", "simplifile"], source = "local", path = "../../reference" },
+  { name = "reference_this", version = "0.2.0", build_tools = ["gleam"], requirements = ["argv", "gleam_stdlib", "glint", "simplifile"], otp_app = "reference_this", source = "hex", outer_checksum = "EBC34F1550A24F3B278C8CD9811A379A0B002288DFBDF275E4437B55EAE3B351" },
   { name = "repeatedly", version = "2.1.2", build_tools = ["gleam"], requirements = [], otp_app = "repeatedly", source = "hex", outer_checksum = "93AE1938DDE0DC0F7034F32C1BF0D4E89ACEBA82198A1FE21F604E849DA5F589" },
   { name = "simplifile", version = "2.2.0", build_tools = ["gleam"], requirements = ["filepath", "gleam_stdlib"], otp_app = "simplifile", source = "hex", outer_checksum = "0DFABEF7DC7A9E2FF4BB27B108034E60C81BEBFCB7AB816B9E7E18ED4503ACD8" },
   { name = "snag", version = "1.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "snag", source = "hex", outer_checksum = "7E9F06390040EB5FAB392CE642771484136F2EC103A92AE11BA898C8167E6E17" },
@@ -49,4 +49,4 @@ gleam_stdlib = { version = ">= 0.51.0 and < 1.0.0" }
 lustre = { version = ">= 4.5.0 and < 5.0.0" }
 lustre_dev_tools = { version = ">= 1.5.6 and < 2.0.0" }
 paint = { path = "./../" }
-reference = { path = "../../reference" }
+reference_this = { version = ">= 0.1.0 and < 1.0.0" }

@@ -14,10 +14,10 @@ gleam run -m lustre/dev build app --minify
 
 Update the referenced code snippets:
 ```sh
-gleam run -m reference -- --allow-all-ext src/examples src/examples_code.gleam
+gleam run -m reference_this -- --allow-all-ext src/examples src/examples_code.gleam
 ```
 
 Add a new example:
 - Add a file in `src/examples/`
 - Add the example picture to `demo.gleam`
-- run `reference` tool as mentioned above
+- run `reference_this` tool as mentioned above
