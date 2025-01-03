@@ -8,8 +8,11 @@ import gleam_community/colour
 import paint as p
 
 pub fn community_colour_example() -> p.Picture {
-  let assert Ok(semi_transparent) = colour.from_rgba(0.3, 0.3, 0.0, 0.5)
-  let colours = [colour.dark_red, colour.blue, semi_transparent]
+  let assert Ok(semi_transparent) = colour.from_rgba_hex_string("#A2E2DC7F")
+  let assert Ok(blue) = colour.from_rgb_hex_string("#99CAEB")
+  let assert Ok(green) = colour.from_rgb255(198, 211, 115)
+
+  let colours = [green, semi_transparent, blue]
 
   p.combine(
     list.index_map(colours, fn(c, i) {
