@@ -16,50 +16,54 @@
 //// allow_read = true
 //// ```
 
-import gleam/option.{type Option, None}
 import paint/internal/draw
 import paint/internal/impl_skia
 import paint/internal/types.{type Picture}
 
 /// The format and configuration
 pub type Format {
-  Png(width: Int, height: Int)
-  Jpeg(width: Int, height: Int)
-  Webp(width: Int, height: Int)
-  Svg(width: Int, height: Int)
-  Pdf(width: Int, height: Int, metadata: PdfMetadata)
+  Png
+  Jpeg
+  Webp
+  Svg
+  Pdf(metadata: PdfMetadata)
 }
 
 /// Additional metadata for a PDF document.
-/// For more details please see the [Skia documentation](https://api.skia.org/structSkPDF_1_1Metadata.html)
+/// For more details please see the [Skia documentation](https://api.skia.org/structSkPDF_1_1Metadata.html).
+/// To construct a PdfMetadata value without bothering setting every value, please make use of `pdf_metadata_defaults`:
+/// ```
+/// PdfMetadata(..pdf_metadata_defaults, title: Some("My cool picture"))
+/// ```
 pub type PdfMetadata {
   PdfMetadata(
-    title: Option(String),
-    author: Option(String),
-    subject: Option(String),
-    keywords: Option(String),
-    creator: Option(String),
-    producer: Option(String),
-    /// This string is expected to be a JavaScript [datestring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#datestring).
-    creation: Option(String),
-    /// This string is expected to be a JavaScript [datestring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#datestring).
-    modified: Option(String),
-    pdfa: Option(Bool),
-    encoding_quality: Option(Int),
+    title: String,
+    author: String,
+    subject: String,
+    keywords: String,
+    creator: String,
+    producer: String,
+    // FIXME: Seems like these dates are broken in the deno skia canvas library?
+    // /// This string is expected to be a JavaScript [datestring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#datestring),
+    // /// for example: `October 21 2015 07:28`.
+    //creation: Option(String),
+    // /// This string is expected to be a JavaScript [datestring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#datestring),
+    // /// for example: `October 21 2015 07:28`.
+    //modified: Option(String),
+    pdfa: Bool,
+    encoding_quality: Int,
   )
 }
 
 pub const pdf_metadata_defaults: PdfMetadata = PdfMetadata(
-  title: None,
-  author: None,
-  subject: None,
-  keywords: None,
-  creator: None,
-  producer: None,
-  creation: None,
-  modified: None,
-  pdfa: None,
-  encoding_quality: None,
+  title: "",
+  author: "",
+  subject: "",
+  keywords: "",
+  creator: "",
+  producer: "",
+  pdfa: False,
+  encoding_quality: 0,
 )
 
 fn format_to_string(format: Format) -> String {
@@ -72,31 +76,77 @@ fn format_to_string(format: Format) -> String {
   }
 }
 
-pub fn save_file(picture: Picture, format: Format, path: String) {
+pub fn save_file(
+  picture: Picture,
+  format: Format,
+  path: String,
+  width width: Int,
+  height height: Int,
+) {
   case format {
-    Jpeg(width, height) | Png(width, height) | Webp(width, height) -> {
-      let canvas = impl_skia.canvas_create(width, height)
-      let ctx = impl_skia.get_rendering_context(canvas)
-      draw.display_on_rendering_context(
-        picture,
-        ctx,
-        draw.default_drawing_state,
-      )
-      impl_skia.canvas_save(canvas, format_to_string(format), path)
-    }
-    Svg(width, height) -> {
-      let canvas = impl_skia.svg_canvas_create(width, height)
-      let ctx = impl_skia.svg_get_rendering_context(canvas)
-      draw.display_on_rendering_context(
-        picture,
-        ctx,
-        draw.default_drawing_state,
-      )
-      let completed_canvas = impl_skia.svg_canvas_complete(canvas)
-      impl_skia.svg_canvas_save(completed_canvas, path)
-    }
-    Pdf(width, height, metadata) -> {
-      Nil
-    }
+    Jpeg | Png | Webp ->
+      create_image(width, height, format_to_string(format), picture, path)
+    Svg -> create_svg(width, height, picture, path)
+    Pdf(metadata) -> create_pdf(width, height, metadata, picture, path)
   }
+}
+
+fn create_pdf(
+  width: Int,
+  height: Int,
+  metadata: PdfMetadata,
+  picture: Picture,
+  path: String,
+) -> Nil {
+  let PdfMetadata(
+    title,
+    author,
+    subject,
+    keywords,
+    creator,
+    producer,
+    //creation,
+    //modified,
+    pdfa,
+    encoding_quality,
+  ) = metadata
+
+  let doc =
+    impl_skia.pdf_create(
+      title,
+      author,
+      subject,
+      keywords,
+      creator,
+      producer,
+      //creation,
+      //modified,
+      pdfa,
+      encoding_quality,
+    )
+  let ctx = impl_skia.pdf_new_page(doc, width, height)
+  draw.display_on_rendering_context(picture, ctx, draw.default_drawing_state)
+  impl_skia.pdf_end_page(doc)
+  impl_skia.pdf_save(doc, path)
+}
+
+fn create_image(
+  width: Int,
+  height: Int,
+  format_string: String,
+  picture: Picture,
+  path: String,
+) -> Nil {
+  let canvas = impl_skia.canvas_create(width, height)
+  let ctx = impl_skia.get_rendering_context(canvas)
+  draw.display_on_rendering_context(picture, ctx, draw.default_drawing_state)
+  impl_skia.canvas_save(canvas, format_string, path)
+}
+
+fn create_svg(width: Int, height: Int, picture: Picture, path: String) -> Nil {
+  let canvas = impl_skia.svg_canvas_create(width, height)
+  let ctx = impl_skia.svg_get_rendering_context(canvas)
+  draw.display_on_rendering_context(picture, ctx, draw.default_drawing_state)
+  let completed_canvas = impl_skia.svg_canvas_complete(canvas)
+  impl_skia.svg_canvas_save(completed_canvas, path)
 }

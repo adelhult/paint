@@ -1,4 +1,3 @@
-import gleam/option.{None, Some}
 import paint as p
 import paint/skia
 
@@ -12,20 +11,20 @@ pub fn main() {
   let width = 200
   let height = 200
 
-  skia.save_file(picture, skia.Jpeg(width:, height:), "./output/testing.jpg")
-  skia.save_file(picture, skia.Png(width:, height:), "./output/testing.png")
-  skia.save_file(picture, skia.Webp(width:, height:), "./output/testing.webp")
-  skia.save_file(picture, skia.Svg(width:, height:), "./output/testing.svg")
+  skia.save_file(picture, skia.Jpeg, "./output/testing.jpg", width:, height:)
+  skia.save_file(picture, skia.Png, "./output/testing.png", width:, height:)
+  skia.save_file(picture, skia.Webp, "./output/testing.webp", width:, height:)
+  skia.save_file(picture, skia.Svg, "./output/testing.svg", width:, height:)
   skia.save_file(
     picture,
     skia.Pdf(
-      width:,
-      height:,
       metadata: skia.PdfMetadata(
         ..skia.pdf_metadata_defaults,
-        title: Some("Hej"),
+        title: "My cool picture",
       ),
     ),
-    "./output/testing.pdf",
+    "./output/testing2.pdf",
+    width:,
+    height:,
   )
 }

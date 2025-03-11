@@ -32,22 +32,20 @@ export function pdf_create(
   keywords,
   creator,
   producer,
-  creation,
-  modified,
+  //creation,
+  //modified,
   pdfa,
-  encodingQuality
+  encodingQuality,
 ) {
-  return new PdfDocument(metadata, {
-    title: title,
-    author: author,
-    subject: subject,
-    keywords: keywords,
-    creator: creator,
-    producer: producer,
-    creation: new Date(creation),
-    modified: new Date(modified),
-    pdfa: pdfa,
-    encodingQuality: encodingQuality,
+  return new PdfDocument({
+    title,
+    author,
+    subject,
+    keywords,
+    creator,
+    producer,
+    pdfa,
+    encodingQuality,
   });
 }
 
@@ -55,7 +53,7 @@ export function pdf_new_page(pdf, w, h) {
   return pdf.newPage(w, h);
 }
 
-export function pdf_end_page() {
+export function pdf_end_page(pdf) {
   pdf.endPage();
 }
 

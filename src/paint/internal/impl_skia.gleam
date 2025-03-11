@@ -1,4 +1,3 @@
-import gleam/option.{type Option}
 import paint/internal/impl_rendering_ctx.{type RenderingContext2D}
 
 pub type Canvas
@@ -32,16 +31,16 @@ pub fn svg_canvas_save(canvas: SvgCanvasCompleted, path: String) -> Nil
 
 @external(javascript, "./impl_skia.ffi.mjs", "pdf_create")
 pub fn pdf_create(
-  title: Option(String),
-  author: Option(String),
-  subject: Option(String),
-  keywords: Option(String),
-  creator: Option(String),
-  producer: Option(String),
-  creation: Option(String),
-  modified: Option(String),
-  pdfa: Option(Bool),
-  encoding_quality: Option(Int),
+  title: String,
+  author: String,
+  subject: String,
+  keywords: String,
+  creator: String,
+  producer: String,
+  //creation: Option(String),
+  //modified: Option(String),
+  pdfa: Bool,
+  encoding_quality: Int,
 ) -> PdfDocument
 
 @external(javascript, "./impl_skia.ffi.mjs", "pdf_new_page")
