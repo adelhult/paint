@@ -24,13 +24,6 @@ pub type Event {
   MouseReleased(MouseButton)
 }
 
-pub type Next(state, output) {
-  /// Continue using the given state
-  Continue(state)
-  /// Terminate with some given output
-  Stop(output)
-}
-
 pub type Key {
   KeyLeftArrow
   KeyRightArrow

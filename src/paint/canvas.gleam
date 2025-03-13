@@ -6,7 +6,7 @@
 
 import gleam/option.{type Option, None, Some}
 import paint.{translate_xy}
-import paint/event.{type Event, type Next, Continue, Stop}
+import paint/event.{type Event}
 import paint/internal/draw.{default_drawing_state, display_on_rendering_context}
 import paint/internal/impl_canvas
 import paint/internal/impl_rendering_ctx
@@ -65,137 +65,105 @@ pub fn interact(
   view: fn(state) -> Picture,
   selector: String,
 ) {
-  let ignore_output = fn(_) { Nil }
-  interact_with_output(
-    init,
-    fn(state, event) { Continue(update(state, event)) },
-    view,
-    selector,
-    ignore_output,
-  )
-}
+  {
+    let ctx = impl_canvas.get_rendering_context(selector)
+    let initial_state =
+      init(Config(
+        impl_rendering_ctx.get_width(ctx),
+        impl_rendering_ctx.get_height(ctx),
+      ))
 
-/// Works the same as the `interact` function but wraps the update
-/// in `Next(state, output)` and takes an additional
-/// callback `on_complete` that allows you to access the output when
-/// `Stop(output)` is returned from your update function.
-///
-/// For example:
-/// ```
-/// // ...
-/// fn update(event, state) {
-///   // terminate directly with some value
-///   Stop("some output")
-/// }
-///
-/// use output <- interact_with_output(init, update, view, "#mycanvas")
-/// let assert "Some output" = output
-/// ```
-pub fn interact_with_output(
-  init: fn(Config) -> state,
-  update: fn(state, Event) -> Next(state, output),
-  view: fn(state) -> Picture,
-  selector: String,
-  on_complete: fn(output) -> Nil,
-) {
-  let ctx = impl_canvas.get_rendering_context(selector)
-  let initial_state =
-    init(Config(
-      impl_rendering_ctx.get_width(ctx),
-      impl_rendering_ctx.get_height(ctx),
-    ))
+    impl_canvas.set_global(initial_state, selector)
 
-  impl_canvas.set_global(initial_state, selector)
-
-  // Handle keyboard input
-  let create_key_handler = fn(event_name, constructor) {
-    impl_canvas.setup_input_handler(
-      event_name,
-      fn(event: impl_canvas.KeyboardEvent) {
-        let key = parse_key_code(impl_canvas.get_key_code(event))
-        case key {
-          Some(key) -> {
-            let new_state =
-              update(impl_canvas.get_global(selector), constructor(key))
-            impl_canvas.set_global(new_state, selector)
+    // Handle keyboard input
+    let create_key_handler = fn(event_name, constructor) {
+      impl_canvas.setup_input_handler(
+        event_name,
+        fn(event: impl_canvas.KeyboardEvent) {
+          let key = parse_key_code(impl_canvas.get_key_code(event))
+          case key {
+            Some(key) -> {
+              let new_state =
+                update(impl_canvas.get_global(selector), constructor(key))
+              impl_canvas.set_global(new_state, selector)
+            }
+            None -> Nil
           }
-          None -> Nil
-        }
-      },
-    )
-  }
-  create_key_handler("keydown", event.KeyboardPressed)
-  create_key_handler("keyup", event.KeyboardRelased)
+        },
+      )
+    }
+    create_key_handler("keydown", event.KeyboardPressed)
+    create_key_handler("keyup", event.KeyboardRelased)
 
-  // Handle mouse movement
-  impl_canvas.setup_input_handler(
-    "mousemove",
-    fn(event: impl_canvas.MouseEvent) {
-      let #(x, y) = impl_canvas.mouse_pos(ctx, event)
-      let new_state =
-        update(impl_canvas.get_global(selector), event.MouseMoved(x, y))
-      impl_canvas.set_global(new_state, selector)
-      Nil
-    },
-  )
-
-  // Handle mouse buttons
-  let create_mouse_button_handler = fn(event_name, constructor, check_pressed) {
+    // Handle mouse movement
     impl_canvas.setup_input_handler(
-      event_name,
+      "mousemove",
       fn(event: impl_canvas.MouseEvent) {
-        // Read the previous state of the mouse
-        let previous_event_id = "PAINT_PREVIOUS_MOUSE_INPUT_FOR_" <> selector
-        let previous_event = impl_canvas.get_global(previous_event_id)
-        // Save this state
-        impl_canvas.set_global(event, previous_event_id)
-
-        // A utility to check which buttons was just pressed/released
-        let check_button = fn(i) {
-          impl_canvas.check_mouse_button(
-            event,
-            previous_event,
-            i,
-            check_pressed,
-          )
-        }
-
-        let trigger_update = fn(button) {
-          let new_state =
-            update(impl_canvas.get_global(selector), constructor(button))
-          impl_canvas.set_global(new_state, selector)
-        }
-
-        // Note: it is rather rare, but it seems that multiple buttons
-        // can be pressed in the very same MouseEvent, so we may need to
-        // trigger multiple events at once.
-        case check_button(0) {
-          True -> trigger_update(event.MouseButtonLeft)
-          False -> Nil
-        }
-        case check_button(1) {
-          True -> trigger_update(event.MouseButtonRight)
-          False -> Nil
-        }
-        case check_button(2) {
-          True -> trigger_update(event.MouseButtonMiddle)
-          False -> Nil
-        }
-
+        let #(x, y) = impl_canvas.mouse_pos(ctx, event)
+        let new_state =
+          update(impl_canvas.get_global(selector), event.MouseMoved(x, y))
+        impl_canvas.set_global(new_state, selector)
         Nil
       },
     )
-  }
-  create_mouse_button_handler("mousedown", event.MousePressed, True)
-  create_mouse_button_handler("mouseup", event.MouseReleased, False)
 
-  impl_canvas.setup_request_animation_frame(get_tick_func(
-    ctx,
-    on_complete,
-    view,
-    update,
-    selector,
-  ))
+    // Handle mouse buttons
+    let create_mouse_button_handler = fn(event_name, constructor, check_pressed) {
+      impl_canvas.setup_input_handler(
+        event_name,
+        fn(event: impl_canvas.MouseEvent) {
+          // Read the previous state of the mouse
+          let previous_event_id = "PAINT_PREVIOUS_MOUSE_INPUT_FOR_" <> selector
+          let previous_event = impl_canvas.get_global(previous_event_id)
+          // Save this state
+          impl_canvas.set_global(event, previous_event_id)
+
+          // A utility to check which buttons was just pressed/released
+          let check_button = fn(i) {
+            impl_canvas.check_mouse_button(
+              event,
+              previous_event,
+              i,
+              check_pressed,
+            )
+          }
+
+          let trigger_update = fn(button) {
+            let new_state =
+              update(impl_canvas.get_global(selector), constructor(button))
+            impl_canvas.set_global(new_state, selector)
+          }
+
+          // Note: it is rather rare, but it seems that multiple buttons
+          // can be pressed in the very same MouseEvent, so we may need to
+          // trigger multiple events at once.
+          case check_button(0) {
+            True -> trigger_update(event.MouseButtonLeft)
+            False -> Nil
+          }
+          case check_button(1) {
+            True -> trigger_update(event.MouseButtonRight)
+            False -> Nil
+          }
+          case check_button(2) {
+            True -> trigger_update(event.MouseButtonMiddle)
+            False -> Nil
+          }
+
+          Nil
+        },
+      )
+    }
+    create_mouse_button_handler("mousedown", event.MousePressed, True)
+    create_mouse_button_handler("mouseup", event.MouseReleased, False)
+
+    impl_canvas.setup_request_animation_frame(get_tick_func(
+      ctx,
+      view,
+      update,
+      selector,
+    ))
+  }
 }
 
 fn parse_key_code(key_code: Int) -> Option(event.Key) {
@@ -221,30 +189,25 @@ fn parse_key_code(key_code: Int) -> Option(event.Key) {
 
 // Gleam does not have recursive let bindings, so I need
 // to do this workaround...
-fn get_tick_func(ctx, on_complete, view, update, selector) {
+fn get_tick_func(ctx, view, update, selector) {
   fn(time) {
     let current_state = impl_canvas.get_global(selector)
 
     // Trigger a tick event before drawing
-    case update(current_state, event.Tick(time)) {
-      Stop(result) -> {
-        on_complete(result)
-      }
-      Continue(new_state) -> {
-        impl_canvas.set_global(new_state, selector)
+    let new_state = update(current_state, event.Tick(time))
 
-        // Create the picture
-        let picture = view(new_state)
+    impl_canvas.set_global(new_state, selector)
 
-        // Render the picture on the canvas
-        impl_rendering_ctx.reset(ctx)
-        display_on_rendering_context(picture, ctx, default_drawing_state)
-        impl_canvas.setup_request_animation_frame(
-          // call myself
-          get_tick_func(ctx, on_complete, view, update, selector),
-        )
-      }
-    }
+    // Create the picture
+    let picture = view(new_state)
+
+    // Render the picture on the canvas
+    impl_rendering_ctx.reset(ctx)
+    display_on_rendering_context(picture, ctx, default_drawing_state)
+    impl_canvas.setup_request_animation_frame(
+      // call myself
+      get_tick_func(ctx, view, update, selector),
+    )
   }
 }
 
