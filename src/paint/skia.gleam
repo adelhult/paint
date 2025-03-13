@@ -80,8 +80,8 @@ pub fn save_file(
   picture: Picture,
   format: Format,
   path: String,
-  width width: Int,
-  height height: Int,
+  width width: Float,
+  height height: Float,
 ) {
   case format {
     Jpeg | Png | Webp ->
@@ -92,8 +92,8 @@ pub fn save_file(
 }
 
 fn create_pdf(
-  width: Int,
-  height: Int,
+  width: Float,
+  height: Float,
   metadata: PdfMetadata,
   picture: Picture,
   path: String,
@@ -131,8 +131,8 @@ fn create_pdf(
 }
 
 fn create_image(
-  width: Int,
-  height: Int,
+  width: Float,
+  height: Float,
   format_string: String,
   picture: Picture,
   path: String,
@@ -143,7 +143,12 @@ fn create_image(
   impl_skia.canvas_save(canvas, format_string, path)
 }
 
-fn create_svg(width: Int, height: Int, picture: Picture, path: String) -> Nil {
+fn create_svg(
+  width: Float,
+  height: Float,
+  picture: Picture,
+  path: String,
+) -> Nil {
   let canvas = impl_skia.svg_canvas_create(width, height)
   let ctx = impl_skia.svg_get_rendering_context(canvas)
   draw.display_on_rendering_context(picture, ctx, draw.default_drawing_state)

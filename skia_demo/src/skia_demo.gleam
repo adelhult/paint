@@ -2,14 +2,10 @@ import paint as p
 import paint/skia
 
 pub fn main() {
-  let picture =
-    p.circle(50.0)
-    |> p.translate_xy(100.0, 100.0)
-    |> p.fill(p.colour_rgb(0, 100, 200))
-    |> p.concat(p.text("Hello world!", 40) |> p.translate_y(50.0))
+  let picture = p.circle(50.0)
 
-  let width = 200
-  let height = 200
+  let width = 200.0
+  let height = 200.0
 
   skia.save_file(picture, skia.Jpeg, "./output/testing.jpg", width:, height:)
   skia.save_file(picture, skia.Png, "./output/testing.png", width:, height:)

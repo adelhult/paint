@@ -15,13 +15,13 @@ pub fn get_rendering_context(canvas: Canvas) -> RenderingContext2D
 pub fn svg_get_rendering_context(canvas: SvgCanvas) -> RenderingContext2D
 
 @external(javascript, "./impl_skia.ffi.mjs", "canvas_create")
-pub fn canvas_create(width: Int, height: Int) -> Canvas
+pub fn canvas_create(width: Float, height: Float) -> Canvas
 
 @external(javascript, "./impl_skia.ffi.mjs", "canvas_save")
 pub fn canvas_save(canvas: Canvas, format: String, path: String) -> Nil
 
 @external(javascript, "./impl_skia.ffi.mjs", "svg_canvas_create")
-pub fn svg_canvas_create(width: Int, height: Int) -> SvgCanvas
+pub fn svg_canvas_create(width: Float, height: Float) -> SvgCanvas
 
 @external(javascript, "./impl_skia.ffi.mjs", "svg_canvas_complete")
 pub fn svg_canvas_complete(canvas: SvgCanvas) -> SvgCanvasCompleted
@@ -46,8 +46,8 @@ pub fn pdf_create(
 @external(javascript, "./impl_skia.ffi.mjs", "pdf_new_page")
 pub fn pdf_new_page(
   pdf: PdfDocument,
-  width: Int,
-  height: Int,
+  width: Float,
+  height: Float,
 ) -> RenderingContext2D
 
 @external(javascript, "./impl_skia.ffi.mjs", "pdf_end_page")
