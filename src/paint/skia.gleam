@@ -20,7 +20,6 @@ import paint/internal/draw
 import paint/internal/impl_skia
 import paint/internal/types.{type Picture}
 
-/// The format and configuration
 pub type Format {
   Png
   Jpeg
