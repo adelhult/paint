@@ -16,6 +16,7 @@
 //// allow_read = true
 //// ```
 
+import gleam/result
 import paint/internal/draw
 import paint/internal/impl_skia
 import paint/internal/types.{type Picture}
@@ -65,6 +66,22 @@ pub const pdf_metadata_defaults: PdfMetadata = PdfMetadata(
   encoding_quality: 0,
 )
 
+/// Save a picture using the given document format.
+pub fn save_file(
+  picture: Picture,
+  format: Format,
+  path: String,
+  width width: Float,
+  height height: Float,
+) -> Result(Nil, String) {
+  case format {
+    Jpeg | Png | Webp ->
+      create_image(width, height, format_to_string(format), picture, path)
+    Svg -> create_svg(width, height, picture, path)
+    Pdf(metadata) -> create_pdf(width, height, metadata, picture, path)
+  }
+}
+
 fn format_to_string(format: Format) -> String {
   case format {
     Jpeg(..) -> "jpeg"
@@ -75,28 +92,13 @@ fn format_to_string(format: Format) -> String {
   }
 }
 
-pub fn save_file(
-  picture: Picture,
-  format: Format,
-  path: String,
-  width width: Float,
-  height height: Float,
-) {
-  case format {
-    Jpeg | Png | Webp ->
-      create_image(width, height, format_to_string(format), picture, path)
-    Svg -> create_svg(width, height, picture, path)
-    Pdf(metadata) -> create_pdf(width, height, metadata, picture, path)
-  }
-}
-
 fn create_pdf(
   width: Float,
   height: Float,
   metadata: PdfMetadata,
   picture: Picture,
   path: String,
-) -> Nil {
+) -> Result(Nil, String) {
   let PdfMetadata(
     title,
     author,
@@ -110,22 +112,21 @@ fn create_pdf(
     encoding_quality,
   ) = metadata
 
-  let doc =
-    impl_skia.pdf_create(
-      title,
-      author,
-      subject,
-      keywords,
-      creator,
-      producer,
-      //creation,
-      //modified,
-      pdfa,
-      encoding_quality,
-    )
-  let ctx = impl_skia.pdf_new_page(doc, width, height)
+  use doc <- result.try(impl_skia.pdf_create(
+    title,
+    author,
+    subject,
+    keywords,
+    creator,
+    producer,
+    //creation,
+    //modified,
+    pdfa,
+    encoding_quality,
+  ))
+  use ctx <- result.try(impl_skia.pdf_new_page(doc, width, height))
   draw.display_on_rendering_context(picture, ctx, draw.default_drawing_state)
-  impl_skia.pdf_end_page(doc)
+  use _ <- result.try(impl_skia.pdf_end_page(doc))
   impl_skia.pdf_save(doc, path)
 }
 
@@ -135,9 +136,9 @@ fn create_image(
   format_string: String,
   picture: Picture,
   path: String,
-) -> Nil {
-  let canvas = impl_skia.canvas_create(width, height)
-  let ctx = impl_skia.get_rendering_context(canvas)
+) -> Result(Nil, String) {
+  use canvas <- result.try(impl_skia.canvas_create(width, height))
+  use ctx <- result.try(impl_skia.get_rendering_context(canvas))
   draw.display_on_rendering_context(picture, ctx, draw.default_drawing_state)
   impl_skia.canvas_save(canvas, format_string, path)
 }
@@ -147,9 +148,9 @@ fn create_svg(
   height: Float,
   picture: Picture,
   path: String,
-) -> Nil {
-  let canvas = impl_skia.svg_canvas_create(width, height)
-  let ctx = impl_skia.svg_get_rendering_context(canvas)
+) -> Result(Nil, String) {
+  use canvas <- result.try(impl_skia.svg_canvas_create(width, height))
+  use ctx <- result.try(impl_skia.svg_get_rendering_context(canvas))
   draw.display_on_rendering_context(picture, ctx, draw.default_drawing_state)
   let completed_canvas = impl_skia.svg_canvas_complete(canvas)
   impl_skia.svg_canvas_save(completed_canvas, path)

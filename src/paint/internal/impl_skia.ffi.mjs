@@ -1,15 +1,28 @@
 import { createCanvas, SvgCanvas, PdfDocument } from "jsr:@gfx/canvas@0.5.6";
+import { Error, Ok } from "./../../gleam.mjs";
 
 export function canvas_create(width, height) {
-  return createCanvas(width, height);
+  try {
+    return new Ok(createCanvas(width, height));
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
 
 export function get_rendering_context(canvas) {
-  return canvas.getContext("2d");
+  try {
+    return new Ok(canvas.getContext("2d"));
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
 
 export function canvas_save(canvas, format, path) {
-  canvas.save(path);
+  try {
+    return new Ok(canvas.save(path, format));
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
 
 export function svg_canvas_complete(canvas) {
@@ -18,11 +31,19 @@ export function svg_canvas_complete(canvas) {
 }
 
 export function svg_canvas_create(width, height) {
-  return new SvgCanvas(width, height);
+  try {
+    return new Ok(new SvgCanvas(width, height));
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
 
 export function svg_canvas_save(canvas, path) {
-  canvas.save(path);
+  try {
+    return new Ok(canvas.save(path));
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
 
 export function pdf_create(
@@ -37,26 +58,44 @@ export function pdf_create(
   pdfa,
   encodingQuality,
 ) {
-  return new PdfDocument({
-    title,
-    author,
-    subject,
-    keywords,
-    creator,
-    producer,
-    pdfa,
-    encodingQuality,
-  });
+  try {
+    return new Ok(
+      new PdfDocument({
+        title,
+        author,
+        subject,
+        keywords,
+        creator,
+        producer,
+        pdfa,
+        encodingQuality,
+      }),
+    );
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
 
 export function pdf_new_page(pdf, w, h) {
-  return pdf.newPage(w, h);
+  try {
+    return new Ok(pdf.newPage(w, h));
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
 
 export function pdf_end_page(pdf) {
-  pdf.endPage();
+  try {
+    return new Ok(pdf.endPage());
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
 
 export function pdf_save(pdf, path) {
-  pdf.save(path);
+  try {
+    return new Ok(pdf.save(path));
+  } catch (error) {
+    return new Error(error.toString());
+  }
 }
