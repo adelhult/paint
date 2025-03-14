@@ -11,17 +11,29 @@ pub type Event {
   KeyboardPressed(Key)
   /// Triggered when a key is released
   KeyboardRelased(Key)
-  /// Triggered when the mouse is moved. Contains
-  /// the `x` and `y` value for the mouse position.
-  MouseMoved(Float, Float)
-  /// Triggered when a mouse button is pressed
-  MousePressed(MouseButton)
-  /// Triggered when a mouse button is released.
+  /// Triggered when a pointer (mouse or touch input) is moved
+  ///
+  /// Contains the x and y position of the pointer and the pointer_id, which
+  /// can be ignored unless you are supporting multi-touch.
+  ///
+  /// pointer_id will be unique for each pointer (mouse, finger, pen, etc) that
+  /// is simultaneously used with the device.
+  PointerMoved(x: Float, y: Float, pointer_id: Int)
+  /// Triggered when a pointer button is pressed
+  ///
+  /// Contains the x and y position of the pointer, the button that is being
+  /// pressed and the pointer_id, which can be ignored unless you are
+  /// supporting multi-touch.
+  ///
+  /// pointer_id will be unique for each pointer (mouse, finger, pen, etc) that
+  /// is simultaneously used with the device.
+  PointerPressed(x: Float, y: Float, button: PointerButton, pointer_id: Int)
+  /// Triggered when a pointer button is released
   ///
   /// Note, on the web you might encounter issues where the
   /// release event for the right mouse button is not triggered
   /// because of the context menu.
-  MouseReleased(MouseButton)
+  PointerReleased(x: Float, y: Float, button: PointerButton, pointer_id: Int)
 }
 
 pub type Key {
@@ -42,9 +54,8 @@ pub type Key {
   KeyBackspace
 }
 
-pub type MouseButton {
-  MouseButtonLeft
-  MouseButtonRight
-  /// The scroll wheel button
-  MouseButtonMiddle
+pub type PointerButton {
+  PointerButtonPrimary
+  PointerButtonSecondary
+  PointerButtonOther(Int)
 }
