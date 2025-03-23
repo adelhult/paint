@@ -33,7 +33,7 @@ pub type Format {
 /// For more details please see the [Skia documentation](https://api.skia.org/structSkPDF_1_1Metadata.html).
 /// To construct a PdfMetadata value without bothering setting every value, please make use of `pdf_metadata_defaults`:
 /// ```
-/// PdfMetadata(..pdf_metadata_defaults, title: Some("My cool picture"))
+/// PdfMetadata(..pdf_metadata_defaults, title: "My cool picture")
 /// ```
 pub type PdfMetadata {
   PdfMetadata(
