@@ -26,7 +26,9 @@ class PaintCanvas extends HTMLElement {
   set picture(value) {
     this.ctx.reset();
     const display =
-      window.PAINT_STATE["display_on_rendering_context_with_default_drawing_state"];
+      window.PAINT_STATE[
+        "display_on_rendering_context_with_default_drawing_state"
+      ];
     display(value, this.ctx);
   }
 
