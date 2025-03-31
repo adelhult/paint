@@ -222,8 +222,9 @@ pub fn interact(
       fn(event: impl_canvas.PointerEvent) {
         let #(x, y, pointer_id, button) = impl_canvas.pointer_pos(ctx, event)
         let button = case button {
+          // https://w3c.github.io/pointerevents/#x4-1-1-2-the-button-property
           0 -> event.PointerButtonPrimary
-          1 -> event.PointerButtonSecondary
+          2 -> event.PointerButtonSecondary
           x -> event.PointerButtonOther(x)
         }
         let new_state =
