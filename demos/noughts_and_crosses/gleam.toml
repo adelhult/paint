@@ -1,0 +1,24 @@
+name = "noughts_and_crosses"
+version = "1.0.0"
+target = "javascript"
+
+# Fill out these fields if you intend to generate HTML documentation or publish
+# your project to the Hex package manager.
+#
+# description = ""
+# licences = ["Apache-2.0"]
+# repository = { type = "github", user = "", repo = "" }
+# links = [{ title = "Website", href = "" }]
+#
+# For a full reference of all the available options, you can have a look at
+# https://gleam.run/writing-gleam/gleam-toml/.
+
+[dependencies]
+gleam_stdlib = ">= 0.58.0 and < 2.0.0"
+gleam_community_colour = ">= 2.0.0 and < 3.0.0"
+paint = { path = "../../../paint" }
+gleam_yielder = ">= 1.1.0 and < 2.0.0"
+prng = ">= 4.0.1 and < 5.0.0"
+
+[dev-dependencies]
+gleeunit = ">= 1.0.0 and < 2.0.0"
