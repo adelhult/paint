@@ -3,7 +3,7 @@
 
 import gleam/result
 import gleam_community/colour
-import gleam_community/maths/elementary.{pi}
+import gleam_community/maths.{pi}
 import paint/internal/types as internal_implementation
 
 /// A 2D picture. This is the type which this entire library revolves around.

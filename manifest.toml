@@ -3,12 +3,13 @@
 
 packages = [
   { name = "gleam_community_colour", version = "2.0.0", build_tools = ["gleam"], requirements = ["gleam_json", "gleam_stdlib"], otp_app = "gleam_community_colour", source = "hex", outer_checksum = "FDD6AC62C6EC8506C005949A4FCEF032038191D5EAAEC3C9A203CD53AE956ACA" },
-  { name = "gleam_community_maths", version = "1.1.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_community_maths", source = "hex", outer_checksum = "6C4ED7BC7E7DF6977719B5F2CFE717EE8280D1CF6EA81D55FD9953758C7FD14E" },
+  { name = "gleam_community_maths", version = "1.1.1", build_tools = ["gleam"], requirements = ["gleam_stdlib", "gleam_yielder"], source = "git", repo = "https://github.com/gleam-community/maths", commit = "e5d491efa4e5752e109a6eaaa9e8f0d54945883a" },
   { name = "gleam_json", version = "2.3.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_json", source = "hex", outer_checksum = "C55C5C2B318533A8072D221C5E06E5A75711C129E420DD1CE463342106012E5D" },
-  { name = "gleam_stdlib", version = "0.57.0", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "86EFACDF6460B8681E82752C5490F9630EC0F138F88A037DDCB241799AA8811F" },
+  { name = "gleam_stdlib", version = "0.58.0", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "091F2D2C4A3A4E2047986C47E2C2C9D728A4E068ABB31FDA17B0D347E6248467" },
+  { name = "gleam_yielder", version = "1.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_yielder", source = "hex", outer_checksum = "8E4E4ECFA7982859F430C57F549200C7749823C106759F4A19A78AEA6687717A" },
 ]
 
 [requirements]
 gleam_community_colour = { version = ">= 2.0.0 and < 3.0.0" }
-gleam_community_maths = { version = ">= 1.1.1 and < 2.0.0" }
-gleam_stdlib = { version = ">= 0.57.0 and < 2.0.0" }
+gleam_community_maths = { git = "https://github.com/gleam-community/maths", ref = "e5d491efa4e5752e109a6eaaa9e8f0d54945883a" }
+gleam_stdlib = { version = ">= 0.58.0 and < 2.0.0" }

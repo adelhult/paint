@@ -17,6 +17,6 @@ links = [
 
 
 [dependencies]
-gleam_stdlib = ">= 0.57.0 and < 2.0.0"
-gleam_community_maths = ">= 1.1.1 and < 2.0.0"
+gleam_stdlib = ">= 0.58.0 and < 2.0.0"
+gleam_community_maths = { git = "https://github.com/gleam-community/maths", ref = "e5d491efa4e5752e109a6eaaa9e8f0d54945883a" }
 gleam_community_colour = ">= 2.0.0 and < 3.0.0"
