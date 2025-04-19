@@ -12,9 +12,17 @@ jobs:
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "26.0.2"
-          gleam-version: "1.6.1"
+          gleam-version: "1.9.1"
           rebar3-version: "3"
           # elixir-version: "1.15.4"
+      - name: Build noughts and crosses demo
+        run: |
+          cd demos/noughts_and_crosses
+          gleam deps download
+          gleam build
+          mkdir -p dist
+          cp ./build/dev/javascript/noughts_and_crosses/noughts_and_crosses.mjs ./dist/noughts_and_crosses.mjs
+          cp ./index.html ./dist/index.html
       - name: Build website
         run: |
           cd website
@@ -25,6 +33,7 @@ jobs:
           cp index.html dist/index.html
           cp -r priv dist/priv
           sed -i 's|priv/static/demo.mjs|paint/priv/static/demo.min.mjs|' dist/index.html
+          cp -r ../demos/noughts_and_crosses/dist dist/noughts_and_crosses
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
