@@ -3,7 +3,6 @@
 
 import gleam/result
 import gleam_community/colour
-import gleam_community/maths.{pi}
 import paint/internal/types as internal_implementation
 
 /// A 2D picture. This is the type which this entire library revolves around.
@@ -176,4 +175,11 @@ pub fn combine(pictures: List(Picture)) -> Picture {
 /// ```
 pub fn just(picture: Picture) -> fn(a) -> Picture {
   fn(_config) { picture }
+}
+
+// Internal utility function to get Pi π 
+@external(erlang, "math", "pi")
+@external(javascript, "./numbers_ffi.mjs", "pi")
+fn pi() -> Float {
+  3.1415926
 }
