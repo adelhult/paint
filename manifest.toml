@@ -9,4 +9,5 @@ packages = [
 
 [requirements]
 gleam_community_colour = { version = ">= 2.0.0 and < 3.0.0" }
+gleam_json = { version = ">= 3.0.2 and < 4.0.0" }
 gleam_stdlib = { version = ">= 0.58.0 and < 2.0.0" }

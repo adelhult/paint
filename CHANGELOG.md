@@ -1,3 +1,5 @@
+# 0.4.0
+
 # 0.3.0
 - Breaking: A big refactor of the code base. The canvas backend now lives in `paint/canvas`, the functions has been renamed appropriately (`display_on_canvas` => `canvas.display`). The `Key` and `Event` types has been moved to `paint/event`.
 - Addition/Breaking: More `Event`s for mouse movement and mouse buttons.
