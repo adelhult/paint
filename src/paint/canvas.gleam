@@ -8,6 +8,7 @@ import gleam/int
 import gleam/option.{type Option, None, Some}
 import gleam_community/colour
 import paint.{translate_xy}
+import paint/encode
 import paint/event.{type Event}
 import paint/internal/impl_canvas
 import paint/internal/types.{
@@ -319,33 +320,30 @@ fn get_tick_func(ctx, view, update, selector) {
 /// your web application you may prefer to use the [web components](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) API
 /// and the `define_web_component` function.
 /// ```
-/// // Call this function to register a custom HTML element <paint-canvas>
+/// // Call this function once to register a custom HTML element <paint-canvas>
 /// canvas.define_web_component()
 /// // You can then display your picture by setting the "picture"
-/// // property on the element.
+/// // property or attribute on the element.
 ///
 /// // In Lustre it would look something like this:
-/// let my_picture = circle(50.0)
-/// element(
-///   "paint-canvas",
-///    [
-///        attribute.property("picture", my_picture),
-///        attribute.width(500),
-///        attribute.height(300),
-///        attribute.style([#("background", "#eee")]),
-///     ],
-///     [],
-/// )
+/// fn canvas(picture: paint.Picture, attributes: List(attribute.Attribute(a))) {
+///  element.element(
+///    "paint-canvas",
+///    [attribute.attribute("picture", encode.to_string(picture)), ..attributes],
+///    [],
+///  )
+///}
 /// ```
-/// A more detailed example for using this API together with Lustre can be found in [this GitHub Gist](https://gist.github.com/adelhult/03c5916df891a06bec706e6f0842cd91).
-///
+/// A more detailed example for using this API can be found in the "demos" directory.
 pub fn define_web_component() -> Nil {
   impl_canvas.define_web_component()
-  // somewhat of an ugly hack, but the setter for the web component will need to call
-  // `display_on_rendering_context` when the picture property changes. Therefore we
+  // somewhat of an ugly hack, but the setter for the web component will need to call this
+  // when the picture property changes. Therefore we
   // bind this function to the window object so we can access it from the JS side of things.
   impl_canvas.set_global(
-    fn(picture, ctx) {
+    fn(encoded_picture, ctx) {
+      let assert Ok(picture) = encode.from_string(encoded_picture)
+        as "Invalid picture provided to web component"
       display_on_rendering_context(picture, ctx, default_drawing_state)
     },
     "display_on_rendering_context_with_default_drawing_state",

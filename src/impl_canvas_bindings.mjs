@@ -1,6 +1,6 @@
 class PaintCanvas extends HTMLElement {
   // Open an issue if you are in need of any other attributes :)
-  static observedAttributes = ["width", "height", "style"];
+  static observedAttributes = ["width", "height", "style", "picture"];
 
   constructor() {
     super();
@@ -18,8 +18,13 @@ class PaintCanvas extends HTMLElement {
     this.ctx = this.canvas.getContext("2d");
   }
 
-  // forward any given attributes to the canvas
+  // forward any given attributes to the canvas (unless it's the picture attribute)
   attributeChangedCallback(name, _oldValue, newValue) {
+    if (name === "picture") {
+      this.picture = newValue;
+      return;
+    }
+
     this.canvas.setAttribute(name, newValue);
   }
 
@@ -29,7 +34,9 @@ class PaintCanvas extends HTMLElement {
       window.PAINT_STATE[
         "display_on_rendering_context_with_default_drawing_state"
       ];
-    display(value, this.ctx);
+    if (value) {
+      display(value, this.ctx);
+    }
   }
 
   set width(value) {
