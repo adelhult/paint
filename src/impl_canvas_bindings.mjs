@@ -18,33 +18,45 @@ class PaintCanvas extends HTMLElement {
     this.ctx = this.canvas.getContext("2d");
   }
 
-  // forward any given attributes to the canvas (unless it's the picture attribute)
   attributeChangedCallback(name, _oldValue, newValue) {
     if (name === "picture") {
       this.picture = newValue;
       return;
+    } else if (name === "width") {
+      this.width = newValue; 
+    } else if (name === "height") {
+      this.height = newValue;
     }
-
-    this.canvas.setAttribute(name, newValue);
   }
 
-  set picture(value) {
+  drawPicture() {
+    if (!this.pictureString) {
+      return;
+    }
+
     this.ctx.reset();
     const display =
       window.PAINT_STATE[
         "display_on_rendering_context_with_default_drawing_state"
       ];
-    if (value) {
-      display(value, this.ctx);
-    }
+   
+    display(this.pictureString, this.ctx);
+  }  
+
+
+  set picture(value) {
+    this.pictureString = value;
+    this.drawPicture()
   }
 
   set width(value) {
     this.canvas.width = value;
+    this.drawPicture();
   }
 
   set height(value) {
     this.canvas.height = value;
+    this.drawPicture();
   }
 
   get width() {
