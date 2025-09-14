@@ -9,6 +9,7 @@ import lustre/element/html.{button, div, h1, h2, h3, hr, p}
 import lustre/event
 import paint
 import paint/canvas
+import paint/encode
 
 // Example pictures
 import examples/arc
@@ -46,7 +47,7 @@ fn paint_canvas(
     [
       attribute.height(canvas_width),
       attribute.width(canvas_height),
-      attribute.property("picture", picture),
+      attribute.attribute("picture", encode.to_string(picture)),
       attribute.style([
         #("background", "#f5f5f5"),
         #("border-radius", "10px"),
