@@ -11,6 +11,7 @@ repository = { type = "github", user = "adelhult", repo = "paint" }
 links = [
     { title = "Visual examples", href = "https://adelhult.github.io/paint/" },
 ]
+dev-dependencies = { gleeunit = ">= 1.6.1 and < 2.0.0" }
 #
 # For a full reference of all the available options, you can have a look at
 # https://gleam.run/writing-gleam/gleam-toml/.
