@@ -1,4 +1,7 @@
 # 0.4.0
+- Drop gleam_community_maths dependancy (Thanks, @graphiteisaac!)
+- Addition: Add `encode` module containing `to_string` and `from_string` functions.
+- Breaking: The web components API now expects a Picture encoded as a string, instead of a JavaScript object.
 
 # 0.3.0
 - Breaking: A big refactor of the code base. The canvas backend now lives in `paint/canvas`, the functions has been renamed appropriately (`display_on_canvas` => `canvas.display`). The `Key` and `Event` types has been moved to `paint/event`.
