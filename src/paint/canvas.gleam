@@ -204,65 +204,42 @@ pub fn interact(
 
   // Handle mouse movement
   impl_canvas.setup_input_handler(
-    "mousemove",
-    fn(event: impl_canvas.MouseEvent) {
-      let #(x, y) = impl_canvas.mouse_pos(ctx, event)
+    "pointermove",
+    fn(event: impl_canvas.PointerEvent) {
+      let #(x, y, pointer_id, _button) = impl_canvas.pointer_pos(ctx, event)
       let new_state =
-        update(impl_canvas.get_global(selector), event.MouseMoved(x, y))
+        update(
+          impl_canvas.get_global(selector),
+          event.PointerMoved(x, y, pointer_id),
+        )
       impl_canvas.set_global(new_state, selector)
       Nil
     },
   )
 
-  // Handle mouse buttons
-  let create_mouse_button_handler = fn(event_name, constructor, check_pressed) {
+  let create_mouse_button_handler = fn(event_name, constructor) {
     impl_canvas.setup_input_handler(
       event_name,
-      fn(event: impl_canvas.MouseEvent) {
-        // Read the previous state of the mouse
-        let previous_event_id = "PAINT_PREVIOUS_MOUSE_INPUT_FOR_" <> selector
-        let previous_event = impl_canvas.get_global(previous_event_id)
-        // Save this state
-        impl_canvas.set_global(event, previous_event_id)
-
-        // A utility to check which buttons was just pressed/released
-        let check_button = fn(i) {
-          impl_canvas.check_mouse_button(
-            event,
-            previous_event,
-            i,
-            check_pressed,
+      fn(event: impl_canvas.PointerEvent) {
+        let #(x, y, pointer_id, button) = impl_canvas.pointer_pos(ctx, event)
+        let button = case button {
+          // https://w3c.github.io/pointerevents/#x4-1-1-2-the-button-property
+          0 -> event.PointerButtonPrimary
+          2 -> event.PointerButtonSecondary
+          x -> event.PointerButtonOther(x)
+        }
+        let new_state =
+          update(
+            impl_canvas.get_global(selector),
+            constructor(x, y, button, pointer_id),
           )
-        }
-
-        let trigger_update = fn(button) {
-          let new_state =
-            update(impl_canvas.get_global(selector), constructor(button))
-          impl_canvas.set_global(new_state, selector)
-        }
-
-        // Note: it is rather rare, but it seems that multiple buttons
-        // can be pressed in the very same MouseEvent, so we may need to
-        // trigger multiple events at once.
-        case check_button(0) {
-          True -> trigger_update(event.MouseButtonLeft)
-          False -> Nil
-        }
-        case check_button(1) {
-          True -> trigger_update(event.MouseButtonRight)
-          False -> Nil
-        }
-        case check_button(2) {
-          True -> trigger_update(event.MouseButtonMiddle)
-          False -> Nil
-        }
-
+        impl_canvas.set_global(new_state, selector)
         Nil
       },
     )
   }
-  create_mouse_button_handler("mousedown", event.MousePressed, True)
-  create_mouse_button_handler("mouseup", event.MouseReleased, False)
+  create_mouse_button_handler("pointerdown", event.PointerPressed)
+  create_mouse_button_handler("pointerup", event.PointerReleased)
 
   impl_canvas.setup_request_animation_frame(get_tick_func(
     ctx,

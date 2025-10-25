@@ -18,18 +18,13 @@ pub type KeyboardEvent
 @external(javascript, "./../../impl_canvas_bindings.mjs", "get_key_code")
 pub fn get_key_code(event: KeyboardEvent) -> Int
 
-pub type MouseEvent
+pub type PointerEvent
 
-@external(javascript, "./../../impl_canvas_bindings.mjs", "mouse_pos")
-pub fn mouse_pos(ctx: RenderingContext2D, event: MouseEvent) -> #(Float, Float)
-
-@external(javascript, "./../../impl_canvas_bindings.mjs", "check_mouse_button")
-pub fn check_mouse_button(
-  event: MouseEvent,
-  previous_event: MouseEvent,
-  button_index: Int,
-  check_pressed check_pressed: Bool,
-) -> Bool
+@external(javascript, "./../../impl_canvas_bindings.mjs", "parse_pointer_event")
+pub fn pointer_pos(
+  ctx: RenderingContext2D,
+  event: PointerEvent,
+) -> #(Float, Float, Int, Int)
 
 @external(javascript, "../../impl_canvas_bindings.mjs", "get_width")
 pub fn get_width(ctx: RenderingContext2D) -> Float

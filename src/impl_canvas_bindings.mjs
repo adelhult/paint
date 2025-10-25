@@ -111,7 +111,7 @@ export function get_height(ctx) {
 }
 
 // Based on https://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
-export function mouse_pos(ctx, event) {
+function pointer_pos(ctx, event) {
   // Calculate the scaling of the canvas vs its content
   const rect = ctx.canvas.getBoundingClientRect();
   const scaleX = ctx.canvas.width / rect.width;
@@ -123,34 +123,15 @@ export function mouse_pos(ctx, event) {
   ];
 }
 
-// if check_pressed is true, the function will return true if the button was pressed
-// if check_pressed is false, the function will return true if the button was released
-export function check_mouse_button(
-  event,
-  previous_event,
-  button_index,
-  check_pressed,
-) {
-  let previous_buttons = previous_event?.buttons ?? 0;
-  let current_buttons = event.buttons;
+export function parse_pointer_event(ctx, event) {
+  const [x, y] = pointer_pos(ctx, event)
 
-  // ~001 &&
-  //  011
-  //  -----
-  //  010 found the newly pressed!
-  //
-  //   011 &&
-  //  ~001
-  //   -----
-  //   010 found the newly released!
-  if (check_pressed) {
-    previous_buttons = ~previous_buttons;
-  } else {
-    current_buttons = ~current_buttons;
-  }
-
-  let button = previous_buttons & current_buttons & (1 << button_index);
-  return !!button;
+  return [
+    x,
+    y,
+    event.pointerId,
+    event.button
+  ]
 }
 
 export function reset(ctx) {
