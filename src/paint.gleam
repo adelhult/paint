@@ -97,7 +97,7 @@ pub fn square(length: Float) -> Picture {
   rectangle(length, length)
 }
 
-// FIXME: add methods to draw only part of an image, flip, and if we want smooth scaling or not
+// FIXME: add a functon that allows us to draw only part of an image, flip, and if we want smooth scaling or not
 pub fn image(image: Image, width_px width_px, height_px height_px) -> Picture {
   internal_implementation.ImageRef(image, width_px:, height_px:)
 }

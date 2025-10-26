@@ -22,30 +22,26 @@ pub type Config {
   Config(width: Float, height: Float)
 }
 
-fn image_from_query_internal(selector: String) -> #(String, impl_canvas.JsImage) {
+pub fn image_from_query(selector: String) -> Image {
   let id = "image-selector-" <> selector
-  let image = case impl_canvas.get_global(id) {
+  case impl_canvas.get_global(id) {
     // Re-use the cached image if we can
-    Ok(image) -> {
-      image
+    Ok(_) -> {
+      Nil
     }
     Error(Nil) -> {
       let image = impl_canvas.image_from_query(selector)
       impl_canvas.set_global(image, id)
-      image
     }
   }
-  #(id, image)
-}
-
-pub fn image_from_query_lazy(selector: String) -> Image {
-  let #(id, _) = image_from_query_internal(selector)
   Image(id)
 }
 
-pub fn image_from_query(selector: String, loaded: fn(Image) -> Nil) -> Nil {
-  let #(id, image) = image_from_query_internal(selector)
-  impl_canvas.on_image_load(image, fn() { loaded(Image(id)) })
+// FIXME: this should take a list of images and await them all
+pub fn wait_until_loaded(image: Image, loaded: fn() -> Nil) -> Nil {
+  let Image(id:) = image
+  let assert Ok(js_image) = impl_canvas.get_global(id)
+  impl_canvas.on_image_load(js_image, loaded)
 }
 
 /// Display a picture on a HTML canvas element
