@@ -6,8 +6,9 @@ pub type Picture {
   Polygon(List(Vec2), closed: Bool)
   Arc(radius: Float, start: Angle, end: Angle)
   Text(text: String, style: FontProperties)
-  // TODO: Bitmap images
+  ImageRef(Image, width_px: Int, height_px: Int)
   // Styling
+  // TODO: font
   Fill(Picture, Colour)
   Stroke(Picture, StrokeProperties)
   // Transform
@@ -16,6 +17,12 @@ pub type Picture {
   Rotate(Picture, Angle)
   // Combine
   Combine(List(Picture))
+}
+
+// TODO: if we add other backends way may want to extend this type
+// with some more information. Or even add a phantom type...
+pub type Image {
+  Image(id: String)
 }
 
 pub type StrokeProperties {

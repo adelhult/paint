@@ -1,3 +1,5 @@
+import { Ok, Error } from "./gleam.mjs";
+
 class PaintCanvas extends HTMLElement {
   // Open an issue if you are in need of any other attributes :)
   static observedAttributes = ["width", "height", "style", "picture"];
@@ -23,7 +25,7 @@ class PaintCanvas extends HTMLElement {
       this.picture = newValue;
       return;
     } else if (name === "width") {
-      this.width = newValue; 
+      this.width = newValue;
     } else if (name === "height") {
       this.height = newValue;
     }
@@ -39,14 +41,13 @@ class PaintCanvas extends HTMLElement {
       window.PAINT_STATE[
         "display_on_rendering_context_with_default_drawing_state"
       ];
-   
-    display(this.pictureString, this.ctx);
-  }  
 
+    display(this.pictureString, this.ctx);
+  }
 
   set picture(value) {
     this.pictureString = value;
-    this.drawPicture()
+    this.drawPicture();
   }
 
   set width(value) {
@@ -99,7 +100,13 @@ export function set_global(state, id) {
 }
 
 export function get_global(id) {
-  return window.PAINT_STATE[id];
+  if (!window.PAINT_STATE) {
+    return new Error(undefined);
+  }
+  if (!(id in window.PAINT_STATE)) {
+    return new Error(undefined);
+  }
+  return new Ok(window.PAINT_STATE[id]);
 }
 
 export function get_width(ctx) {
@@ -235,4 +242,21 @@ export function rotate(ctx, radians) {
 
 export function reset_transform(ctx) {
   ctx.resetTransform();
+}
+
+export function draw_image(ctx, image, width_px, height_px) {
+  ctx.drawImage(image, 0, 0, width_px, height_px);
+}
+
+export function image_from_query(selector) {
+  // TODO: make sure it's an image and make sure for it to load?
+  return document.querySelector(selector);
+}
+
+export function on_image_load(image, callback) {
+  if (image.complete) {
+    callback();
+  } else {
+    image.addEventListener("load", callback);
+  }
 }

@@ -41,7 +41,7 @@ pub fn get_height(ctx: RenderingContext2D) -> Float
 pub fn set_global(state: state, id: String) -> Nil
 
 @external(javascript, "../../impl_canvas_bindings.mjs", "get_global")
-pub fn get_global(id: String) -> state
+pub fn get_global(id: String) -> Result(state, Nil)
 
 @external(javascript, "../../impl_canvas_bindings.mjs", "reset")
 pub fn reset(ctx: RenderingContext2D) -> Nil
@@ -94,3 +94,19 @@ pub fn polygon(
 
 @external(javascript, "../../impl_canvas_bindings.mjs", "text")
 pub fn text(ctx: RenderingContext2D, text: String, style: String) -> Nil
+
+pub type JsImage
+
+@external(javascript, "../../impl_canvas_bindings.mjs", "draw_image")
+pub fn draw_image(
+  ctx: RenderingContext2D,
+  image: JsImage,
+  width_px: Int,
+  height_px: Int,
+) -> Nil
+
+@external(javascript, "../../impl_canvas_bindings.mjs", "image_from_query")
+pub fn image_from_query(selector: String) -> JsImage
+
+@external(javascript, "../../impl_canvas_bindings.mjs", "on_image_load")
+pub fn on_image_load(image: JsImage, callback: fn() -> Nil) -> Nil

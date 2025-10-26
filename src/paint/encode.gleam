@@ -8,7 +8,7 @@ import paint/internal/types.{
 }
 
 /// Serialize a `Picture` to a string.
-/// 
+///
 /// If you wish to store the serialized data, remember that the library currently makes no stability guarantee that
 /// the data can be deserialized by *future* versions of the library
 pub fn to_string(picture: Picture) -> String {
@@ -184,6 +184,7 @@ fn picture_to_json(picture: Picture) -> Json {
         #("y", json.float(y)),
         #("picture", picture_to_json(picture)),
       ])
+    types.ImageRef(types.Image(id:), width_px:, height_px:) -> todo
   }
 }
 

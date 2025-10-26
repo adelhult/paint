@@ -13,6 +13,9 @@ import paint/internal/types as internal_implementation
 pub type Picture =
   internal_implementation.Picture
 
+pub type Image =
+  internal_implementation.Image
+
 /// An angle in clock-wise direction.
 /// See: `angle_rad` and `angle_deg`.
 pub type Angle =
@@ -92,6 +95,11 @@ pub fn rectangle(width: Float, height: Float) -> Picture {
 /// A square
 pub fn square(length: Float) -> Picture {
   rectangle(length, length)
+}
+
+// FIXME: add methods to draw only part of an image, flip, and if we want smooth scaling or not
+pub fn image(image: Image, width_px width_px, height_px height_px) -> Picture {
+  internal_implementation.ImageRef(image, width_px:, height_px:)
 }
 
 /// Text with some given font size
@@ -177,7 +185,7 @@ pub fn just(picture: Picture) -> fn(a) -> Picture {
   fn(_config) { picture }
 }
 
-// Internal utility function to get Pi π 
+// Internal utility function to get Pi π
 @external(erlang, "math", "pi")
 @external(javascript, "./numbers_ffi.mjs", "pi")
 fn pi() -> Float {

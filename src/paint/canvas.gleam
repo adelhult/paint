@@ -12,13 +12,40 @@ import paint/encode
 import paint/event.{type Event}
 import paint/internal/impl_canvas
 import paint/internal/types.{
-  type Picture, Arc, Blank, Combine, Fill, FontProperties, NoStroke, Polygon,
-  Radians, Rotate, Scale, SolidStroke, Stroke, Text, Translate,
+  type Image, type Picture, Arc, Blank, Combine, Fill, FontProperties, Image,
+  NoStroke, Polygon, Radians, Rotate, Scale, SolidStroke, Stroke, Text,
+  Translate,
 }
 
 /// The configuration of the "canvas"
 pub type Config {
   Config(width: Float, height: Float)
+}
+
+fn image_from_query_internal(selector: String) -> #(String, impl_canvas.JsImage) {
+  let id = "image-selector-" <> selector
+  let image = case impl_canvas.get_global(id) {
+    // Re-use the cached image if we can
+    Ok(image) -> {
+      image
+    }
+    Error(Nil) -> {
+      let image = impl_canvas.image_from_query(selector)
+      impl_canvas.set_global(image, id)
+      image
+    }
+  }
+  #(id, image)
+}
+
+pub fn image_from_query_lazy(selector: String) -> Image {
+  let #(id, _) = image_from_query_internal(selector)
+  Image(id)
+}
+
+pub fn image_from_query(selector: String, loaded: fn(Image) -> Nil) -> Nil {
+  let #(id, image) = image_from_query_internal(selector)
+  impl_canvas.on_image_load(image, fn() { loaded(Image(id)) })
 }
 
 /// Display a picture on a HTML canvas element
@@ -141,6 +168,11 @@ fn display_on_rendering_context(
         }
       }
     }
+    types.ImageRef(Image(id:), width_px:, height_px:) -> {
+      // FIXME: log an error if this fails?
+      let assert Ok(image) = impl_canvas.get_global(id)
+      impl_canvas.draw_image(ctx, image, width_px, height_px)
+    }
   }
 }
 
@@ -190,8 +222,8 @@ pub fn interact(
         let key = parse_key_code(impl_canvas.get_key_code(event))
         case key {
           Some(key) -> {
-            let new_state =
-              update(impl_canvas.get_global(selector), constructor(key))
+            let assert Ok(old_state) = impl_canvas.get_global(selector)
+            let new_state = update(old_state, constructor(key))
             impl_canvas.set_global(new_state, selector)
           }
           None -> Nil
@@ -207,8 +239,8 @@ pub fn interact(
     "mousemove",
     fn(event: impl_canvas.MouseEvent) {
       let #(x, y) = impl_canvas.mouse_pos(ctx, event)
-      let new_state =
-        update(impl_canvas.get_global(selector), event.MouseMoved(x, y))
+      let assert Ok(old_state) = impl_canvas.get_global(selector)
+      let new_state = update(old_state, event.MouseMoved(x, y))
       impl_canvas.set_global(new_state, selector)
       Nil
     },
@@ -221,7 +253,8 @@ pub fn interact(
       fn(event: impl_canvas.MouseEvent) {
         // Read the previous state of the mouse
         let previous_event_id = "PAINT_PREVIOUS_MOUSE_INPUT_FOR_" <> selector
-        let previous_event = impl_canvas.get_global(previous_event_id)
+        let assert Ok(previous_event) =
+          impl_canvas.get_global(previous_event_id)
         // Save this state
         impl_canvas.set_global(event, previous_event_id)
 
@@ -236,8 +269,8 @@ pub fn interact(
         }
 
         let trigger_update = fn(button) {
-          let new_state =
-            update(impl_canvas.get_global(selector), constructor(button))
+          let assert Ok(old_state) = impl_canvas.get_global(selector)
+          let new_state = update(old_state, constructor(button))
           impl_canvas.set_global(new_state, selector)
         }
 
@@ -297,7 +330,7 @@ fn parse_key_code(key_code: Int) -> Option(event.Key) {
 // to do this workaround...
 fn get_tick_func(ctx, view, update, selector) {
   fn(time) {
-    let current_state = impl_canvas.get_global(selector)
+    let assert Ok(current_state) = impl_canvas.get_global(selector)
 
     // Trigger a tick event before drawing
     let new_state = update(current_state, event.Tick(time))
@@ -340,6 +373,9 @@ pub fn define_web_component() -> Nil {
   // somewhat of an ugly hack, but the setter for the web component will need to call this
   // when the picture property changes. Therefore we
   // bind this function to the window object so we can access it from the JS side of things.
+  //
+  // However, we should be careful of changing this. It is not part of the public API but it seems like
+  // [Tiramisu](https://hexdocs.pm/tiramisu/index.html) might makes use of it.
   impl_canvas.set_global(
     fn(encoded_picture, ctx) {
       let assert Ok(picture) = encode.from_string(encoded_picture)
