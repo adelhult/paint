@@ -13,6 +13,8 @@ import paint/internal/types as internal_implementation
 pub type Picture =
   internal_implementation.Picture
 
+/// A reference to an image (i.e. a texture), not to be confused with the `Picture` type.
+/// To create an image, see the image functions in the `canvas` back-end.
 pub type Image =
   internal_implementation.Image
 
@@ -57,7 +59,7 @@ pub fn colour_rgb(red: Int, green: Int, blue: Int) -> Colour {
 pub type Vec2 =
   #(Float, Float)
 
-/// A blank image
+/// A blank picture
 pub fn blank() -> Picture {
   internal_implementation.Blank
 }
@@ -97,8 +99,9 @@ pub fn square(length: Float) -> Picture {
   rectangle(length, length)
 }
 
-// FIXME: add a functon that allows us to draw only part of an image, flip, and if we want smooth scaling or not
+/// Draw an image such as a PNG, JPEG or an SVG. See the `canvas` back-end for more details on how to load images.
 pub fn image(image: Image, width_px width_px, height_px height_px) -> Picture {
+  // TODO: add a function that allows us to draw only part of an image, flip, and if we want smooth scaling or not
   internal_implementation.ImageRef(image, width_px:, height_px:)
 }
 

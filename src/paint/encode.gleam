@@ -9,8 +9,12 @@ import paint/internal/types.{
 
 /// Serialize a `Picture` to a string.
 ///
-/// If you wish to store the serialized data, remember that the library currently makes no stability guarantee that
-/// the data can be deserialized by *future* versions of the library
+/// Note, serializing an `Image` texture will only store an ID referencing the image. This means that if you deserialize a Picture containing
+/// references to images, you are responsible for making sure all images are loaded before drawing the picture.
+/// More advanced APIs to support use cases such as these are planned for a future release.
+///
+/// Also, if you wish to store the serialized data, remember that the library currently makes no stability guarantee that
+/// the data can be deserialized by *future* versions of the library.
 pub fn to_string(picture: Picture) -> String {
   let version = "paint:unstable"
   json.object([

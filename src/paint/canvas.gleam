@@ -22,6 +22,22 @@ pub type Config {
   Config(width: Float, height: Float)
 }
 
+/// Create a reference to an image using a CSS query selector. For example:
+/// ```
+/// fn kitten() {
+///  canvas.image_from_query("#kitten")
+/// }
+/// // In the HTML file:
+/// // <img
+/// //  style="display: none"
+/// //  src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Cat_November_2010-1a.jpg"
+/// //  id="kitten"
+/// // />
+/// ```
+///
+/// > [!WARNING]
+/// > **Important**: Make sure the image has loaded before trying to draw a pictures referencing it.
+/// > You can do this using `canvas.wait_until_loaded` function.
 pub fn image_from_query(selector: String) -> Image {
   let id = "image-selector-" <> selector
   case impl_canvas.get_global(id) {
@@ -37,6 +53,16 @@ pub fn image_from_query(selector: String) -> Image {
   Image(id)
 }
 
+/// Create a reference to an image using a source path.
+/// ```
+/// fn my_logo_image() {
+///   canvas.image_from_src("./priv/static/logo.svg")
+/// }
+/// ```
+///
+/// > [!WARNING]
+/// > **Important**: Make sure the image has loaded before trying to draw a pictures referencing it.
+/// > You can do this using `canvas.wait_until_loaded` function.
 pub fn image_from_src(src: String) -> Image {
   let id = "image-src-" <> src
   case impl_canvas.get_global(id) {
@@ -52,6 +78,21 @@ pub fn image_from_src(src: String) -> Image {
   Image(id)
 }
 
+/// Wait until a list of images have all been loaded, for example:
+/// ```
+/// fn lucy() {
+///  canvas.image_from_query("#lucy")
+/// }
+///
+/// fn cat() {
+///   canvas.image_from_src("./path/to/kitten.png")
+/// }
+///
+/// pub fn main() {
+///  use <- canvas.wait_until_loaded([lucy(), kitten()])
+///  // It is now safe to draw Pictures containing the images lucy and kitten :)
+/// }
+/// ```
 pub fn wait_until_loaded(images: List(Image), on_loaded: fn() -> Nil) -> Nil {
   case images {
     [] -> on_loaded()
