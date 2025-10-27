@@ -59,3 +59,4 @@ pub fn rotate_round_trip_test() {
 pub fn combine_round_trip_test() {
   let assert Ok(_) = round_trip(p.circle(20.0) |> p.concat(p.square(20.0)))
 }
+// Note: there is no round trip test for images since I currently can't construct an image without the canvas back-end

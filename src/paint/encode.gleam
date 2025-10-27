@@ -90,6 +90,12 @@ fn decode_picture() -> Decoder(Picture) {
       use picture <- decode.field("picture", decode_picture())
       decode.success(types.Translate(picture, #(x, y)))
     }
+    "image" -> {
+      use id <- decode.field("id", decode.string)
+      use width_px <- decode.field("width_px", decode.int)
+      use height_px <- decode.field("height_px", decode.int)
+      decode.success(types.ImageRef(types.Image(id:), width_px:, height_px:))
+    }
     _ -> decode.failure(types.Blank, "Picture")
   }
 }
@@ -184,7 +190,14 @@ fn picture_to_json(picture: Picture) -> Json {
         #("y", json.float(y)),
         #("picture", picture_to_json(picture)),
       ])
-    types.ImageRef(types.Image(id:), width_px:, height_px:) -> todo
+    types.ImageRef(types.Image(id:), width_px:, height_px:) -> {
+      json.object([
+        #("type", json.string("image")),
+        #("id", json.string(id)),
+        #("width_px", json.int(width_px)),
+        #("height_px", json.int(height_px)),
+      ])
+    }
   }
 }
 
