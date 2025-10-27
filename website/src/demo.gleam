@@ -1,3 +1,4 @@
+import examples/image
 import gleam/bool
 import gleam/dict.{type Dict}
 import gleam/int
@@ -61,6 +62,7 @@ fn paint_canvas(
 
 pub fn main() {
   canvas.define_web_component()
+  use <- canvas.wait_until_loaded([image.my_logo_image()])
   let app = lustre.simple(init, update, view)
   let assert Ok(_) = lustre.start(app, "#app", Nil)
 
@@ -118,6 +120,7 @@ fn init(_flags) {
       ref_to_example(refs, "rectangle.gleam", rectangle.rectangle_example()),
       ref_to_example(refs, "square.gleam", square.square_example()),
       ref_to_example(refs, "text.gleam", text.text_example()),
+      ref_to_example(refs, "image.gleam", image.image_example()),
     ]),
     Category("Style", [
       ref_to_example(refs, "fill.gleam", fill.fill_example()),
