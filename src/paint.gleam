@@ -193,17 +193,6 @@ pub fn combine(pictures: List(Picture)) -> Picture {
   internal_implementation.Combine(pictures)
 }
 
-/// Utility function that is useful for cases where you
-/// are no interested in the canvas configuration. For example,
-/// ```
-/// canvas.display(just(circle(30.0)), "#my_canvas")
-/// // instead of...
-/// canvas.display(fn(_config) { circle(30.0) }, "#my_canvas")
-/// ```
-pub fn just(picture: Picture) -> fn(a) -> Picture {
-  fn(_config) { picture }
-}
-
 // Internal utility function to get Pi π
 @external(erlang, "math", "pi")
 @external(javascript, "./numbers_ffi.mjs", "pi")
