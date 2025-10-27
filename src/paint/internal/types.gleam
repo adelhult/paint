@@ -11,6 +11,7 @@ pub type Picture {
   // TODO: font
   Fill(Picture, Colour)
   Stroke(Picture, StrokeProperties)
+  ImageScalingBehaviour(Picture, ImageScalingBehaviour)
   // Transform
   Translate(Picture, Vec2)
   Scale(Picture, Vec2)
@@ -23,6 +24,11 @@ pub type Picture {
 // Invariant: the image object is assumed to already be created and stored somewhere (like the PAINT_STATE for the canvas backend)
 pub type Image {
   Image(id: String)
+}
+
+pub type ImageScalingBehaviour {
+  ScalingSmooth
+  ScalingPixelated
 }
 
 pub type StrokeProperties {

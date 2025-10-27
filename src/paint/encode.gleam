@@ -100,6 +100,23 @@ fn decode_picture() -> Decoder(Picture) {
       use height_px <- decode.field("height_px", decode.int)
       decode.success(types.ImageRef(types.Image(id:), width_px:, height_px:))
     }
+    "image_scaling_behaviour" -> {
+      use behaviour <- decode.field("behaviour", decode.string)
+      use picture <- decode.field("picture", decode_picture())
+      case behaviour {
+        "smooth" ->
+          decode.success(types.ImageScalingBehaviour(
+            picture,
+            types.ScalingSmooth,
+          ))
+        "pixelated" ->
+          decode.success(types.ImageScalingBehaviour(
+            picture,
+            types.ScalingPixelated,
+          ))
+        _ -> decode.failure(types.Blank, "Picture")
+      }
+    }
     _ -> decode.failure(types.Blank, "Picture")
   }
 }
@@ -202,6 +219,18 @@ fn picture_to_json(picture: Picture) -> Json {
         #("height_px", json.int(height_px)),
       ])
     }
+    types.ImageScalingBehaviour(picture, behaviour) ->
+      json.object([
+        #("type", json.string("image_scaling_behaviour")),
+        #(
+          "behaviour",
+          json.string(case behaviour {
+            types.ScalingPixelated -> "pixelated"
+            types.ScalingSmooth -> "smooth"
+          }),
+        ),
+        #("picture", picture_to_json(picture)),
+      ])
   }
 }
 

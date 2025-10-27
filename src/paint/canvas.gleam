@@ -227,9 +227,18 @@ fn display_on_rendering_context(
       }
     }
     types.ImageRef(Image(id:), width_px:, height_px:) -> {
-      // FIXME: log an error if this fails?
+      // TODO: log an error if this fails?
       let assert Ok(image) = impl_canvas.get_global(id)
       impl_canvas.draw_image(ctx, image, width_px, height_px)
+    }
+    types.ImageScalingBehaviour(p, behaviour) -> {
+      impl_canvas.save(ctx)
+      impl_canvas.set_image_smoothing_enabled(ctx, case behaviour {
+        types.ScalingPixelated -> False
+        types.ScalingSmooth -> True
+      })
+      display_on_rendering_context(p, ctx, state)
+      impl_canvas.restore(ctx)
     }
   }
 }

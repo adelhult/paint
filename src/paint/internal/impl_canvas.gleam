@@ -73,6 +73,9 @@ pub fn set_stroke_color(ctx: RenderingContext2D, css_color: String) -> Nil
 @external(javascript, "../../impl_canvas_bindings.mjs", "set_line_width")
 pub fn set_line_width(ctx: RenderingContext2D, width: Float) -> Nil
 
+@external(javascript, "../../impl_canvas_bindings.mjs", "set_image_smoothing_enabled")
+pub fn set_image_smoothing_enabled(ctx: RenderingContext2D, value: Bool) -> Nil
+
 @external(javascript, "../../impl_canvas_bindings.mjs", "arc")
 pub fn arc(
   ctx: RenderingContext2D,

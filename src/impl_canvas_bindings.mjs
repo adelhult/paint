@@ -265,3 +265,7 @@ export function on_image_load(image, callback) {
     image.addEventListener("load", callback);
   }
 }
+
+export function set_image_smoothing_enabled(ctx, value) {
+  ctx.imageSmoothingEnabled = value;
+}

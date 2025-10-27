@@ -1,4 +1,5 @@
 import examples/image
+import examples/image_scaling
 import gleam/bool
 import gleam/dict.{type Dict}
 import gleam/int
@@ -62,7 +63,10 @@ fn paint_canvas(
 
 pub fn main() {
   canvas.define_web_component()
-  use <- canvas.wait_until_loaded([image.my_logo_image()])
+  use <- canvas.wait_until_loaded([
+    image.my_logo_image(),
+    image_scaling.pixel_art(),
+  ])
   let app = lustre.simple(init, update, view)
   let assert Ok(_) = lustre.start(app, "#app", Nil)
 
@@ -129,6 +133,11 @@ fn init(_flags) {
         refs,
         "community_colour.gleam",
         community_colour.community_colour_example(),
+      ),
+      ref_to_example(
+        refs,
+        "image_scaling.gleam",
+        image_scaling.image_scaling_example(),
       ),
     ]),
     Category("Transform", [

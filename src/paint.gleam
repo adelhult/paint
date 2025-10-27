@@ -105,6 +105,22 @@ pub fn image(image: Image, width_px width_px, height_px height_px) -> Picture {
   internal_implementation.ImageRef(image, width_px:, height_px:)
 }
 
+/// Set image scaling to be smooth (this is the default behaviour)
+pub fn image_scaling_smooth(picture: Picture) -> Picture {
+  internal_implementation.ImageScalingBehaviour(
+    picture,
+    internal_implementation.ScalingSmooth,
+  )
+}
+
+/// Disable smooth image scaling, suitable for pixel art.
+pub fn image_scaling_pixelated(picture: Picture) -> Picture {
+  internal_implementation.ImageScalingBehaviour(
+    picture,
+    internal_implementation.ScalingPixelated,
+  )
+}
+
 /// Text with some given font size
 pub fn text(text: String, px font_size: Int) -> Picture {
   internal_implementation.Text(

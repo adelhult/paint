@@ -29,13 +29,16 @@ jobs:
           cd website
           gleam deps download
           gleam run -m reference_this -- --allow-all-ext src/examples src/examples_code.gleam
-          sed -i 's|./priv/static/logo.svg|./logo.svg|' src/demo.gleam
+          sed -i 's|./priv/static/|./|' src/demo.gleam
+          sed -i 's|./priv/static/|./|' src/examples/image_scaling.gleam
+          sed -i 's|./priv/static/|./|' src/examples/image.gleam
           gleam run -m lustre/dev build app --minify
           mkdir -p dist
           cp index.html dist/index.html
           cp -r priv dist/priv
           sed -i 's|priv/static/demo.mjs|paint/priv/static/demo.min.mjs|' dist/index.html
           cp ../media/logo.svg ./dist/logo.svg
+          cp ../media/pixel_art_example.png ./dist/pixel_art_example.png
           cp -r ../demos/noughts_and_crosses/dist dist/noughts_and_crosses
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
