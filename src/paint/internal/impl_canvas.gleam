@@ -108,5 +108,8 @@ pub fn draw_image(
 @external(javascript, "../../impl_canvas_bindings.mjs", "image_from_query")
 pub fn image_from_query(selector: String) -> JsImage
 
+@external(javascript, "../../impl_canvas_bindings.mjs", "image_from_src")
+pub fn image_from_src(src: String) -> JsImage
+
 @external(javascript, "../../impl_canvas_bindings.mjs", "on_image_load")
 pub fn on_image_load(image: JsImage, callback: fn() -> Nil) -> Nil

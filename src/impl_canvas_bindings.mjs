@@ -249,8 +249,13 @@ export function draw_image(ctx, image, width_px, height_px) {
 }
 
 export function image_from_query(selector) {
-  // TODO: make sure it's an image and make sure for it to load?
   return document.querySelector(selector);
+}
+
+export function image_from_src(src) {
+  const image = new Image();
+  image.src = src;
+  return image;
 }
 
 export function on_image_load(image, callback) {

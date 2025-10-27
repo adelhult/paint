@@ -19,8 +19,8 @@ pub type Picture {
   Combine(List(Picture))
 }
 
-// TODO: if we add other backends way may want to extend this type
-// with some more information. Or even add a phantom type...
+// The ID for an image
+// Invariant: the image object is assumed to already be created and stored somewhere (like the PAINT_STATE for the canvas backend)
 pub type Image {
   Image(id: String)
 }

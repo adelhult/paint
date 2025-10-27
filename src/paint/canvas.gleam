@@ -37,11 +37,32 @@ pub fn image_from_query(selector: String) -> Image {
   Image(id)
 }
 
-// FIXME: this should take a list of images and await them all
-pub fn wait_until_loaded(image: Image, loaded: fn() -> Nil) -> Nil {
-  let Image(id:) = image
-  let assert Ok(js_image) = impl_canvas.get_global(id)
-  impl_canvas.on_image_load(js_image, loaded)
+pub fn image_from_src(src: String) -> Image {
+  let id = "image-src-" <> src
+  case impl_canvas.get_global(id) {
+    // Re-use the cached image if we can
+    Ok(_) -> {
+      Nil
+    }
+    Error(Nil) -> {
+      let image = impl_canvas.image_from_src(src)
+      impl_canvas.set_global(image, id)
+    }
+  }
+  Image(id)
+}
+
+pub fn wait_until_loaded(images: List(Image), on_loaded: fn() -> Nil) -> Nil {
+  case images {
+    [] -> on_loaded()
+    [image, ..rest] -> {
+      let Image(id:) = image
+      let assert Ok(js_image) = impl_canvas.get_global(id)
+      impl_canvas.on_image_load(js_image, fn() {
+        wait_until_loaded(rest, on_loaded)
+      })
+    }
+  }
 }
 
 /// Display a picture on a HTML canvas element
