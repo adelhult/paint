@@ -1,4 +1,4 @@
-import { Ok, Error } from "./gleam.mjs";
+import { Ok, Error, Result$isOk, Result$Ok$0 } from "./gleam.mjs";
 
 class PaintCanvas extends HTMLElement {
   // Open an issue if you are in need of any other attributes :)
@@ -138,7 +138,9 @@ export function check_mouse_button(
   button_index,
   check_pressed,
 ) {
-  let previous_buttons = previous_event?.buttons ?? 0;
+  let previous_buttons = Result$isOk(previous_event)
+    ? Result$Ok$0(previous_event).buttons
+    : 0;
   let current_buttons = event.buttons;
 
   // ~001 &&
