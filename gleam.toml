@@ -5,7 +5,7 @@ target = "javascript"
 # Fill out these fields if you intend to generate HTML documentation or publish
 # your project to the Hex package manager.
 #
-description = "Make 2D drawings, animations, and games (HTML Canvas)"
+description = "Make 2D drawings, animations, and games using the HTML Canvas"
 licences = ["MIT"]
 repository = { type = "github", user = "adelhult", repo = "paint" }
 links = [
