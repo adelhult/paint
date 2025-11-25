@@ -1,3 +1,6 @@
+# 1.0.1
+- Fix: MouseReleased event being emitted (Thanks, @agj!)
+
 # 1.0.0
 - Addition: Add basic Image API
 - Breaking: Remove the `just` function
