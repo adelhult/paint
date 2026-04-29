@@ -3,8 +3,8 @@ import gleam/json.{type Json}
 import gleam_community/colour
 import paint.{type Picture}
 import paint/internal/types.{
-  type Angle, type FontProperties, type StrokeProperties, FontProperties,
-  NoStroke, Radians, SolidStroke,
+  type Angle, type FontProperties, type StrokeProperties, DashedStroke,
+  FontProperties, NoStroke, Radians,
 }
 
 /// Serialize a `Picture` to a string.
@@ -131,10 +131,11 @@ fn decode_stroke() -> Decoder(StrokeProperties) {
   use stroke_type <- decode.field("type", decode.string)
   case stroke_type {
     "noStroke" -> decode.success(NoStroke)
-    "solidStroke" -> {
+    "dashedStroke" -> {
       use colour <- decode.field("colour", colour.decoder())
-      use thickness <- decode.field("thickness", decode.float)
-      decode.success(SolidStroke(colour, thickness))
+      use width <- decode.field("width", decode.float)
+      use dashes <- decode.field("dashes", decode.list(decode.float))
+      decode.success(DashedStroke(colour, width:, dashes:))
     }
     _ -> decode.failure(NoStroke, "StrokeProperties")
   }
@@ -245,11 +246,12 @@ fn font_to_json(font: FontProperties) -> Json {
 fn stroke_to_json(stroke: StrokeProperties) -> Json {
   case stroke {
     NoStroke -> json.object([#("type", json.string("noStroke"))])
-    SolidStroke(colour, thickness) ->
+    DashedStroke(colour, width:, dashes:) ->
       json.object([
-        #("type", json.string("solidStroke")),
+        #("type", json.string("dashedStroke")),
         #("colour", colour.encode(colour)),
-        #("thickness", json.float(thickness)),
+        #("width", json.float(width)),
+        #("dashes", json.array(dashes, json.float)),
       ])
   }
 }

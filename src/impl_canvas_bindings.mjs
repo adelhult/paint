@@ -231,6 +231,10 @@ export function set_line_width(ctx, width) {
   ctx.lineWidth = width;
 }
 
+export function set_line_dash(ctx, dashes) {
+  ctx.setLineDash(dashes);
+}
+
 export function translate(ctx, x, y) {
   ctx.translate(x, y);
 }

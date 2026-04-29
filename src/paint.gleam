@@ -172,9 +172,19 @@ pub fn fill(picture: Picture, colour: Colour) -> Picture {
 
 /// Set a solid stroke with some given colour and width
 pub fn stroke(picture: Picture, colour: Colour, width width: Float) -> Picture {
+  stroke_dashed(picture, colour, width:, dashes: [])
+}
+
+/// Set a dashed stroke with some given colour and width
+pub fn stroke_dashed(
+  picture: Picture,
+  colour: Colour,
+  width width: Float,
+  dashes dashes: List(Float),
+) -> Picture {
   internal_implementation.Stroke(
     picture,
-    internal_implementation.SolidStroke(colour, width),
+    internal_implementation.DashedStroke(colour, width:, dashes:),
   )
 }
 

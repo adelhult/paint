@@ -5,6 +5,7 @@
 //// - `interact` (allows you to make animations and interactive programs)
 
 import gleam/int
+import gleam/javascript/array
 import gleam/option.{type Option, None, Some}
 import gleam_community/colour
 import paint.{translate_xy}
@@ -12,8 +13,8 @@ import paint/encode
 import paint/event.{type Event}
 import paint/internal/impl_canvas
 import paint/internal/types.{
-  type Image, type Picture, Arc, Blank, Combine, Fill, FontProperties, Image,
-  NoStroke, Polygon, Radians, Rotate, Scale, SolidStroke, Stroke, Text,
+  type Image, type Picture, Arc, Blank, Combine, DashedStroke, Fill,
+  FontProperties, Image, NoStroke, Polygon, Radians, Rotate, Scale, Stroke, Text,
   Translate,
 }
 
@@ -179,10 +180,11 @@ fn display_on_rendering_context(
             ctx,
             DrawingState(..state, stroke: False),
           )
-        SolidStroke(color, width) -> {
+        DashedStroke(color, width:, dashes:) -> {
           impl_canvas.save(ctx)
           impl_canvas.set_stroke_color(ctx, colour.to_css_rgba_string(color))
           impl_canvas.set_line_width(ctx, width)
+          impl_canvas.set_line_dash(ctx, array.from_list(dashes))
           display_on_rendering_context(
             p,
             ctx,

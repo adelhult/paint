@@ -21,3 +21,4 @@ dev-dependencies = { gleeunit = ">= 1.6.1 and < 2.0.0" }
 gleam_stdlib = ">= 1.0.0 and < 2.0.0"
 gleam_community_colour = ">= 2.0.0 and < 3.0.0"
 gleam_json = ">= 3.0.2 and < 4.0.0"
+gleam_javascript = ">= 1.0.0 and < 2.0.0"

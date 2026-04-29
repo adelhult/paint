@@ -30,6 +30,7 @@ import examples/rotate
 import examples/scale
 import examples/square
 import examples/stroke
+import examples/stroke_dashed
 import examples/text
 import examples/translate
 
@@ -128,6 +129,11 @@ fn init(_flags) {
     Category("Style", [
       ref_to_example(refs, "fill.gleam", fill.fill_example()),
       ref_to_example(refs, "stroke.gleam", stroke.stroke_example()),
+      ref_to_example(
+        refs,
+        "stroke_dashed.gleam",
+        stroke_dashed.stroke_dashed_example(),
+      ),
       ref_to_example(
         refs,
         "community_colour.gleam",
