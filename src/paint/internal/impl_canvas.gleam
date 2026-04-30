@@ -91,6 +91,52 @@ pub fn arc(
   stroke: Bool,
 ) -> Nil
 
+@external(javascript, "../../impl_canvas_bindings.mjs", "path")
+pub fn path(
+  ctx: RenderingContext2D,
+  add_segments: fn(RenderingContext2D) -> Nil,
+  fill: Bool,
+  stroke: Bool,
+) -> Nil
+
+@external(javascript, "../../impl_canvas_bindings.mjs", "move_to")
+pub fn move_to(ctx: RenderingContext2D, x: Float, y: Float) -> Nil
+
+@external(javascript, "../../impl_canvas_bindings.mjs", "line_to")
+pub fn line_to(ctx: RenderingContext2D, x: Float, y: Float) -> Nil
+
+@external(javascript, "../../impl_canvas_bindings.mjs", "arc_centre")
+pub fn arc_centre(
+  ctx: RenderingContext2D,
+  x: Float,
+  y: Float,
+  radius: Float,
+  start_angle: Float,
+  end_angle: Float,
+  counterclockwise: Bool,
+) -> Nil
+
+@external(javascript, "../../impl_canvas_bindings.mjs", "arc_corner")
+pub fn arc_corner(
+  ctx: RenderingContext2D,
+  x1: Float,
+  y1: Float,
+  x2: Float,
+  y2: Float,
+  radius: Float,
+) -> Nil
+
+@external(javascript, "../../impl_canvas_bindings.mjs", "bezier_to")
+pub fn bezier_to(
+  ctx: RenderingContext2D,
+  cp1x: Float,
+  cp1y: Float,
+  cp2x: Float,
+  cp2y: Float,
+  x: Float,
+  y: Float,
+) -> Nil
+
 @external(javascript, "../../impl_canvas_bindings.mjs", "polygon")
 pub fn polygon(
   ctx: RenderingContext2D,

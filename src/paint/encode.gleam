@@ -49,6 +49,13 @@ fn decode_picture() -> Decoder(Picture) {
       use end <- decode.field("end", decode_angle())
       decode.success(types.Arc(radius, start:, end:))
     }
+    "path" -> {
+      use segments <- decode.field(
+        "segments",
+        decode.list(decode_path_segment()),
+      )
+      decode.success(types.Path(segments))
+    }
     "blank" -> decode.success(types.Blank)
     "combine" -> {
       use pictures <- decode.field(
@@ -121,6 +128,48 @@ fn decode_picture() -> Decoder(Picture) {
   }
 }
 
+fn decode_path_segment() -> Decoder(types.PathSegment) {
+  use ty <- decode.field("type", decode.string)
+
+  case ty {
+    "move_to" -> {
+      use dest <- decode.field("dest", decode_vec2())
+      decode.success(types.MoveTo(dest))
+    }
+    "line_to" -> {
+      use dest <- decode.field("dest", decode_vec2())
+      decode.success(types.LineTo(dest))
+    }
+    "arc_centre" -> {
+      use centre <- decode.field("centre", decode_vec2())
+      use radius <- decode.field("radius", decode.float)
+      use start_angle <- decode.field("start_angle", decode_angle())
+      use end_angle <- decode.field("end_angle", decode_angle())
+      use counterclockwise <- decode.field("counterclockwise", decode.bool)
+      decode.success(types.ArcCentre(
+        centre:,
+        radius:,
+        start_angle:,
+        end_angle:,
+        counterclockwise:,
+      ))
+    }
+    "arc_corner" -> {
+      use corner <- decode.field("corner", decode_vec2())
+      use end <- decode.field("end", decode_vec2())
+      use radius <- decode.field("radius", decode.float)
+      decode.success(types.ArcCorner(corner:, end:, radius:))
+    }
+    "bezier_to" -> {
+      use cp1 <- decode.field("cp1", decode_vec2())
+      use cp2 <- decode.field("cp2", decode_vec2())
+      use end <- decode.field("end", decode_vec2())
+      decode.success(types.BezierTo(cp1:, cp2:, end:))
+    }
+    _ -> decode.failure(types.MoveTo(#(0.0, 0.0)), "PathSegment")
+  }
+}
+
 fn decode_font() -> Decoder(FontProperties) {
   use size_px <- decode.field("sizePx", decode.int)
   use font_family <- decode.field("fontFamily", decode.string)
@@ -155,6 +204,11 @@ fn picture_to_json(picture: Picture) -> Json {
         #("radius", json.float(radius)),
         #("start", angle_to_json(start)),
         #("end", angle_to_json(end)),
+      ])
+    types.Path(segments) ->
+      json.object([
+        #("type", json.string("path")),
+        #("segments", json.array(segments, of: path_segment_to_json)),
       ])
     types.Blank -> json.object([#("type", json.string("blank"))])
     types.Combine(from) ->
@@ -235,6 +289,50 @@ fn picture_to_json(picture: Picture) -> Json {
   }
 }
 
+fn path_segment_to_json(segment: types.PathSegment) -> Json {
+  case segment {
+    types.MoveTo(dest) ->
+      json.object([
+        #("type", json.string("move_to")),
+        #("dest", vec2_to_json(dest)),
+      ])
+    types.LineTo(dest) ->
+      json.object([
+        #("type", json.string("line_to")),
+        #("dest", vec2_to_json(dest)),
+      ])
+    types.ArcCentre(
+      centre:,
+      radius:,
+      start_angle:,
+      end_angle:,
+      counterclockwise:,
+    ) ->
+      json.object([
+        #("type", json.string("arc_centre")),
+        #("centre", vec2_to_json(centre)),
+        #("radius", json.float(radius)),
+        #("start_angle", angle_to_json(start_angle)),
+        #("end_angle", angle_to_json(end_angle)),
+        #("counterclockwise", json.bool(counterclockwise)),
+      ])
+    types.ArcCorner(corner:, end:, radius:) ->
+      json.object([
+        #("type", json.string("arc_corner")),
+        #("corner", vec2_to_json(corner)),
+        #("end", vec2_to_json(end)),
+        #("radius", json.float(radius)),
+      ])
+    types.BezierTo(cp1:, cp2:, end:) ->
+      json.object([
+        #("type", json.string("bezier_to")),
+        #("cp1", vec2_to_json(cp1)),
+        #("cp2", vec2_to_json(cp2)),
+        #("end", vec2_to_json(end)),
+      ])
+  }
+}
+
 fn font_to_json(font: FontProperties) -> Json {
   let FontProperties(size_px:, font_family:) = font
   json.object([
@@ -259,4 +357,9 @@ fn stroke_to_json(stroke: StrokeProperties) -> Json {
 fn angle_to_json(angle: Angle) -> Json {
   let Radians(rad) = angle
   json.object([#("radians", json.float(rad))])
+}
+
+fn vec2_to_json(vec2: #(Float, Float)) -> Json {
+  let #(x, y) = vec2
+  json.object([#("x", json.float(x)), #("y", json.float(y))])
 }
