@@ -13,6 +13,14 @@ import paint/internal/types as internal_implementation
 pub type Picture =
   internal_implementation.Picture
 
+/// A segment from a 2D path.
+///
+///> [!NOTE]
+///> Unless you intend to author a new backend you should **consider this type opaque and never use any of its constructors**.
+///> Instead, make use of the many utility functions defined in this module (`move_to`, `line_to`, etc.)
+pub type PathSegment =
+  internal_implementation.PathSegment
+
 /// A reference to an image (i.e. a texture), not to be confused with the `Picture` type.
 /// To create an image, see the image functions in the `canvas` back-end.
 pub type Image =
@@ -77,6 +85,52 @@ pub fn circle(radius: Float) -> Picture {
 /// starting angle to some other angle in clock-wise direction
 pub fn arc(radius: Float, start: Angle, end: Angle) -> Picture {
   internal_implementation.Arc(radius, start: start, end: end)
+}
+
+/// A path
+pub fn path(segments: List(PathSegment)) -> Picture {
+  internal_implementation.Path(segments)
+}
+
+/// Move to in path
+pub fn move_to(dest: Vec2) -> PathSegment {
+  internal_implementation.MoveTo(dest)
+}
+
+/// Line to in path
+pub fn line_to(dest: Vec2) -> PathSegment {
+  internal_implementation.LineTo(dest)
+}
+
+/// Arc in path, defined as centre and start/end angles
+pub fn arc_centre(
+  centre centre: Vec2,
+  radius radius: Float,
+  start_angle start_angle: Angle,
+  end_angle end_angle: Angle,
+  counterclockwise counterclockwise: Bool,
+) -> PathSegment {
+  internal_implementation.ArcCentre(
+    centre:,
+    radius:,
+    start_angle:,
+    end_angle:,
+    counterclockwise:,
+  )
+}
+
+/// Arc in path, defined as corner point and end point
+pub fn arc_corner(
+  corner corner: Vec2,
+  end end: Vec2,
+  radius radius: Float,
+) -> PathSegment {
+  internal_implementation.ArcCorner(corner:, end:, radius:)
+}
+
+/// Bezier curve in path
+pub fn bezier_to(cp1 cp1: Vec2, cp2 cp2: Vec2, end end: Vec2) -> PathSegment {
+  internal_implementation.BezierTo(cp1:, cp2:, end:)
 }
 
 /// A polygon consisting of a list of 2d points

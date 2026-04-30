@@ -178,6 +178,37 @@ export function arc(ctx, radius, start, end, fill, stroke) {
   }
 }
 
+export function path(ctx, add_segments, fill, stroke) {
+  ctx.beginPath();
+  add_segments(ctx);
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
+}
+
+export function move_to(ctx, x, y) {
+  ctx.moveTo(x, y);
+}
+
+export function line_to(ctx, x, y) {
+  ctx.lineTo(x, y);
+}
+
+export function arc_centre(ctx, x, y, radius, start_angle, end_angle, counterclockwise) {
+  ctx.arc(x, y, radius, start_angle, end_angle, counterclockwise);
+}
+
+export function arc_corner(ctx, x1, y1, x2, y2, radius) {
+  ctx.arcTo(x1, y1, x2, y2, radius);
+}
+
+export function bezier_to(ctx, cp1x, cp1y, cp2x, cp2y, x, y) {
+  ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+}
+
 export function polygon(ctx, points, closed, fill, stroke) {
   ctx.beginPath();
   ctx.moveTo(0, 0);

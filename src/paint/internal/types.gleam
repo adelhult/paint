@@ -5,6 +5,7 @@ pub type Picture {
   Blank
   Polygon(List(Vec2), closed: Bool)
   Arc(radius: Float, start: Angle, end: Angle)
+  Path(List(PathSegment))
   Text(text: String, style: FontProperties)
   ImageRef(Image, width_px: Int, height_px: Int)
   // Styling
@@ -29,6 +30,20 @@ pub type Image {
 pub type ImageScalingBehaviour {
   ScalingSmooth
   ScalingPixelated
+}
+
+pub type PathSegment {
+  MoveTo(Vec2)
+  LineTo(Vec2)
+  ArcCentre(
+    centre: Vec2,
+    radius: Float,
+    start_angle: Angle,
+    end_angle: Angle,
+    counterclockwise: Bool,
+  )
+  ArcCorner(corner: Vec2, end: Vec2, radius: Float)
+  BezierTo(cp1: Vec2, cp2: Vec2, end: Vec2)
 }
 
 pub type StrokeProperties {

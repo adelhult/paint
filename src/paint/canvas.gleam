@@ -13,9 +13,9 @@ import paint/encode
 import paint/event.{type Event}
 import paint/internal/impl_canvas
 import paint/internal/types.{
-  type Image, type Picture, Arc, Blank, Combine, DashedStroke, Fill,
-  FontProperties, Image, NoStroke, Polygon, Radians, Rotate, Scale, Stroke, Text,
-  Translate,
+  type Image, type PathSegment, type Picture, Arc, Blank, Combine, DashedStroke,
+  Fill, FontProperties, Image, NoStroke, Path, Polygon, Radians, Rotate, Scale,
+  Stroke, Text, Translate,
 }
 
 /// The configuration of the "canvas"
@@ -165,6 +165,15 @@ fn display_on_rendering_context(
       )
     }
 
+    Path(segments) -> {
+      impl_canvas.path(
+        ctx,
+        add_segments_to_rendering_context(segments, _),
+        state.fill,
+        state.stroke,
+      )
+    }
+
     Fill(p, colour) -> {
       impl_canvas.save(ctx)
       impl_canvas.set_fill_colour(ctx, colour.to_css_rgba_string(colour))
@@ -241,6 +250,54 @@ fn display_on_rendering_context(
       })
       display_on_rendering_context(p, ctx, state)
       impl_canvas.restore(ctx)
+    }
+  }
+}
+
+fn add_segments_to_rendering_context(
+  segments: List(PathSegment),
+  ctx: impl_canvas.RenderingContext2D,
+) {
+  case segments {
+    [] -> Nil
+    [s, ..ss] -> {
+      add_segment_to_rendering_context(s, ctx)
+      add_segments_to_rendering_context(ss, ctx)
+    }
+  }
+}
+
+fn add_segment_to_rendering_context(
+  segment: PathSegment,
+  ctx: impl_canvas.RenderingContext2D,
+) {
+  case segment {
+    types.MoveTo(dest) -> impl_canvas.move_to(ctx, dest.0, dest.1)
+    types.LineTo(dest) -> impl_canvas.line_to(ctx, dest.0, dest.1)
+    types.ArcCentre(
+      centre:,
+      radius:,
+      start_angle:,
+      end_angle:,
+      counterclockwise:,
+    ) -> {
+      let Radians(start_radians) = start_angle
+      let Radians(end_radians) = end_angle
+      impl_canvas.arc_centre(
+        ctx,
+        centre.0,
+        centre.1,
+        radius,
+        start_radians,
+        end_radians,
+        counterclockwise,
+      )
+    }
+    types.ArcCorner(corner:, end:, radius:) -> {
+      impl_canvas.arc_corner(ctx, corner.0, corner.1, end.0, end.1, radius)
+    }
+    types.BezierTo(cp1:, cp2:, end:) -> {
+      impl_canvas.bezier_to(ctx, cp1.0, cp1.1, cp2.0, cp2.1, end.0, end.1)
     }
   }
 }

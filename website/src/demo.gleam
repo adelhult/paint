@@ -23,6 +23,7 @@ import examples/community_colour
 import examples/concat
 import examples/fill
 import examples/lines
+import examples/path
 import examples/polygon
 import examples/readme
 import examples/rectangle
@@ -119,6 +120,7 @@ fn init(_flags) {
       ref_to_example(refs, "blank.gleam", blank.blank_example()),
       ref_to_example(refs, "circle.gleam", circle.circle_example()),
       ref_to_example(refs, "arc.gleam", arc.arc_example()),
+      ref_to_example(refs, "path.gleam", path.path_example()),
       ref_to_example(refs, "polygon.gleam", polygon.polygon_example()),
       ref_to_example(refs, "lines.gleam", lines.lines_example()),
       ref_to_example(refs, "rectangle.gleam", rectangle.rectangle_example()),
