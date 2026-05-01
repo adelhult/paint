@@ -6,7 +6,7 @@ import paint/canvas
 
 pub fn pixel_art() {
   // https://kenney.nl/assets/pixel-platformer
-  canvas.image_from_src("./priv/static/pixel_art_example.png")
+  canvas.image_from_src("./pixel_art_example.png")
 }
 
 pub fn image_scaling_example() -> p.Picture {

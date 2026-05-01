@@ -2,13 +2,6 @@ Visit the version [hosted online](https://adelhult.github.io/paint/).
 
 ## Developing
 
-Copy logo
-```sh
-mkdir -p ./priv/static
-cp ../media/logo.svg ./priv/static/logo.svg
-cp ../media/pixel_art_example.png ./priv/static/pixel_art_example.png
-```
-
 Start Lustre dev server:
 ```sh
 gleam run -m lustre/dev start
@@ -16,7 +9,7 @@ gleam run -m lustre/dev start
 
 Build the Lustre app:
 ```sh
-gleam run -m lustre/dev build app --minify
+gleam run -m lustre/dev build --minify
 ```
 
 Update the referenced code snippets:

@@ -6,8 +6,9 @@ import gleam/int
 import gleam/list
 import lustre
 import lustre/attribute.{class}
-import lustre/element.{type Element, keyed, text}
+import lustre/element.{type Element, text}
 import lustre/element/html.{button, div, h1, h2, h3, hr, p}
+import lustre/element/keyed
 import lustre/event
 import paint
 import paint/canvas
@@ -50,11 +51,9 @@ fn paint_canvas(
       attribute.height(canvas_width),
       attribute.width(canvas_height),
       attribute.attribute("picture", encode.to_string(picture)),
-      attribute.style([
-        #("background", "#f5f5f5"),
-        #("border-radius", "10px"),
-        #("line-height", "0"),
-      ]),
+      attribute.style("background", "#f5f5f5"),
+      attribute.style("border-radius", "10px"),
+      attribute.style("line-height", "0"),
       ..attr
     ],
     [],
@@ -172,8 +171,8 @@ fn view_category(category: Category, show_source: Bool) {
     anchor(category.name),
     h2([], [text(category.name)]),
     hr([]),
-    keyed(
-      div([class(class_name)], _),
+    keyed.div(
+      [class(class_name)],
       list.map(category.examples, fn(example) {
         #(example.title, view_example(example, show_source))
       }),
@@ -237,8 +236,8 @@ fn examples(model: Model) -> Element(Msg) {
         False -> "Detailed view"
       }),
     ]),
-    keyed(
-      div([class("example-section")], _),
+    keyed.div(
+      [class("example-section")],
       list.map(model.examples, fn(category) {
         #(category.name, view_category(category, model.show_source_code))
       }),
@@ -249,8 +248,8 @@ fn examples(model: Model) -> Element(Msg) {
 fn category_toc(model: Model) -> Element(Msg) {
   div([], [
     h3([], [text("Contents")]),
-    keyed(
-      html.ul([class("toc")], _),
+    keyed.ul(
+      [class("toc")],
       list.map(model.examples, fn(category) {
         #(
           category.name,
@@ -288,7 +287,7 @@ fn interactive_demo() -> Element(a) {
 }
 
 fn logo() -> Element(a) {
-  html.img([class("logo"), attribute.src("./priv/static/logo.svg")])
+  html.img([class("logo"), attribute.src("./logo.svg")])
 }
 
 fn anchor(name: String) -> Element(a) {
@@ -311,8 +310,9 @@ fn links() -> Element(a) {
   ]
 
   div([class("menu-container")], [
-    keyed(
-      html.menu([], _),
+    keyed.element(
+      "menu",
+      [],
       list.map(links_list, fn(link) {
         let #(name, address) = link
         #(address, html.a([attribute.href(address)], [html.li([], [name])]))

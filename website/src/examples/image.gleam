@@ -8,7 +8,7 @@ import paint/canvas
 // use <- canvas.wait_until_loaded([my_logo_image()])
 // ```
 pub fn my_logo_image() {
-  canvas.image_from_src("./priv/static/logo.svg")
+  canvas.image_from_src("./logo.svg")
 }
 
 pub fn image_example() -> p.Picture {
