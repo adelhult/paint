@@ -6,7 +6,6 @@ import gleam/float
 import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/yielder.{type Yielder, Next}
 import gleam_community/colour
 import paint as p
 import paint/canvas
@@ -30,6 +29,7 @@ type State {
   GameOver(
     // None is used to represent ties
     winner: Option(Tile),
+    seed: random.Seed,
   )
 }
 
@@ -37,7 +37,8 @@ type PlayingState {
   PlayingState(
     selected_pos: Option(Pos),
     board: Dict(Pos, Tile),
-    random_positions: Yielder(Pos),
+    random_positions: random.Generator(Pos),
+    seed: random.Seed,
   )
 }
 
@@ -67,9 +68,9 @@ fn board_number_placed(state: PlayingState) -> Int {
 }
 
 fn all_positions() -> List(Pos) {
-  list.range(from: 0, to: board_size - 1)
+  int.range(from: 0, to: board_size, with: [], run: list.prepend)
   |> list.flat_map(fn(x) {
-    list.range(from: 0, to: board_size - 1)
+    int.range(from: 0, to: board_size, with: [], run: list.prepend)
     |> list.map(fn(y) { Pos(x, y) })
   })
 }
@@ -92,21 +93,23 @@ pub fn main() {
 }
 
 fn init(_config: canvas.Config) -> State {
-  new_game()
+  new_game(random.new_seed(0))
 }
 
-fn new_game() -> State {
+fn new_game(seed: random.Seed) -> State {
   // We supply a stream of random positions for the
   // computer player to pick from when making a move
-  let generator = {
+  let random_positions = {
     let int_gen = random.int(0, board_size - 1)
-    random.pair(int_gen, int_gen)
-    |> random.map(fn(pair) { Pos(pair.0, pair.1) })
+    use a <- random.then(int_gen)
+    use b <- random.then(int_gen)
+    random.constant(Pos(a, b))
   }
 
   Playing(PlayingState(
     selected_pos: None,
-    random_positions: random.to_random_yielder(generator),
+    random_positions:,
+    seed:,
     board: dict.new(),
   ))
 }
@@ -115,7 +118,7 @@ fn new_game() -> State {
 
 fn view(state: State) -> p.Picture {
   case state {
-    GameOver(winning_tile) -> view_winner_screen(winning_tile)
+    GameOver(winning_tile, _) -> view_winner_screen(winning_tile)
     Playing(state) -> view_board(state)
   }
   |> p.translate_xy(offset_px, offset_px)
@@ -200,8 +203,8 @@ fn update(state: State, event: event.Event) -> State {
       }
     }
 
-    GameOver(..), event.MousePressed(..) -> {
-      new_game()
+    GameOver(_, seed), event.MousePressed(..) -> {
+      new_game(seed)
     }
 
     // We don't care about any other events
@@ -250,7 +253,8 @@ fn check(state: State, just_played: Pos) -> State {
         |> option.unwrap(or: False)
       }
 
-      let range = list.range(0, board_size - 1)
+      let range =
+        int.range(from: 0, to: board_size, with: [], run: list.prepend)
 
       let current_row = fn() {
         range
@@ -279,10 +283,10 @@ fn check(state: State, just_played: Pos) -> State {
       }
 
       case current_row() || current_col() || diagonal() || anti_diagonal() {
-        True -> GameOver(Some(just_played_tile))
+        True -> GameOver(Some(just_played_tile), playing_state.seed)
         False ->
           case board_number_placed(playing_state) == board_size * board_size {
-            True -> GameOver(None)
+            True -> GameOver(None, playing_state.seed)
             False -> Playing(playing_state)
           }
       }
@@ -295,10 +299,9 @@ fn computer_response(state: State) -> #(State, Option(Pos)) {
   case state {
     GameOver(..) -> #(state, None)
     Playing(state) -> {
-      let assert Next(pos, random_positions) =
-        yielder.step(state.random_positions)
+      let #(pos, seed) = random.step(state.random_positions, state.seed)
 
-      let state = PlayingState(..state, random_positions:)
+      let state = PlayingState(..state, seed:)
       let tile = board_get(state, pos)
 
       case tile {
