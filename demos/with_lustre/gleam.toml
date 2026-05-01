@@ -15,7 +15,7 @@ target = "javascript"
 # https://gleam.run/writing-gleam/gleam-toml/.
 
 [dependencies]
-gleam_stdlib = ">= 0.44.0 and < 2.0.0"
+gleam_stdlib = ">= 1.0.0 and < 2.0.0"
 lustre = ">= 5.3.5 and < 6.0.0"
 paint = { path = "../../../paint" }
 gleam_community_colour = ">= 2.0.2 and < 3.0.0"
@@ -23,4 +23,4 @@ gleam_community_colour = ">= 2.0.2 and < 3.0.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
-lustre_dev_tools = ">= 1.9.2 and < 2.0.0"
+lustre_dev_tools = ">= 2.3.6 and < 3.0.0"
