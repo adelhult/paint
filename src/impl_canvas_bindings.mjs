@@ -37,6 +37,7 @@ class PaintCanvas extends HTMLElement {
     }
 
     this.ctx.reset();
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     const display =
       window.PAINT_STATE[
         "display_on_rendering_context_with_default_drawing_state"
