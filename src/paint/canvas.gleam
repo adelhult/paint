@@ -14,8 +14,8 @@ import paint/event.{type Event}
 import paint/internal/impl_canvas
 import paint/internal/types.{
   type Image, type PathSegment, type Picture, Blank, Combine, DashedStroke, Fill,
-  FontProperties, Image, NoStroke, Path, Radians, Rotate, Scale, Stroke, Text,
-  Translate,
+  FontFamily, Image, NoStroke, Path, Radians, Rotate, Scale, Stroke, Text,
+  TextAlign, TextBaseline, TextDirection, Translate,
 }
 
 /// The configuration of the "canvas"
@@ -124,10 +124,14 @@ pub fn display(init: fn(Config) -> Picture, selector: String) {
 /// (note that the fill and stroke color as well as the stroke width
 /// is stored inside of the context)
 type DrawingState {
-  DrawingState(fill: Bool, stroke: Bool)
+  DrawingState(fill: Bool, stroke: Bool, font_family: String)
 }
 
-const default_drawing_state = DrawingState(fill: False, stroke: True)
+const default_drawing_state = DrawingState(
+  fill: False,
+  stroke: True,
+  font_family: "sans-serif",
+)
 
 fn display_on_rendering_context(
   picture: Picture,
@@ -137,13 +141,12 @@ fn display_on_rendering_context(
   case picture {
     Blank -> Nil
 
-    Text(text, properties) -> {
-      let FontProperties(size_px, font_family) = properties
+    Text(text:, size_px:) -> {
       impl_canvas.save(ctx)
       impl_canvas.text(
         ctx,
         text,
-        int.to_string(size_px) <> "px " <> font_family,
+        int.to_string(size_px) <> "px " <> state.font_family,
       )
       impl_canvas.restore(ctx)
     }
@@ -155,6 +158,38 @@ fn display_on_rendering_context(
         state.fill,
         state.stroke,
       )
+    }
+
+    FontFamily(p, family) -> {
+      display_on_rendering_context(
+        p,
+        ctx,
+        DrawingState(..state, font_family: family),
+      )
+    }
+
+    TextAlign(p, alignment) -> {
+      impl_canvas.save(ctx)
+      impl_canvas.set_text_align(ctx, encode.text_align_to_string(alignment))
+      display_on_rendering_context(p, ctx, state)
+      impl_canvas.restore(ctx)
+    }
+
+    TextBaseline(p, baseline) -> {
+      impl_canvas.save(ctx)
+      impl_canvas.set_text_baseline(
+        ctx,
+        encode.text_baseline_to_string(baseline),
+      )
+      display_on_rendering_context(p, ctx, state)
+      impl_canvas.restore(ctx)
+    }
+
+    TextDirection(p, direction) -> {
+      impl_canvas.save(ctx)
+      impl_canvas.set_direction(ctx, encode.text_direction_to_string(direction))
+      display_on_rendering_context(p, ctx, state)
+      impl_canvas.restore(ctx)
     }
 
     Fill(p, colour) -> {

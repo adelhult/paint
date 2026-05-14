@@ -3,8 +3,12 @@ import gleam/json.{type Json}
 import gleam_community/colour
 import paint.{type Picture}
 import paint/internal/types.{
-  type Angle, type FontProperties, type StrokeProperties, DashedStroke,
-  FontProperties, NoStroke, Radians,
+  type Angle, type StrokeProperties, type TextAlign, type TextBaseline,
+  type TextDirection, DashedStroke, NoStroke, Radians, TextAlignCenter,
+  TextAlignEnd, TextAlignLeft, TextAlignRight, TextAlignStart,
+  TextBaselineAlphabetic, TextBaselineBottom, TextBaselineHanging,
+  TextBaselineIdeographic, TextBaselineMiddle, TextBaselineTop,
+  TextDirectionInherit, TextDirectionLtr, TextDirectionRtl,
 }
 
 /// Serialize a `Picture` to a string.
@@ -81,8 +85,28 @@ fn decode_picture() -> Decoder(Picture) {
     }
     "text" -> {
       use text <- decode.field("text", decode.string)
-      use style <- decode.field("style", decode_font())
-      decode.success(types.Text(text, style))
+      use size_px <- decode.field("sizePx", decode.int)
+      decode.success(types.Text(text:, size_px:))
+    }
+    "font_family" -> {
+      use family <- decode.field("family", decode.string)
+      use picture <- decode.field("picture", decode_picture())
+      decode.success(types.FontFamily(picture, family))
+    }
+    "text_align" -> {
+      use alignment <- decode.field("alignment", decode_text_align())
+      use picture <- decode.field("picture", decode_picture())
+      decode.success(types.TextAlign(picture, alignment))
+    }
+    "text_baseline" -> {
+      use baseline <- decode.field("baseline", decode_text_baseline())
+      use picture <- decode.field("picture", decode_picture())
+      decode.success(types.TextBaseline(picture, baseline))
+    }
+    "text_direction" -> {
+      use direction <- decode.field("direction", decode_text_direction())
+      use picture <- decode.field("picture", decode_picture())
+      decode.success(types.TextDirection(picture, direction))
     }
     "translate" -> {
       use x <- decode.field("x", decode.float)
@@ -159,10 +183,39 @@ fn decode_path_segment() -> Decoder(types.PathSegment) {
   }
 }
 
-fn decode_font() -> Decoder(FontProperties) {
-  use size_px <- decode.field("sizePx", decode.int)
-  use font_family <- decode.field("fontFamily", decode.string)
-  decode.success(FontProperties(size_px:, font_family:))
+fn decode_text_align() -> Decoder(TextAlign) {
+  use value <- decode.then(decode.string)
+  case value {
+    "start" -> decode.success(TextAlignStart)
+    "end" -> decode.success(TextAlignEnd)
+    "left" -> decode.success(TextAlignLeft)
+    "right" -> decode.success(TextAlignRight)
+    "center" -> decode.success(TextAlignCenter)
+    _ -> decode.failure(TextAlignStart, "TextAlign")
+  }
+}
+
+fn decode_text_baseline() -> Decoder(TextBaseline) {
+  use value <- decode.then(decode.string)
+  case value {
+    "top" -> decode.success(TextBaselineTop)
+    "hanging" -> decode.success(TextBaselineHanging)
+    "middle" -> decode.success(TextBaselineMiddle)
+    "alphabetic" -> decode.success(TextBaselineAlphabetic)
+    "ideographic" -> decode.success(TextBaselineIdeographic)
+    "bottom" -> decode.success(TextBaselineBottom)
+    _ -> decode.failure(TextBaselineAlphabetic, "TextBaseline")
+  }
+}
+
+fn decode_text_direction() -> Decoder(TextDirection) {
+  use value <- decode.then(decode.string)
+  case value {
+    "ltr" -> decode.success(TextDirectionLtr)
+    "rtl" -> decode.success(TextDirectionRtl)
+    "inherit" -> decode.success(TextDirectionInherit)
+    _ -> decode.failure(TextDirectionInherit, "TextDirection")
+  }
 }
 
 fn decode_stroke() -> Decoder(StrokeProperties) {
@@ -223,11 +276,35 @@ fn picture_to_json(picture: Picture) -> Json {
         #("stroke", stroke_to_json(stroke)),
         #("picture", picture_to_json(picture)),
       ])
-    types.Text(text:, style:) ->
+    types.Text(text:, size_px:) ->
       json.object([
         #("type", json.string("text")),
         #("text", json.string(text)),
-        #("style", font_to_json(style)),
+        #("sizePx", json.int(size_px)),
+      ])
+    types.FontFamily(picture, family) ->
+      json.object([
+        #("type", json.string("font_family")),
+        #("family", json.string(family)),
+        #("picture", picture_to_json(picture)),
+      ])
+    types.TextAlign(picture, alignment) ->
+      json.object([
+        #("type", json.string("text_align")),
+        #("alignment", json.string(text_align_to_string(alignment))),
+        #("picture", picture_to_json(picture)),
+      ])
+    types.TextBaseline(picture, baseline) ->
+      json.object([
+        #("type", json.string("text_baseline")),
+        #("baseline", json.string(text_baseline_to_string(baseline))),
+        #("picture", picture_to_json(picture)),
+      ])
+    types.TextDirection(picture, direction) ->
+      json.object([
+        #("type", json.string("text_direction")),
+        #("direction", json.string(text_direction_to_string(direction))),
+        #("picture", picture_to_json(picture)),
       ])
     types.Translate(picture, #(x, y)) ->
       json.object([
@@ -303,12 +380,33 @@ fn path_segment_to_json(segment: types.PathSegment) -> Json {
   }
 }
 
-fn font_to_json(font: FontProperties) -> Json {
-  let FontProperties(size_px:, font_family:) = font
-  json.object([
-    #("sizePx", json.int(size_px)),
-    #("fontFamily", json.string(font_family)),
-  ])
+pub fn text_align_to_string(value: TextAlign) -> String {
+  case value {
+    TextAlignStart -> "start"
+    TextAlignEnd -> "end"
+    TextAlignLeft -> "left"
+    TextAlignRight -> "right"
+    TextAlignCenter -> "center"
+  }
+}
+
+pub fn text_baseline_to_string(value: TextBaseline) -> String {
+  case value {
+    TextBaselineTop -> "top"
+    TextBaselineHanging -> "hanging"
+    TextBaselineMiddle -> "middle"
+    TextBaselineAlphabetic -> "alphabetic"
+    TextBaselineIdeographic -> "ideographic"
+    TextBaselineBottom -> "bottom"
+  }
+}
+
+pub fn text_direction_to_string(value: TextDirection) -> String {
+  case value {
+    TextDirectionLtr -> "ltr"
+    TextDirectionRtl -> "rtl"
+    TextDirectionInherit -> "inherit"
+  }
 }
 
 fn stroke_to_json(stroke: StrokeProperties) -> Json {

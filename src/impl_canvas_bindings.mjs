@@ -206,9 +206,21 @@ export function bezier_to(ctx, cp1x, cp1y, cp2x, cp2y, x, y) {
   ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
 }
 
-export function text(ctx, text, style) {
-  ctx.font = style;
+export function text(ctx, text, font) {
+  ctx.font = font;
   ctx.fillText(text, 0, 0);
+}
+
+export function set_text_align(ctx, value) {
+  ctx.textAlign = value;
+}
+
+export function set_text_baseline(ctx, value) {
+  ctx.textBaseline = value;
+}
+
+export function set_direction(ctx, value) {
+  ctx.direction = value;
 }
 
 export function save(ctx) {

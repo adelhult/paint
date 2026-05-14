@@ -203,11 +203,67 @@ pub fn image_scaling_pixelated(picture: Picture) -> Picture {
 
 /// Text with some given font size
 pub fn text(text: String, px font_size: Int) -> Picture {
-  internal_implementation.Text(
-    text,
-    style: internal_implementation.FontProperties(font_size, "sans-serif"),
-  )
-  // TODO: expose more styling options (font and text alignment)
+  internal_implementation.Text(text, size_px: font_size)
+}
+
+/// Horizontal alignment for text. See `text_align`.
+pub type TextAlign =
+  internal_implementation.TextAlign
+
+pub const text_align_start: TextAlign = internal_implementation.TextAlignStart
+
+pub const text_align_end: TextAlign = internal_implementation.TextAlignEnd
+
+pub const text_align_left: TextAlign = internal_implementation.TextAlignLeft
+
+pub const text_align_right: TextAlign = internal_implementation.TextAlignRight
+
+pub const text_align_center: TextAlign = internal_implementation.TextAlignCenter
+
+/// Vertical baseline for text. See `text_baseline`.
+pub type TextBaseline =
+  internal_implementation.TextBaseline
+
+pub const text_baseline_top: TextBaseline = internal_implementation.TextBaselineTop
+
+pub const text_baseline_hanging: TextBaseline = internal_implementation.TextBaselineHanging
+
+pub const text_baseline_middle: TextBaseline = internal_implementation.TextBaselineMiddle
+
+pub const text_baseline_alphabetic: TextBaseline = internal_implementation.TextBaselineAlphabetic
+
+pub const text_baseline_ideographic: TextBaseline = internal_implementation.TextBaselineIdeographic
+
+pub const text_baseline_bottom: TextBaseline = internal_implementation.TextBaselineBottom
+
+/// Writing direction for text. See `text_direction`.
+pub type TextDirection =
+  internal_implementation.TextDirection
+
+pub const text_direction_ltr: TextDirection = internal_implementation.TextDirectionLtr
+
+pub const text_direction_rtl: TextDirection = internal_implementation.TextDirectionRtl
+
+pub const text_direction_inherit: TextDirection = internal_implementation.TextDirectionInherit
+
+/// Set the font family used to render `text` inside the picture.
+pub fn font_family(picture: Picture, family: String) -> Picture {
+  internal_implementation.FontFamily(picture, family)
+}
+
+/// Set the horizontal text alignment used to render `text` inside the picture.
+pub fn text_align(picture: Picture, alignment: TextAlign) -> Picture {
+  internal_implementation.TextAlign(picture, alignment)
+}
+
+/// Set the vertical text baseline used to render `text` inside the picture.
+pub fn text_baseline(picture: Picture, baseline: TextBaseline) -> Picture {
+  internal_implementation.TextBaseline(picture, baseline)
+}
+
+/// Set the writing direction used to render `text` inside the picture.
+pub fn text_direction(picture: Picture, direction: TextDirection) -> Picture {
+  internal_implementation.TextDirection(picture, direction)
 }
 
 /// Translate a picture in horizontal and vertical direction

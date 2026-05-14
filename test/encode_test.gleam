@@ -77,4 +77,23 @@ pub fn image_scaling_pixelated_round_trip_test() {
 pub fn image_scaling_smooth_round_trip_test() {
   let assert Ok(_) = round_trip(p.blank() |> p.image_scaling_smooth())
 }
+
+pub fn text_align_round_trip_test() {
+  let assert Ok(_) =
+    round_trip(p.text("Hey", px: 20) |> p.text_align(p.text_align_left))
+}
+
+pub fn text_baseline_round_trip_test() {
+  let assert Ok(_) =
+    round_trip(p.text("Hey", px: 20) |> p.text_baseline(p.text_baseline_bottom))
+}
+
+pub fn text_direction_round_trip_test() {
+  let assert Ok(_) =
+    round_trip(p.text("Hey", px: 20) |> p.text_direction(p.text_direction_ltr))
+}
+
+pub fn font_family_round_trip_test() {
+  let assert Ok(_) = round_trip(p.text("Hey", px: 20) |> p.font_family("Arial"))
+}
 // Note: there is no round trip test for images since I currently can't construct an image without the canvas back-end
