@@ -4,13 +4,16 @@ pub type Picture {
   // Shapes
   Blank
   Path(List(PathSegment))
-  Text(text: String, style: FontProperties)
+  Text(text: String, size_px: Int)
   ImageRef(Image, width_px: Int, height_px: Int)
   // Styling
-  // TODO: font
   Fill(Picture, Colour)
   Stroke(Picture, StrokeProperties)
   ImageScalingBehaviour(Picture, ImageScalingBehaviour)
+  FontFamily(Picture, String)
+  TextAlign(Picture, TextAlign)
+  TextBaseline(Picture, TextBaseline)
+  TextDirection(Picture, TextDirection)
   // Transform
   Translate(Picture, Vec2)
   Scale(Picture, Vec2)
@@ -49,8 +52,27 @@ pub type StrokeProperties {
   DashedStroke(Colour, width: Float, dashes: List(Float))
 }
 
-pub type FontProperties {
-  FontProperties(size_px: Int, font_family: String)
+pub type TextAlign {
+  TextAlignStart
+  TextAlignEnd
+  TextAlignLeft
+  TextAlignRight
+  TextAlignCenter
+}
+
+pub type TextBaseline {
+  TextBaselineTop
+  TextBaselineHanging
+  TextBaselineMiddle
+  TextBaselineAlphabetic
+  TextBaselineIdeographic
+  TextBaselineBottom
+}
+
+pub type TextDirection {
+  TextDirectionLtr
+  TextDirectionRtl
+  TextDirectionInherit
 }
 
 pub type Angle {
