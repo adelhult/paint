@@ -108,17 +108,17 @@ pub fn path(start: Vec2, segments: List(PathSegment)) -> Picture {
 }
 
 /// Move to in path
-pub fn move_to(dest: Vec2) -> PathSegment {
-  internal_implementation.MoveTo(dest)
+pub fn path_move(to: Vec2) -> PathSegment {
+  internal_implementation.MoveTo(to)
 }
 
 /// Line to in path
-pub fn line_to(dest: Vec2) -> PathSegment {
-  internal_implementation.LineTo(dest)
+pub fn path_line(to: Vec2) -> PathSegment {
+  internal_implementation.LineTo(to)
 }
 
 /// Arc in path, defined as centre and start/end angles
-pub fn arc_centre(
+pub fn path_arc_centre(
   centre centre: Vec2,
   radius radius: Float,
   start_angle start_angle: Angle,
@@ -135,7 +135,7 @@ pub fn arc_centre(
 }
 
 /// Arc in path, defined as corner point and end point
-pub fn arc_corner(
+pub fn path_arc_corner(
   corner corner: Vec2,
   end end: Vec2,
   radius radius: Float,
@@ -144,17 +144,17 @@ pub fn arc_corner(
 }
 
 /// Bezier curve in path
-pub fn bezier_to(cp1 cp1: Vec2, cp2 cp2: Vec2, end end: Vec2) -> PathSegment {
+pub fn path_bezier(cp1 cp1: Vec2, cp2 cp2: Vec2, end end: Vec2) -> PathSegment {
   internal_implementation.BezierTo(cp1:, cp2:, end:)
 }
 
 /// A rectangle with some given width and height
 pub fn rectangle(width: Float, height: Float) -> Picture {
   path(#(0.0, 0.0), [
-    line_to(#(width, 0.0)),
-    line_to(#(width, height)),
-    line_to(#(0.0, height)),
-    line_to(#(0.0, 0.0)),
+    path_line(#(width, 0.0)),
+    path_line(#(width, height)),
+    path_line(#(0.0, height)),
+    path_line(#(0.0, 0.0)),
   ])
 }
 
