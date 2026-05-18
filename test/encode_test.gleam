@@ -29,8 +29,7 @@ pub fn arc_round_trip_test() {
 pub fn path_round_trip_test() {
   let assert Ok(_) =
     round_trip(
-      p.path([
-        p.move_to(#(1.0, 2.0)),
+      p.path(#(1.0, 2.0), [
         p.line_to(#(3.0, 4.0)),
         p.arc_centre(#(5.0, 6.0), 7.0, p.angle_deg(8.0), p.angle_deg(9.0), True),
         p.arc_corner(#(10.0, 11.0), #(12.0, 13.0), 14.0),

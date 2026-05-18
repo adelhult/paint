@@ -88,8 +88,11 @@ pub fn arc(radius: Float, start: Angle, end: Angle) -> Picture {
 }
 
 /// A path
-pub fn path(segments: List(PathSegment)) -> Picture {
-  internal_implementation.Path(segments)
+pub fn path(start: Vec2, segments: List(PathSegment)) -> Picture {
+  internal_implementation.Path([
+    internal_implementation.MoveTo(start),
+    ..segments
+  ])
 }
 
 /// Move to in path
