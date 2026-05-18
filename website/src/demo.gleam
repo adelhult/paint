@@ -22,6 +22,7 @@ import examples/combine
 import examples/community_colour
 import examples/concat
 import examples/fill
+import examples/font_family
 import examples/path
 import examples/readme
 import examples/rectangle
@@ -31,6 +32,9 @@ import examples/square
 import examples/stroke
 import examples/stroke_dashed
 import examples/text
+import examples/text_alignment
+import examples/text_baseline
+import examples/text_direction
 import examples/translate
 
 import examples_code
@@ -134,13 +138,33 @@ fn init(_flags) {
       ),
       ref_to_example(
         refs,
-        "community_colour.gleam",
-        community_colour.community_colour_example(),
+        "font_family.gleam",
+        font_family.font_family_example(),
       ),
       ref_to_example(
         refs,
         "image_scaling.gleam",
         image_scaling.image_scaling_example(),
+      ),
+      ref_to_example(
+        refs,
+        "text_alignment.gleam",
+        text_alignment.alignment_example(),
+      ),
+      ref_to_example(
+        refs,
+        "text_baseline.gleam",
+        text_baseline.baseline_example(),
+      ),
+      ref_to_example(
+        refs,
+        "text_direction.gleam",
+        text_direction.direction_example(),
+      ),
+      ref_to_example(
+        refs,
+        "community_colour.gleam",
+        community_colour.community_colour_example(),
       ),
     ]),
     Category("Transform", [
