@@ -15,7 +15,7 @@ pub fn blank_round_trip_test() {
 
 pub fn arc_round_trip_test() {
   let assert Ok(_) =
-    round_trip(p.arc(30.0, p.angle_deg(20.0), p.angle_rad(1.0)))
+    round_trip(p.arc(30.0, p.angle_deg(20.0), p.angle_rad(1.0), p.Clockwise))
 }
 
 pub fn path_round_trip_test() {
@@ -28,7 +28,7 @@ pub fn path_round_trip_test() {
           7.0,
           p.angle_deg(8.0),
           p.angle_deg(9.0),
-          True,
+          p.Counterclockwise,
         ),
         p.path_arc_corner(#(10.0, 11.0), #(12.0, 13.0), 14.0),
         p.path_bezier(#(15.0, 16.0), #(17.0, 18.0), #(19.0, 20.0)),
