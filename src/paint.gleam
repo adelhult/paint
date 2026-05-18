@@ -207,44 +207,45 @@ pub fn text(text: String, px font_size: Int) -> Picture {
 }
 
 /// Horizontal alignment for text. See `text_align`.
-pub type TextAlign =
-  internal_implementation.TextAlign
-
-pub const text_align_start: TextAlign = internal_implementation.TextAlignStart
-
-pub const text_align_end: TextAlign = internal_implementation.TextAlignEnd
-
-pub const text_align_left: TextAlign = internal_implementation.TextAlignLeft
-
-pub const text_align_right: TextAlign = internal_implementation.TextAlignRight
-
-pub const text_align_center: TextAlign = internal_implementation.TextAlignCenter
+pub type TextAlign {
+  /// The text is aligned at the normal start of the line (left-aligned for left-to-right locales, right-aligned for right-to-left locales).
+  TextAlignStart
+  /// The text is aligned at the normal end of the line (right-aligned for left-to-right locales, left-aligned for right-to-left locales).
+  TextAlignEnd
+  /// The text is left-aligned.
+  TextAlignLeft
+  /// The text is right-aligned.
+  TextAlignRight
+  /// The text is centered.
+  TextAlignCenter
+}
 
 /// Vertical baseline for text. See `text_baseline`.
-pub type TextBaseline =
-  internal_implementation.TextBaseline
-
-pub const text_baseline_top: TextBaseline = internal_implementation.TextBaselineTop
-
-pub const text_baseline_hanging: TextBaseline = internal_implementation.TextBaselineHanging
-
-pub const text_baseline_middle: TextBaseline = internal_implementation.TextBaselineMiddle
-
-pub const text_baseline_alphabetic: TextBaseline = internal_implementation.TextBaselineAlphabetic
-
-pub const text_baseline_ideographic: TextBaseline = internal_implementation.TextBaselineIdeographic
-
-pub const text_baseline_bottom: TextBaseline = internal_implementation.TextBaselineBottom
+pub type TextBaseline {
+  /// The text baseline is the top of the em square.
+  TextBaselineTop
+  /// The text baseline is the hanging baseline. (Used by Tibetan and other Indic scripts.)
+  TextBaselineHanging
+  /// The text baseline is the middle of the em square.
+  TextBaselineMiddle
+  /// The text baseline is the normal alphabetic baseline. Default value.
+  TextBaselineAlphabetic
+  /// The text baseline is the ideographic baseline; this is the bottom of the body of the characters,
+  /// if the main body of characters protrudes beneath the alphabetic baseline. (Used by Chinese, Japanese, and Korean scripts.)
+  TextBaselineIdeographic
+  /// The text baseline is the bottom of the bounding box. This differs from the ideographic baseline in that the ideographic baseline doesn't consider descenders.
+  TextBaselineBottom
+}
 
 /// Writing direction for text. See `text_direction`.
-pub type TextDirection =
-  internal_implementation.TextDirection
-
-pub const text_direction_ltr: TextDirection = internal_implementation.TextDirectionLtr
-
-pub const text_direction_rtl: TextDirection = internal_implementation.TextDirectionRtl
-
-pub const text_direction_inherit: TextDirection = internal_implementation.TextDirectionInherit
+pub type TextDirection {
+  /// Left to right
+  TextDirectionLtr
+  /// Right to left
+  TextDirectionRtl
+  /// Inherited
+  Inherit
+}
 
 /// Set the font family used to render `text` inside the picture.
 pub fn font_family(picture: Picture, family: String) -> Picture {
@@ -253,17 +254,37 @@ pub fn font_family(picture: Picture, family: String) -> Picture {
 
 /// Set the horizontal text alignment used to render `text` inside the picture.
 pub fn text_align(picture: Picture, alignment: TextAlign) -> Picture {
-  internal_implementation.TextAlign(picture, alignment)
+  internal_implementation.TextAlign(picture, case alignment {
+    // Ideally this internal type should be public
+    TextAlignStart -> internal_implementation.TextAlignStart
+    TextAlignEnd -> internal_implementation.TextAlignEnd
+    TextAlignLeft -> internal_implementation.TextAlignLeft
+    TextAlignRight -> internal_implementation.TextAlignRight
+    TextAlignCenter -> internal_implementation.TextAlignCenter
+  })
 }
 
 /// Set the vertical text baseline used to render `text` inside the picture.
 pub fn text_baseline(picture: Picture, baseline: TextBaseline) -> Picture {
-  internal_implementation.TextBaseline(picture, baseline)
+  internal_implementation.TextBaseline(picture, case baseline {
+    // Ideally this internal type should be public
+    TextBaselineTop -> internal_implementation.TextBaselineTop
+    TextBaselineHanging -> internal_implementation.TextBaselineHanging
+    TextBaselineMiddle -> internal_implementation.TextBaselineMiddle
+    TextBaselineAlphabetic -> internal_implementation.TextBaselineAlphabetic
+    TextBaselineIdeographic -> internal_implementation.TextBaselineIdeographic
+    TextBaselineBottom -> internal_implementation.TextBaselineBottom
+  })
 }
 
 /// Set the writing direction used to render `text` inside the picture.
 pub fn text_direction(picture: Picture, direction: TextDirection) -> Picture {
-  internal_implementation.TextDirection(picture, direction)
+  internal_implementation.TextDirection(picture, case direction {
+    // Ideally this internal type should be public
+    TextDirectionLtr -> internal_implementation.TextDirectionLtr
+    TextDirectionRtl -> internal_implementation.TextDirectionRtl
+    Inherit -> internal_implementation.TextDirectionInherit
+  })
 }
 
 /// Translate a picture in horizontal and vertical direction

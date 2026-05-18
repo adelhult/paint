@@ -80,17 +80,19 @@ pub fn image_scaling_smooth_round_trip_test() {
 
 pub fn text_align_round_trip_test() {
   let assert Ok(_) =
-    round_trip(p.text("Hey", px: 20) |> p.text_align(p.text_align_left))
+    round_trip(p.text("Hey", px: 20) |> p.text_align(p.TextAlignLeft))
 }
 
 pub fn text_baseline_round_trip_test() {
   let assert Ok(_) =
-    round_trip(p.text("Hey", px: 20) |> p.text_baseline(p.text_baseline_bottom))
+    round_trip(
+      p.text("Hey", px: 20) |> p.text_baseline(p.TextBaselineAlphabetic),
+    )
 }
 
 pub fn text_direction_round_trip_test() {
   let assert Ok(_) =
-    round_trip(p.text("Hey", px: 20) |> p.text_direction(p.text_direction_ltr))
+    round_trip(p.text("Hey", px: 20) |> p.text_direction(p.TextDirectionRtl))
 }
 
 pub fn font_family_round_trip_test() {
