@@ -1,4 +1,5 @@
 # (2.0.0) Unreleased
+- Addition: Many more font and text options (Thanks @aDifferentJT!)
 - Addition: New path API, including bezier curve support! (Thanks @aDifferentJT!)
 - Addition: Support for dashed strokes (Thanks @aDifferentJT!)
 - Fix: Make sure canvas is cleared when using the web component API (Thanks @aDifferentJT)
