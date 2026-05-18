@@ -1,3 +1,8 @@
+# (2.0.0) Unreleased
+- Addition: New path API (including bezier curve support)
+- Breaking: Remove `polygon` and lines functions in favour of the `path`.
+- Breaking: `arc` now requires an direction
+
 # 1.0.1
 - Fix: MouseReleased event being emitted (Thanks, @agj!)
 
