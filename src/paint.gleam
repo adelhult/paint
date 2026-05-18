@@ -26,6 +26,11 @@ pub type PathSegment =
 pub type Image =
   internal_implementation.Image
 
+pub type RotationDirection {
+  Clockwise
+  Counterclockwise
+}
+
 /// An angle in clock-wise direction.
 /// See: `angle_rad` and `angle_deg`.
 pub type Angle =
@@ -87,14 +92,22 @@ pub fn circle(radius: Float) -> Picture {
 
 /// An arc with some radius going from some
 /// starting angle to some other angle in clock-wise direction
-pub fn arc(radius: Float, start: Angle, end: Angle) -> Picture {
+pub fn arc(
+  radius: Float,
+  start: Angle,
+  end: Angle,
+  direction: RotationDirection,
+) -> Picture {
   internal_implementation.Path([
     internal_implementation.ArcCentre(
       centre: #(0.0, 0.0),
       radius:,
       start_angle: start,
       end_angle: end,
-      counterclockwise: False,
+      counterclockwise: case direction {
+        Clockwise -> False
+        Counterclockwise -> True
+      },
     ),
   ])
 }
@@ -123,14 +136,17 @@ pub fn path_arc_centre(
   radius radius: Float,
   start_angle start_angle: Angle,
   end_angle end_angle: Angle,
-  counterclockwise counterclockwise: Bool,
+  direction direction: RotationDirection,
 ) -> PathSegment {
   internal_implementation.ArcCentre(
     centre:,
     radius:,
     start_angle:,
     end_angle:,
-    counterclockwise:,
+    counterclockwise: case direction {
+      Clockwise -> False
+      Counterclockwise -> True
+    },
   )
 }
 
