@@ -167,17 +167,6 @@ export function reset(ctx) {
   ctx.reset();
 }
 
-export function arc(ctx, radius, start, end, fill, stroke) {
-  ctx.beginPath();
-  ctx.arc(0, 0, radius, start, end);
-  if (fill) {
-    ctx.fill();
-  }
-  if (stroke) {
-    ctx.stroke();
-  }
-}
-
 export function path(ctx, add_segments, fill, stroke) {
   ctx.beginPath();
   add_segments(ctx);
@@ -197,7 +186,15 @@ export function line_to(ctx, x, y) {
   ctx.lineTo(x, y);
 }
 
-export function arc_centre(ctx, x, y, radius, start_angle, end_angle, counterclockwise) {
+export function arc_centre(
+  ctx,
+  x,
+  y,
+  radius,
+  start_angle,
+  end_angle,
+  counterclockwise,
+) {
   ctx.arc(x, y, radius, start_angle, end_angle, counterclockwise);
 }
 
@@ -207,34 +204,6 @@ export function arc_corner(ctx, x1, y1, x2, y2, radius) {
 
 export function bezier_to(ctx, cp1x, cp1y, cp2x, cp2y, x, y) {
   ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-}
-
-export function polygon(ctx, points, closed, fill, stroke) {
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  let started = false;
-  for (const point of points) {
-    let x = point[0];
-    let y = point[1];
-    if (started) {
-      ctx.lineTo(x, y);
-    } else {
-      ctx.moveTo(x, y);
-      started = true;
-    }
-  }
-
-  if (closed) {
-    ctx.closePath();
-  }
-
-  if (fill && closed) {
-    ctx.fill();
-  }
-
-  if (stroke) {
-    ctx.stroke();
-  }
 }
 
 export function text(ctx, text, style) {

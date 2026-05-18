@@ -81,16 +81,6 @@ pub fn set_line_dash(ctx: RenderingContext2D, dashes: Array(Float)) -> Nil
 @external(javascript, "../../impl_canvas_bindings.mjs", "set_image_smoothing_enabled")
 pub fn set_image_smoothing_enabled(ctx: RenderingContext2D, value: Bool) -> Nil
 
-@external(javascript, "../../impl_canvas_bindings.mjs", "arc")
-pub fn arc(
-  ctx: RenderingContext2D,
-  radius: Float,
-  start: Float,
-  end: Float,
-  fill: Bool,
-  stroke: Bool,
-) -> Nil
-
 @external(javascript, "../../impl_canvas_bindings.mjs", "path")
 pub fn path(
   ctx: RenderingContext2D,
@@ -135,15 +125,6 @@ pub fn bezier_to(
   cp2y: Float,
   x: Float,
   y: Float,
-) -> Nil
-
-@external(javascript, "../../impl_canvas_bindings.mjs", "polygon")
-pub fn polygon(
-  ctx: RenderingContext2D,
-  points: List(#(Float, Float)),
-  closed: Bool,
-  fill: Bool,
-  stroke: Bool,
 ) -> Nil
 
 @external(javascript, "../../impl_canvas_bindings.mjs", "text")

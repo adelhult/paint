@@ -13,14 +13,6 @@ pub fn blank_round_trip_test() {
   let assert Ok(_) = round_trip(p.blank())
 }
 
-pub fn polygon_round_trip_test() {
-  let assert Ok(_) = round_trip(p.polygon([#(0.0, 0.0), #(10.0, 20.0)]))
-}
-
-pub fn polygon_empty_round_trip_test() {
-  let assert Ok(_) = round_trip(p.polygon([]))
-}
-
 pub fn arc_round_trip_test() {
   let assert Ok(_) =
     round_trip(p.arc(30.0, p.angle_deg(20.0), p.angle_rad(1.0)))
