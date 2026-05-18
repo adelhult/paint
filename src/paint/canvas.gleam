@@ -13,9 +13,9 @@ import paint/encode
 import paint/event.{type Event}
 import paint/internal/impl_canvas
 import paint/internal/types.{
-  type Image, type PathSegment, type Picture, Arc, Blank, Combine, DashedStroke,
-  Fill, FontProperties, Image, NoStroke, Path, Polygon, Radians, Rotate, Scale,
-  Stroke, Text, Translate,
+  type Image, type PathSegment, type Picture, Blank, Combine, DashedStroke, Fill,
+  FontProperties, Image, NoStroke, Path, Radians, Rotate, Scale, Stroke, Text,
+  Translate,
 }
 
 /// The configuration of the "canvas"
@@ -146,23 +146,6 @@ fn display_on_rendering_context(
         int.to_string(size_px) <> "px " <> font_family,
       )
       impl_canvas.restore(ctx)
-    }
-
-    Polygon(points, closed) -> {
-      impl_canvas.polygon(ctx, points, closed, state.fill, state.stroke)
-    }
-
-    Arc(radius, start, end) -> {
-      let Radians(start_radians) = start
-      let Radians(end_radians) = end
-      impl_canvas.arc(
-        ctx,
-        radius,
-        start_radians,
-        end_radians,
-        state.fill,
-        state.stroke,
-      )
     }
 
     Path(segments) -> {

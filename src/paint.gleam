@@ -74,17 +74,29 @@ pub fn blank() -> Picture {
 
 /// A circle with some given radius
 pub fn circle(radius: Float) -> Picture {
-  internal_implementation.Arc(
-    radius,
-    start: internal_implementation.Radians(0.0),
-    end: internal_implementation.Radians(2.0 *. pi()),
-  )
+  internal_implementation.Path([
+    internal_implementation.ArcCentre(
+      centre: #(0.0, 0.0),
+      radius:,
+      start_angle: internal_implementation.Radians(0.0),
+      end_angle: internal_implementation.Radians(2.0 *. pi()),
+      counterclockwise: True,
+    ),
+  ])
 }
 
 /// An arc with some radius going from some
 /// starting angle to some other angle in clock-wise direction
 pub fn arc(radius: Float, start: Angle, end: Angle) -> Picture {
-  internal_implementation.Arc(radius, start: start, end: end)
+  internal_implementation.Path([
+    internal_implementation.ArcCentre(
+      centre: #(0.0, 0.0),
+      radius:,
+      start_angle: start,
+      end_angle: end,
+      counterclockwise: False,
+    ),
+  ])
 }
 
 /// A path
@@ -136,19 +148,14 @@ pub fn bezier_to(cp1 cp1: Vec2, cp2 cp2: Vec2, end end: Vec2) -> PathSegment {
   internal_implementation.BezierTo(cp1:, cp2:, end:)
 }
 
-/// A polygon consisting of a list of 2d points
-pub fn polygon(points: List(#(Float, Float))) -> Picture {
-  internal_implementation.Polygon(points, True)
-}
-
-/// Lines (same as a polygon but not a closed shape)
-pub fn lines(points: List(#(Float, Float))) -> Picture {
-  internal_implementation.Polygon(points, False)
-}
-
 /// A rectangle with some given width and height
 pub fn rectangle(width: Float, height: Float) -> Picture {
-  polygon([#(0.0, 0.0), #(width, 0.0), #(width, height), #(0.0, height)])
+  path(#(0.0, 0.0), [
+    line_to(#(width, 0.0)),
+    line_to(#(width, height)),
+    line_to(#(0.0, height)),
+    line_to(#(0.0, 0.0)),
+  ])
 }
 
 /// A square

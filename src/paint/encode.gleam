@@ -43,12 +43,6 @@ fn decode_picture() -> Decoder(Picture) {
   use ty <- decode.field("type", decode.string)
 
   case ty {
-    "arc" -> {
-      use radius <- decode.field("radius", decode.float)
-      use start <- decode.field("start", decode_angle())
-      use end <- decode.field("end", decode_angle())
-      decode.success(types.Arc(radius, start:, end:))
-    }
     "path" -> {
       use segments <- decode.field(
         "segments",
@@ -68,11 +62,6 @@ fn decode_picture() -> Decoder(Picture) {
       use picture <- decode.field("picture", decode_picture())
       use colour <- decode.field("colour", colour.decoder())
       decode.success(types.Fill(picture, colour))
-    }
-    "polygon" -> {
-      use points <- decode.field("points", decode.list(of: decode_vec2()))
-      use closed <- decode.field("closed", decode.bool)
-      decode.success(types.Polygon(points, closed))
     }
     "rotate" -> {
       use angle <- decode.field("angle", decode_angle())
@@ -198,13 +187,6 @@ fn decode_vec2() -> Decoder(#(Float, Float)) {
 
 fn picture_to_json(picture: Picture) -> Json {
   case picture {
-    types.Arc(radius:, start:, end:) ->
-      json.object([
-        #("type", json.string("arc")),
-        #("radius", json.float(radius)),
-        #("start", angle_to_json(start)),
-        #("end", angle_to_json(end)),
-      ])
     types.Path(segments) ->
       json.object([
         #("type", json.string("path")),
@@ -221,18 +203,6 @@ fn picture_to_json(picture: Picture) -> Json {
         #("type", json.string("fill")),
         #("colour", colour.encode(colour)),
         #("picture", picture_to_json(picture)),
-      ])
-    types.Polygon(points, closed:) ->
-      json.object([
-        #("type", json.string("polygon")),
-        #(
-          "points",
-          json.array(from: points, of: fn(point) {
-            let #(x, y) = point
-            json.object([#("x", json.float(x)), #("y", json.float(y))])
-          }),
-        ),
-        #("closed", json.bool(closed)),
       ])
     types.Rotate(picture, angle) ->
       json.object([

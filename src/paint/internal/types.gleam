@@ -3,8 +3,6 @@ import gleam_community/colour.{type Colour}
 pub type Picture {
   // Shapes
   Blank
-  Polygon(List(Vec2), closed: Bool)
-  Arc(radius: Float, start: Angle, end: Angle)
   Path(List(PathSegment))
   Text(text: String, style: FontProperties)
   ImageRef(Image, width_px: Int, height_px: Int)
