@@ -17,7 +17,7 @@ pub type Picture =
 ///
 ///> [!NOTE]
 ///> Unless you intend to author a new backend you should **consider this type opaque and never use any of its constructors**.
-///> Instead, make use of the many utility functions defined in this module (`move_to`, `line_to`, etc.)
+///> Instead, make use the functions with the `path_` prefix.
 pub type PathSegment =
   internal_implementation.PathSegment
 
