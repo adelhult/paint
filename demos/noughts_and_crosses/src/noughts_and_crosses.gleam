@@ -174,9 +174,10 @@ fn view_tile(tile: Option(Tile)) -> p.Picture {
   let size = tile_size_px -. padding
   case tile {
     Some(Cross) ->
-      p.combine([
-        p.lines([#(0.0, 0.0), #(size, size)]),
-        p.lines([#(size, 0.0), #(0.0, size)]),
+      p.path(#(0.0, 0.0), [
+        p.path_line(#(size, size)),
+        p.path_move(#(size, 0.0)),
+        p.path_line(#(0.0, size)),
       ])
       |> p.translate_xy(padding /. 2.0, padding /. 2.0)
       |> thick_stroke()

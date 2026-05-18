@@ -3,10 +3,11 @@
 
 packages = [
   { name = "gleam_community_colour", version = "2.0.4", build_tools = ["gleam"], requirements = ["gleam_json", "gleam_stdlib"], otp_app = "gleam_community_colour", source = "hex", outer_checksum = "6DB4665555D7D2B27F0EA32EF47E8BEBC4303821765F9C73D483F38EE24894F0" },
+  { name = "gleam_javascript", version = "1.0.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_javascript", source = "hex", outer_checksum = "EF6C77A506F026C6FB37941889477CD5E4234FCD4337FF0E9384E297CB8F97EB" },
   { name = "gleam_json", version = "3.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_json", source = "hex", outer_checksum = "44FDAA8847BE8FC48CA7A1C089706BD54BADCC4C45B237A992EDDF9F2CDB2836" },
   { name = "gleam_stdlib", version = "1.0.0", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "960090C2FB391784BB34267B099DC9315CC1B1F6013E7415BC763CEF1905D7D3" },
   { name = "gleeunit", version = "1.10.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleeunit", source = "hex", outer_checksum = "254B697FE72EEAD7BF82E941723918E421317813AC49923EE76A18C788C61E72" },
-  { name = "paint", version = "1.0.1", build_tools = ["gleam"], requirements = ["gleam_community_colour", "gleam_json", "gleam_stdlib"], source = "local", path = "../.." },
+  { name = "paint", version = "1.0.1", build_tools = ["gleam"], requirements = ["gleam_community_colour", "gleam_javascript", "gleam_json", "gleam_stdlib"], source = "local", path = "../.." },
   { name = "prng", version = "5.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "prng", source = "hex", outer_checksum = "29DA88BCFB54D06DD1472951DF101E9524878056D139DA2616B04350B403CE10" },
 ]
 
