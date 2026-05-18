@@ -1,7 +1,7 @@
 # (2.0.0) Unreleased
 - Addition: New path API, including bezier curve support! (Thanks @aDifferentJT!)
 - Addition: Support for dashed strokes (Thanks @aDifferentJT!)
-- Fix: Make sure canvas is cleared when using then web component API (Thanks @aDifferentJT)
+- Fix: Make sure canvas is cleared when using the web component API (Thanks @aDifferentJT)
 - Breaking: Remove `polygon` and lines functions in favour of the `path`.
 - Breaking: `arc` now requires an direction
 
